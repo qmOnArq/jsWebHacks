@@ -1,3 +1,4 @@
+
 const config = {
     subtree: true,
     characterData: true,
@@ -13,7 +14,7 @@ function handle(mutationsList) {
     mutationsList.forEach(mutation => {
         const node = mutation.target;
         const text = node.nodeValue;
-        if (!!(' ' + text).match(/[^\u200B\d](\d+.?\d*)+/g)) {
+        if (!!(' ' + text).match(/[^\u200B\d](\d+.?\d*)+/g) && node.nodeType === 3) {
             const style = node.parentElement.style;
             style.backgroundColor = 'red';
             style.color = 'white';
