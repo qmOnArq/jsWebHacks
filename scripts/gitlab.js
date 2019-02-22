@@ -33,7 +33,7 @@ function CONSTS(type) {
         upvoteIcon: {
             color: 'green',
             position: 'absolute',
-            right: '250px',
+            right: '280px',
             top: '11px',
             'margin-right': '0',
         },
@@ -41,7 +41,7 @@ function CONSTS(type) {
         downvoteIcon: {
             color: 'red',
             position: 'absolute',
-            right: '300px',
+            right: '330px',
             top: '11px',
             'margin-right': '0',
         },
@@ -274,22 +274,74 @@ function formatPullRequest(request) {
 
     // Line
 
-    // Unresolved discussions
     if (projectId !== null) {
+        // Unresolved discussions
         let unresolved = 0;
         $.ajax(`/api/v4/projects/${projectId}/merge_requests/${request.id}/discussions`)
             .then(function(data) {
                 (data || []).forEach(function (item) {
-                    (item.notes || []).forEach(function (note) {
+                    if (item.notes && item.notes[0]) {
+                        const note = item.notes[0];
                         if (note.resolvable && !note.resolved) {
                             unresolved++;
                         }
-                    });
+                    }
                 });
 
                 if (unresolved > 0) {
                     $('a', request.commentsElement).prepend(`<span style="color: red;"><i aria-hidden="true" data-hidden="true" class="fa fa-crosshairs"></i><span>${unresolved}</span></span>&nbsp;&nbsp;&nbsp;`);
                 }
+            })
+            .catch(function(x) {
+                console.log(x.responseJSON);
+            });
+
+
+        // Approvals
+        $.ajax(`/api/v4/projects/${projectId}/merge_requests/${request.id}/approvals`)
+            .then(function(data) {
+
+                (data.approved_by || []).forEach(function(item, index) {
+                    item = item.user;
+                    // Author photo
+                    const className = `monar-approve-photo-${item.id}`;
+                    console.log(item, index);
+
+                    const html = `<div class="${className}"><div style="width: 100%; height: 100%; background-size: contain;"></div></div>`;
+                    const css = {
+                        display: 'block',
+                        width: '24px',
+                        height: '24px',
+                        'background-color': 'gray',
+                        'background-size': 'contain',
+                        'border-radius': '50%',
+                        overflow: 'hidden',
+                        border: '2px solid #69D100',
+                        position: 'absolute',
+                        top: '34px',
+                        right: (index * 30) + 215 + 'px',
+                    };
+
+                    let approvePhoto = $('.' + className, request.element);
+                    if (!approvePhoto[0]) {
+                        $('.issuable-info-container', request.element).prepend(html);
+                        approvePhoto = $('.' + className, request.element);
+                    }
+                    approvePhoto.css(css);
+                    approvePhoto.css('background-image', `url(${window['monar_GLOBALS'].defaultAvatar})`);
+                    $('div', approvePhoto).css('background-image', `url('${item.avatar_url}?width=44')`);
+                    $('div', approvePhoto).attr('title', item.name);
+                    request.element.css(CONSTS('approvedBg'));
+                });
+
+                // {
+                //     avatar_url: "https://gitlab.exponea.com/uploads/-/system/user/avatar/__/avatar.png"
+                //     id: __
+                //     name: "__"
+                //     state: "active"
+                //     username: "__"
+                //     web_url: "https://gitlab.exponea.com/__"
+                // }
             })
             .catch(function(x) {
                 console.log(x.responseJSON);
@@ -307,6 +359,9 @@ function prettifyPullRequestPage() {
         document.head.insertAdjacentHTML('beforeEnd', css);
     }
 
+    // Approvals
+    $('.approvals-required-text.text-muted').remove();
+
     // Remove "You can merge this merge request manually using the  command line"
     $('.mr-section-container.mr-widget-workflow .mr-widget-footer').remove();
 
@@ -315,18 +370,19 @@ function prettifyPullRequestPage() {
 
     // Redesign pipeline info
     $('.mr-state-widget.prepend-top-default').css('position', 'relative');
-    $('.mr-widget-heading.mr-widget-workflow').css({
+    const pipelineWrap = $('.ci-widget.media').closest('.mr-widget-heading.mr-widget-workflow');
+    pipelineWrap.css({
         position: 'absolute',
         right: '70px',
         top: '-15px',
         border: 'none',
     });
-    $('.mr-widget-heading.mr-widget-workflow .ci-widget-container').insertBefore($('.mr-widget-heading.mr-widget-workflow .align-self-start'));
-    $('.mr-widget-heading.mr-widget-workflow .align-self-start').css({
+    $('.ci-widget-container', pipelineWrap).insertBefore($('.align-self-start', pipelineWrap));
+    $('.align-self-start', pipelineWrap).css({
         'margin-left': '15px',
         'margin-right': 0,
     });
-    $('.mr-widget-heading.mr-widget-workflow').addClass('remove-before');
+    pipelineWrap.addClass('remove-before');
 
     // Cleanup first box
     $('.diverged-commits-count').contents().filter(function() {
@@ -350,37 +406,37 @@ function prettifyPullRequestPage() {
     $('.branch-actions ul.dropdown-menu').css('overflow', 'hidden');
 
     // Approve button
-    let approveButtonElement = $('#monar-approve-btn');
-    if (approveButtonElement.length === 0) {
-        const approveButton = `<button id="monar-approve-btn" type="button" class="btn float-left prepend-left-10"></button>`;
-        $('.issuable-close-dropdown').after($(approveButton));
-        approveButtonElement = $('#monar-approve-btn');
-    }
-    approveButtonElement.off('click');
-    let labels = [];
-    $('.block.labels input[type=hidden]').each(function() {
-        labels.push(parseInt($(this).val()));
-    });
-    const approved = labels.includes(window['monar_GLOBALS'].APPROVE_ID);
-    approveButtonElement.html(approved ? 'Unapprove' : 'Approve');
-    approveButtonElement.addClass(approved ? 'btn-danger' : 'btn-success');
-    approveButtonElement.click(function() {
-        if (!approved) {
-            labels.push(window['monar_GLOBALS'].APPROVE_ID);
-        } else {
-            labels = labels.filter(function(item) {
-                return item !== window['monar_GLOBALS'].APPROVE_ID;
-            });
-        }
-        $.ajax({
-            url: `/${window.gl.mrWidgetData.source_project_full_path}/merge_requests/${window.gl.mrWidgetData.iid}.json`,
-            type: 'PUT',
-            data: { merge_request: { label_ids: labels } },
-            success: function(result) {
-                location.reload();
-            },
-        });
-    });
+    // let approveButtonElement = $('#monar-approve-btn');
+    // if (approveButtonElement.length === 0) {
+    //     const approveButton = `<button id="monar-approve-btn" type="button" class="btn float-left prepend-left-10"></button>`;
+    //     $('.issuable-close-dropdown').after($(approveButton));
+    //     approveButtonElement = $('#monar-approve-btn');
+    // }
+    // approveButtonElement.off('click');
+    // let labels = [];
+    // $('.block.labels input[type=hidden]').each(function() {
+    //     labels.push(parseInt($(this).val()));
+    // });
+    // const approved = labels.includes(window['monar_GLOBALS'].APPROVE_ID);
+    // approveButtonElement.html(approved ? 'Unapprove' : 'Approve');
+    // approveButtonElement.addClass(approved ? 'btn-danger' : 'btn-success');
+    // approveButtonElement.click(function() {
+    //     if (!approved) {
+    //         labels.push(window['monar_GLOBALS'].APPROVE_ID);
+    //     } else {
+    //         labels = labels.filter(function(item) {
+    //             return item !== window['monar_GLOBALS'].APPROVE_ID;
+    //         });
+    //     }
+    //     $.ajax({
+    //         url: `/${window.gl.mrWidgetData.source_project_full_path}/merge_requests/${window.gl.mrWidgetData.iid}.json`,
+    //         type: 'PUT',
+    //         data: { merge_request: { label_ids: labels } },
+    //         success: function(result) {
+    //             location.reload();
+    //         },
+    //     });
+    // });
 
     // Assign myself
     let assignButtonElement = $('#monar-assign-btn');
