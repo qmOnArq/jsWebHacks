@@ -305,7 +305,6 @@ function formatPullRequest(request) {
                     item = item.user;
                     // Author photo
                     const className = `monar-approve-photo-${item.id}`;
-                    console.log(item, index);
 
                     const html = `<div class="${className}"><div style="width: 100%; height: 100%; background-size: contain;"></div></div>`;
                     const css = {
