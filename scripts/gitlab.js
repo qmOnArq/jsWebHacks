@@ -182,6 +182,22 @@ function parseHtmlPullRequests() {
         });
     });
 
+    if (pullRequests.length > 0 && $('#monar-pipelines-global').length === 0) {
+        let badges = '';
+
+        ['prod', 'qa', 'master'].forEach(function (branch) {
+            badges += `
+                <div style="display: inline-block; width: 116px; text-align: center; height: 48px; margin-right: 10px;">
+                    <b>${branch}</b>
+                    <a href="https://gitlab.exponea.com${window.monar_GLOBALS.project}/commits/${branch}">
+                        <img src="https://gitlab.exponea.com${window.monar_GLOBALS.project}/badges/${branch}/pipeline.svg"></img>
+                    </a>
+                </div>`;
+        });
+
+        $('nav.breadcrumbs .breadcrumbs-container').append(`<div style="position: absolute; right: 0; top: 0;" id="monar-pipelines-global">${badges}</div>`);
+    }
+
     return pullRequests;
 }
 
