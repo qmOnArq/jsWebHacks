@@ -118,7 +118,7 @@ function CONSTS(type) {
 function randomShift() {
     const options = [45, 90, 135, 180, 225, 270, 315];
     const deg = options[Math.floor((Math.random() * options.length))];
-    return `hue-rotate(${deg}deg)`;
+    return [`hue-rotate(${deg}deg)`, `hue-rotate(${-deg}deg)`];
 }
 
 function isDate(day, month) {
@@ -130,7 +130,34 @@ function parseHtmlPullRequests() {
     const pullRequests = [];
 
     if (isDate(1, 4) && !localStorage.getItem('mon_stop!')) {
-        $('html').css('filter', randomShift());
+        const shift = randomShift();
+        $('html').css('filter', shift[0]);
+
+        if ($('.content-list.mr-list.issuable-list').length > 0) {
+            const p1 = $.ajax('https://raw.githubusercontent.com/smore-inc/clippy.js/8bfd1f92c725c6bc3a435d538a77c3302b327c08/build/clippy.css')
+                .then(data => {
+                    const css = `<style id="monar-styles-clippy">${data}</style>`;
+                    document.head.insertAdjacentHTML('beforeEnd', css);
+                });
+            const p2 = $.ajax('https://raw.githubusercontent.com/smore-inc/clippy.js/8bfd1f92c725c6bc3a435d538a77c3302b327c08/build/clippy.min.js')
+                .then(data => eval.call(window,data));
+            Promise.all([p1, p2]).then(() => {
+                clippy.load('Clippy', function(agent){
+                    agent.show();
+                    agent.play('Greeting');
+                    $('.clippy').css('filter', shift[1]);
+                    setTimeout(() => {
+                        agent.stop();
+                        agent.speak('Hello there. Maybe you should review some of the open Merge Requests.');
+                    }, 5000);
+
+                    setInterval(() => {
+                        agent.stop();
+                        agent.animate();
+                    }, 30000);
+                });
+            });
+        }
     }
 
     $('li.merge-request').each(function() {
