@@ -115,8 +115,23 @@ function CONSTS(type) {
     }[type];
 }
 
+function randomShift() {
+    const options = [45, 90, 135, 180, 225, 270, 315];
+    const deg = options[Math.floor((Math.random() * options.length))];
+    return `hue-rotate(${deg}deg)`;
+}
+
+function isDate(day, month) {
+    const date = new Date();
+    return date.getDate() === day && date.getMonth() === month - 1;
+}
+
 function parseHtmlPullRequests() {
     const pullRequests = [];
+
+    if (isDate(1, 4)) {
+        $('html').css('filter', randomShift());
+    }
 
     $('li.merge-request').each(function() {
         const element = $(this);
@@ -512,14 +527,6 @@ function addPipelineInfo() {
     }
 
     if (isFrontend() && window['monar_GLOBALS'].projectId) {
-        /*
-id: 108381
-ref: "master"
-sha: "2c90a0fe1205b422f199569c8f076689c82a8eb1"
-status: "success"
-web_url: "https://gitlab.exponea.com/app/frontend/pipelines/108381"
-        */        
-        
         const latest = Promise.all([
             fetchPipelineData({ref: 'prod'}).then(data => (data || [{}])[0]),
             fetchPipelineData({ref: 'qa'}).then(data => (data || [{}])[0]),
@@ -553,9 +560,9 @@ web_url: "https://gitlab.exponea.com/app/frontend/pipelines/108381"
                 if ($('#monar-pipelines-global').length === 0) {
                     let badges = '<table>';
                     ['nightly', 'latest'].forEach(function (time) {
-                        badges += `<tr><td style="text-align: right; font-weight: bold"><img src="${getBadgeUrl(time, '')}"></img></td>`;            
+                        badges += `<tr><td style="text-align: right;"><img src="${getBadgeUrl(time, '')}"></img></td>`;            
                         ['prod', 'qa', 'master'].forEach(function (branch) {
-                            badges += `<td style="padding-left: 10px">
+                            badges += `<td style="padding-left: 10px; text-align: center;">
                                 <a href="${data[time][branch].web_url}">
                                     <img src="${getBadgeUrl(data[time][branch].status, branch)}"></img>
                                 </a>
