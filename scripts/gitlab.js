@@ -182,27 +182,11 @@ function parseHtmlPullRequests() {
         });
     });
 
-    if (pullRequests.length > 0 && $('#monar-pipelines-global').length === 0) {
-        let badges = '';
-
-        ['prod', 'qa', 'master'].forEach(function (branch) {
-            badges += `
-                <div style="display: inline-block; width: 116px; text-align: center; height: 48px; margin-right: 10px;">
-                    <b>${branch}</b>
-                    <a href="https://gitlab.exponea.com${window.monar_GLOBALS.project}/commits/${branch}">
-                        <img src="https://gitlab.exponea.com${window.monar_GLOBALS.project}/badges/${branch}/pipeline.svg"></img>
-                    </a>
-                </div>`;
-        });
-
-        $('nav.breadcrumbs .breadcrumbs-container').append(`<div style="position: absolute; right: 0; top: 0;" id="monar-pipelines-global">${badges}</div>`);
-    }
-
     return pullRequests;
 }
 
 function formatPullRequest(request) {
-    const projectId = $('#search_project_id')[0] ? $('#search_project_id')[0].value : null;
+    const projectId = getProjectId();
 
     // Target
     if (request.target === 'prod') {
@@ -348,15 +332,6 @@ function formatPullRequest(request) {
                     $('div', approvePhoto).attr('title', item.name);
                     request.element.css(CONSTS('approvedBg'));
                 });
-
-                // {
-                //     avatar_url: "https://gitlab.exponea.com/uploads/-/system/user/avatar/__/avatar.png"
-                //     id: __
-                //     name: "__"
-                //     state: "active"
-                //     username: "__"
-                //     web_url: "https://gitlab.exponea.com/__"
-                // }
             })
             .catch(function(x) {
                 console.log(x.responseJSON);
@@ -365,7 +340,7 @@ function formatPullRequest(request) {
 }
 
 function prettifyPullRequestPage() {
-    if ($('div.merge-request').length !== 1) {
+    if (!isPullRequestsListPage()) {
         return;
     }
 
@@ -420,39 +395,6 @@ function prettifyPullRequestPage() {
     $('.js-web-ide').wrap('<li></li>');
     $('.branch-actions ul.dropdown-menu').css('overflow', 'hidden');
 
-    // Approve button
-    // let approveButtonElement = $('#monar-approve-btn');
-    // if (approveButtonElement.length === 0) {
-    //     const approveButton = `<button id="monar-approve-btn" type="button" class="btn float-left prepend-left-10"></button>`;
-    //     $('.issuable-close-dropdown').after($(approveButton));
-    //     approveButtonElement = $('#monar-approve-btn');
-    // }
-    // approveButtonElement.off('click');
-    // let labels = [];
-    // $('.block.labels input[type=hidden]').each(function() {
-    //     labels.push(parseInt($(this).val()));
-    // });
-    // const approved = labels.includes(window['monar_GLOBALS'].APPROVE_ID);
-    // approveButtonElement.html(approved ? 'Unapprove' : 'Approve');
-    // approveButtonElement.addClass(approved ? 'btn-danger' : 'btn-success');
-    // approveButtonElement.click(function() {
-    //     if (!approved) {
-    //         labels.push(window['monar_GLOBALS'].APPROVE_ID);
-    //     } else {
-    //         labels = labels.filter(function(item) {
-    //             return item !== window['monar_GLOBALS'].APPROVE_ID;
-    //         });
-    //     }
-    //     $.ajax({
-    //         url: `/${window.gl.mrWidgetData.source_project_full_path}/merge_requests/${window.gl.mrWidgetData.iid}.json`,
-    //         type: 'PUT',
-    //         data: { merge_request: { label_ids: labels } },
-    //         success: function(result) {
-    //             location.reload();
-    //         },
-    //     });
-    // });
-
     // Assign myself
     let assignButtonElement = $('#monar-assign-btn');
     if (assignButtonElement.length === 0) {
@@ -483,7 +425,7 @@ function prettifyPullRequestPage() {
     });
 
     // Feebas - main
-    if (window.monar_GLOBALS.project === '/app/frontend') {
+    if (isFrontend()) {
         if ($('#monar-feebas-main').length === 0) {
             const href = `feebas://app:${window.gl.mrWidgetData.diff_head_sha}`;
             $('.mr-state-widget.prepend-top-default').append(`<a title="Open in Feebas" id="monar-feebas-main" href="${href}"></a>`);
@@ -528,7 +470,7 @@ function prettifyPullRequestPage() {
 
 function prettifyCommitList() {
     // Feebas - main
-    if (window.monar_GLOBALS.project === '/app/frontend') {
+    if (isFrontend()) {
         if ($('#commits-list').length !== 0) {
             const feebasInterval = setInterval(function() {
                 clearInterval(feebasInterval);
@@ -553,6 +495,155 @@ function prettifyCommitList() {
     }
 }
 
+function prettifyCreatePullRequestPage() {
+    const titleElement = document.querySelector('.form-control.qa-issuable-form-title');
+    if (titleElement) {
+        const titleRegex = /Resolve (.*?) \"(.*?)\"/g;
+        const titleRegexMatch = titleRegex.exec(titleElement.value);
+        if (titleRegexMatch && titleRegexMatch.length === 3) {
+            titleElement.value = `${titleRegexMatch[1]} ${titleRegexMatch[2]}`;
+        }
+    }
+}
+
+function addPipelineInfo() {
+    if (isPullRequestViewPage()) {
+        return;
+    }
+
+    if (isFrontend() && window['monar_GLOBALS'].projectId) {
+        /*
+id: 108381
+ref: "master"
+sha: "2c90a0fe1205b422f199569c8f076689c82a8eb1"
+status: "success"
+web_url: "https://gitlab.exponea.com/app/frontend/pipelines/108381"
+        */        
+        
+        const latest = Promise.all([
+            fetchPipelineData({ref: 'prod'}).then(data => (data || [{}])[0]),
+            fetchPipelineData({ref: 'qa'}).then(data => (data || [{}])[0]),
+            fetchPipelineData({ref: 'master'}).then(data => (data || [{}])[0]),
+        ]).then(data => ({prod: data[0], qa: data[1], master: data[2]}));
+
+        const nightly = fetchPipelineData({username: window['monar_GLOBALS'].internalUsername})
+            .then(data => {
+                let prod, qa, master;
+                for (let i = 0; i < (data || []).length; i++) {
+                    const item = data[i];
+                    if (item.ref === 'master' && !master) {
+                        master = item;
+                    }
+                    if (item.ref === 'qa' && !qa) {
+                        qa = item;
+                    }
+                    if (item.ref === 'prod' && !prod) {
+                        prod = item;
+                    }
+                    if (master && qa && prod) {
+                        break;
+                    }
+                }
+
+                return {prod: prod || {}, qa: qa || {}, master: master || {}};
+            });
+
+        Promise.all([latest, nightly]).then(data => ({latest: data[0], nightly: data[1]}))
+            .then(data => {
+                if ($('#monar-pipelines-global').length === 0) {
+                    let badges = '<table>';
+                    ['nightly', 'latest'].forEach(function (time) {
+                        badges += `<tr><td style="text-align: right; font-weight: bold"><img src="${getBadgeUrl(time, '')}"></img></td>`;            
+                        ['prod', 'qa', 'master'].forEach(function (branch) {
+                            badges += `<td style="padding-left: 10px">
+                                <a href="${data[time][branch].web_url}">
+                                    <img src="${getBadgeUrl(data[time][branch].status, branch)}"></img>
+                                </a>
+                            </td>`;
+                        });
+                        badges += '</tr>';
+                    });
+                    badges += '</table>';
+            
+                    $('nav.breadcrumbs .breadcrumbs-container').append(`<div style="position: absolute; right: 0; top: -1px;" id="monar-pipelines-global">${badges}</div>`);
+                }
+            });
+    } else {
+        if ($('#monar-pipelines-global').length === 0) {
+            let badges = '';
+    
+            ['prod', 'qa', 'master'].forEach(function (branch) {
+                badges += `
+                    <div style="display: inline-block; width: 116px; text-align: center; height: 48px; margin-right: 10px;">
+                        <b>${branch}</b>
+                        <a href="https://gitlab.exponea.com${window.monar_GLOBALS.project}/commits/${branch}">
+                            <img src="https://gitlab.exponea.com${window.monar_GLOBALS.project}/badges/${branch}/pipeline.svg"></img>
+                        </a>
+                    </div>`;
+            });
+    
+            $('nav.breadcrumbs .breadcrumbs-container').append(`<div style="position: absolute; right: 0; top: 0;" id="monar-pipelines-global">${badges}</div>`);
+        }
+    }
+
+    function fetchPipelineData(data) {
+        return $.ajax({
+            url: `/api/v4/projects/${window['monar_GLOBALS'].projectId}/pipelines`,
+            data: data,
+        });
+    }
+
+    function getBadgeUrl(status, text) {
+        const color = {
+            running: 'blue',
+            pending: 'blue',
+            success: 'brightgreen',
+            failed: 'red',
+            canceled: 'lightgrey',
+            skipped: 'lightgrey',
+            nightly: 'orange',
+            latest: 'orange',
+        }[status];
+
+        const statusWord = {
+            running: 'running',
+            pending: 'pending',
+            success: 'passed',
+            failed: 'failed',
+            canceled: 'canceled',
+            skipped: 'skipped',
+            nightly: 'nightly',
+            latest: 'latest',
+        }[status];
+
+        return `https://img.shields.io/badge/${text}-${statusWord}-${color}.svg`;
+    }
+}
+
+function isFrontend() {
+    return window.monar_GLOBALS.project === '/app/frontend';
+}
+
+function getProjectId() {
+    return $('#search_project_id')[0] ? $('#search_project_id')[0].value : null;
+}
+
+function isPullRequestsListPage() {
+    if ($('div.merge-request').length !== 1) {
+        return false;
+    }
+
+    return true;
+}
+
+function isPullRequestViewPage() {
+    if ($('#content-body .merge-request .merge-request-details').length !== 1) {
+        return false;
+    }
+
+    return true;
+}
+
 setTimeout(function() {
     window['monar_GLOBALS'] = {
         id: gon.current_user_id,
@@ -561,32 +652,20 @@ setTimeout(function() {
         avatar: gon.current_user_avatar_url,
         defaultAvatar: gon.default_avatar_url,
 
-        project: window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath.replace('/issues', ''),
+        project: 
+            window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath 
+            ? window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath.replace('/issues', '') 
+            : '',
+        projectId: getProjectId(),
 
-        APPROVE_ID: 0,
+        internalUsername: 'user.of.system',
     };
-
-    parseHtmlPullRequests().forEach(formatPullRequest);
-
-    $.ajax({
-        url: `${window['monar_GLOBALS'].project}/labels.json`,
-        success: function(result) {
-            (result || []).forEach(function(item) {
-                if (((item || {}).title || '').trim() === 'approved') {
-                    window['monar_GLOBALS'].APPROVE_ID = (item || {}).id;
-                }
-            });
-
-            prettifyPullRequestPage();
-        },
-    });
-
-    prettifyCommitList();
-
-    const titleElement = document.querySelector('.form-control.qa-issuable-form-title');
-    const titleRegex = /Resolve (.*?) \"(.*?)\"/g;
-    const titleRegexMatch = titleRegex.exec(titleElement.value);
-    if (titleRegexMatch && titleRegexMatch.length === 3) {
-        titleElement.value = `${titleRegexMatch[1]} ${titleRegexMatch[2]}`;
+    
+    if (window['monar_GLOBALS'].project) {
+        parseHtmlPullRequests().forEach(formatPullRequest);
+        prettifyPullRequestPage();
+        prettifyCommitList();
+        prettifyCreatePullRequestPage();
+        addPipelineInfo();
     }
 }, 0);
