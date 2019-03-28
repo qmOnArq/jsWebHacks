@@ -129,7 +129,7 @@ function isDate(day, month) {
 function parseHtmlPullRequests() {
     const pullRequests = [];
 
-    if (isDate(1, 4)) {
+    if (isDate(1, 4) && !localStorage.getItem('mon_stop!')) {
         $('html').css('filter', randomShift());
     }
 
@@ -521,12 +521,12 @@ function prettifyCreatePullRequestPage() {
     }
 }
 
-function addPipelineInfo() {
+function addBadges() {
     if (isPullRequestViewPage()) {
         return;
     }
 
-    if (isFrontend() && window['monar_GLOBALS'].projectId) {
+    if (true || isFrontend() && window['monar_GLOBALS'].projectId) {
         const latest = Promise.all([
             fetchPipelineData({ref: 'prod'}).then(data => (data || [{}])[0]),
             fetchPipelineData({ref: 'qa'}).then(data => (data || [{}])[0]),
@@ -555,11 +555,19 @@ function addPipelineInfo() {
                 return {prod: prod || {}, qa: qa || {}, master: master || {}};
             });
 
-        Promise.all([latest, nightly]).then(data => ({latest: data[0], nightly: data[1]}))
+        const latestTag = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/tags`).then(data => (data || [{}])[0]);
+
+        Promise.all([latest, nightly, latestTag]).then(data => ({latest: data[0], nightly: data[1], tag: data[2]}))
             .then(data => {
                 if ($('#monar-pipelines-global').length === 0) {
-                    let badges = '<table>';
-                    ['nightly', 'latest'].forEach(function (time) {
+                    let badges = '';
+
+                    badges += `<a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${window.monar_GLOBALS.project}/commit/${data.tag.commit.id}">
+                            <img src="https://img.shields.io/badge/latest tag-${data.tag.name}-green.svg"></img>
+                        </a>`
+
+                    badges += '<table style="display: inline-block">';
+                    (isFrontend() ? ['nightly', 'latest'] : ['latest']).forEach(function (time) {
                         badges += `<tr><td style="text-align: right;"><img src="${getBadgeUrl(time, '')}"></img></td>`;            
                         ['prod', 'qa', 'master'].forEach(function (branch) {
                             badges += `<td style="padding-left: 10px; text-align: center;">
@@ -572,25 +580,12 @@ function addPipelineInfo() {
                     });
                     badges += '</table>';
             
-                    $('nav.breadcrumbs .breadcrumbs-container').append(`<div style="position: absolute; right: 0; top: -1px;" id="monar-pipelines-global">${badges}</div>`);
+                    $('nav.breadcrumbs .breadcrumbs-container').append(`
+                        <div style="position: absolute; right: 0; top: -1px;" id="monar-pipelines-global">
+                            ${badges}
+                        </div>`);
                 }
             });
-    } else {
-        if ($('#monar-pipelines-global').length === 0) {
-            let badges = '';
-    
-            ['prod', 'qa', 'master'].forEach(function (branch) {
-                badges += `
-                    <div style="display: inline-block; width: 116px; text-align: center; height: 48px; margin-right: 10px;">
-                        <b>${branch}</b>
-                        <a href="https://gitlab.exponea.com${window.monar_GLOBALS.project}/commits/${branch}">
-                            <img src="https://gitlab.exponea.com${window.monar_GLOBALS.project}/badges/${branch}/pipeline.svg"></img>
-                        </a>
-                    </div>`;
-            });
-    
-            $('nav.breadcrumbs .breadcrumbs-container').append(`<div style="position: absolute; right: 0; top: 0;" id="monar-pipelines-global">${badges}</div>`);
-        }
     }
 
     function fetchPipelineData(data) {
@@ -610,6 +605,7 @@ function addPipelineInfo() {
             skipped: 'lightgrey',
             nightly: 'orange',
             latest: 'orange',
+            undefined: 'lightgrey',
         }[status];
 
         const statusWord = {
@@ -621,6 +617,7 @@ function addPipelineInfo() {
             skipped: 'skipped',
             nightly: 'nightly',
             latest: 'latest',
+            undefined: 'unknown',
         }[status];
 
         return `https://img.shields.io/badge/${text}-${statusWord}-${color}.svg`;
@@ -673,6 +670,6 @@ setTimeout(function() {
         prettifyPullRequestPage();
         prettifyCommitList();
         prettifyCreatePullRequestPage();
-        addPipelineInfo();
+        addBadges();
     }
 }, 0);
