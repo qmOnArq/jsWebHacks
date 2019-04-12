@@ -544,15 +544,38 @@ function addBadges() {
             });
 
         const latestTag = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/tags`).then(data => (data || [{}])[0]);
+        const prodCommits = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/commits?ref_name=prod&per_page=100`);
 
-        Promise.all([latest, nightly, latestTag]).then(data => ({latest: data[0], nightly: data[1], tag: data[2]}))
+        Promise.all([latest, nightly, latestTag, prodCommits]).then(data => ({latest: data[0], nightly: data[1], tag: data[2], prodCommits: data[3]}))
             .then(data => {
+                let merges = 0;
+                for (let i = 0; i < data.prodCommits.length; i++) {
+                    const commit = data.prodCommits[i];
+                    if (commit.id === data.tag.commit.id) {
+                        break;
+                    }
+                    if (commit.title.startsWith('Merge')) {
+                        merges++;
+                    }
+                }
+
                 if ($('#monar-pipelines-global').length === 0) {
                     let badges = '';
 
-                    badges += `<a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${window.monar_GLOBALS.project}/commit/${data.tag.commit.id}">
-                            <img src="https://img.shields.io/badge/latest tag-${data.tag.name}-green.svg"></img>
-                        </a>`
+                    badges += `
+                        <table style="display: inline-block">
+                            <tr><td>
+                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${window.monar_GLOBALS.project}/commit/${data.tag.commit.id}">
+                                <img src="https://img.shields.io/badge/latest tag-${data.tag.name}-green.svg"></img>
+                            </a>
+                            </td></tr>
+                            <tr><td>
+                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="#">
+                                <img src="https://img.shields.io/badge/untagged merges-${merges}-green.svg"></img>
+                            </a>
+                            </td></tr>
+                        </table>
+                        `;
 
                     badges += '<table style="display: inline-block">';
                     (isFrontend() ? ['nightly', 'latest'] : ['latest']).forEach(function (time) {
