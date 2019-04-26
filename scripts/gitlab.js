@@ -708,6 +708,8 @@ function toggleUntaggedMerges(show) {
     }
 }
 
+window['toggleUntaggedMerges'] = toggleUntaggedMerges;
+
 setTimeout(function() {
     window['monar_GLOBALS'] = {
         id: gon.current_user_id,
