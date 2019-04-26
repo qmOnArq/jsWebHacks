@@ -549,6 +549,7 @@ function addBadges() {
         Promise.all([latest, nightly, latestTag, prodCommits]).then(data => ({latest: data[0], nightly: data[1], tag: data[2], prodCommits: data[3]}))
             .then(data => {
                 let merges = 0;
+                const tmpArray = [];
                 for (let i = 0; i < data.prodCommits.length; i++) {
                     const commit = data.prodCommits[i];
                     if (commit.id === data.tag.commit.id) {
@@ -556,8 +557,11 @@ function addBadges() {
                     }
                     if (commit.title.startsWith('Merge')) {
                         merges++;
+                        tmpArray.push(commit);
                     }
                 }
+
+                window['monar_GLOBALS'].untaggedMerges = tmpArray;
 
                 if ($('#monar-pipelines-global').length === 0) {
                     let badges = '';
@@ -570,7 +574,7 @@ function addBadges() {
                             </a>
                             </td></tr>
                             <tr><td>
-                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="#">
+                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="javascript:toggleUntaggedMerges(true)">
                                 <img src="https://img.shields.io/badge/untagged merges-${merges}-green.svg"></img>
                             </a>
                             </td></tr>
@@ -659,6 +663,51 @@ function isPullRequestViewPage() {
     return true;
 }
 
+function getJiraUrl() {
+    return $('.shortcuts-external_tracker').attr('href') || '';
+}
+
+function toggleUntaggedMerges(show) {
+    if (show) {
+        $('#content-body').hide();
+        $('#monar_untagged_merges_panel').show();
+
+        if ($('#monar_untagged_merges_panel').length === 0) {
+            const merges = window['monar_GLOBALS'].untaggedMerges || [];
+            const jira = getJiraUrl();
+            let html = '<div id="monar_untagged_merges_panel" style="padding: 20px">';
+            html += `<h3 style="padding-bottom: 20px">Untagged merges (${merges.length})`;
+            html += '<a href="javascript:toggleUntaggedMerges(false)" style="margin-left: 16px; font-size: 14px;">(close)</a>'
+            html += '</h3>';
+            html += '<table style="width: 100%">';
+            merges.forEach(commit => {
+                let match = commit.title.match(/'([\S]*)'/);
+                match = match || commit.message.match(/'([\S]*)'/);
+                const title = match ? match[1] : 'UNKOWN';
+                match = title.match(/^([^ -]*-\d*)/);
+                const jiraTicket = match ? match[1] : '';
+
+                const date = new Date(commit.created_at);
+
+                html += '<tr>';
+                html += `<td><a href="${jira}/browse/${jiraTicket}">${jiraTicket}</a></td>`
+                html += `<td><a href="${window.monar_GLOBALS.project}/commit/${commit.id}">${title}</a></td>`;
+                html += `<td>${commit.short_id}</td>`;
+                html += `<td>${commit.author_name}</td>`;
+                html += `<td>${date.toDateString()}</td>`;
+                html += `<td>${date.toLocaleTimeString()}</td>`;
+                html += '</tr>';
+            });
+            html += '</table>'
+            html += '</div>';
+            $('#content-body').parent().append(html);
+        }
+    } else {
+        $('#content-body').show();
+        $('#monar_untagged_merges_panel').hide();
+    }
+}
+
 setTimeout(function() {
     window['monar_GLOBALS'] = {
         id: gon.current_user_id,
@@ -666,6 +715,8 @@ setTimeout(function() {
         name: gon.current_user_fullname,
         avatar: gon.current_user_avatar_url,
         defaultAvatar: gon.default_avatar_url,
+
+        untaggedMerges: [],
 
         project: 
             window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath 
