@@ -185,8 +185,42 @@ function parseHtmlPullRequests() {
     return pullRequests;
 }
 
+function hidePrStuff() {
+    parseHtmlPullRequests().forEach(request => {
+        const title = request.title;
+
+        const isWip = title.includes('WIP');
+        let hidden = false;
+
+        if (isWip && window['monar_SETTINGS'].hideWip) {
+            hidden = true;
+        }
+
+        request.element.children().css('opacity', hidden ? 0.2 : 1);
+    });
+}
+
 function formatPullRequest(request) {
     const projectId = getProjectId();
+    
+    // Buttons
+    if ($('#monar-pull-requests-buttons').length === 0) {
+        $('.top-area').css('position', 'relative');
+        $('.top-area').append('<div id="monar-pull-requests-buttons" style="display: inline-block; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%)"></div>');
+        $('#monar-pull-requests-buttons').append('<a id="monar-pull-requests-buttons-hide-wip" href="javascript:void(0)" class="btn btn-missing">Hide WIP</a>');
+        $('#monar-pull-requests-buttons-hide-wip').on('click', function() {
+            window['monar_SETTINGS'].hideWip = !window['monar_SETTINGS'].hideWip;
+            $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-missing', !window['monar_SETTINGS'].hideWip);
+            $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-inverted-secondary', window['monar_SETTINGS'].hideWip);
+            $('#monar-pull-requests-buttons-hide-wip').blur();
+            saveSettings();
+            hidePrStuff();
+        });
+        $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-missing', !window['monar_SETTINGS'].hideWip);
+        $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-inverted-secondary', window['monar_SETTINGS'].hideWip);
+
+        hidePrStuff();
+    }
 
     // Target
     if (request.target === 'prod') {
@@ -708,7 +742,18 @@ function toggleUntaggedMerges(show) {
     }
 }
 
+function loadSettings() {
+    window['monar_SETTINGS'] = JSON.parse(localStorage.getItem('monar_SETTINGS')) || {
+        hideWip: true,
+    };
+}
+
+function saveSettings() {
+    localStorage.setItem('monar_SETTINGS', JSON.stringify(window['monar_SETTINGS']));
+}
+
 window['toggleUntaggedMerges'] = toggleUntaggedMerges;
+window['hidePrStuff'] = hidePrStuff;
 
 setTimeout(function() {
     window['monar_GLOBALS'] = {
@@ -728,6 +773,8 @@ setTimeout(function() {
 
         internalUsername: 'user.of.system',
     };
+
+    loadSettings();
     
     if (window['monar_GLOBALS'].project) {
         parseHtmlPullRequests().forEach(formatPullRequest);
