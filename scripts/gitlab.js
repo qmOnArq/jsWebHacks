@@ -364,8 +364,11 @@ function formatPullRequest(request) {
                     approvePhoto.css('background-image', `url(${window['monar_GLOBALS'].defaultAvatar})`);
                     $('div', approvePhoto).css('background-image', `url('${item.avatar_url}?width=44')`);
                     $('div', approvePhoto).attr('title', item.name);
-                    request.element.css(CONSTS('approvedBg'));
                 });
+
+                if (data.approved_by.length >= (data.approvals_required || 1)) {
+                    request.element.css(CONSTS('approvedBg'));
+                }
             })
             .catch(function(x) {
                 console.log(x.responseJSON);
