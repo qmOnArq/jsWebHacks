@@ -210,6 +210,9 @@ function hidePrStuff() {
 
 function formatPullRequest(request) {
     const projectId = getProjectId();
+
+    // Remove "x of y" approvals required
+    $('li[data-original-title="Approvals"], li[title="Approvals"]', request.element).remove();
     
     // Buttons
     if ($('#monar-pull-requests-buttons').length === 0) {
