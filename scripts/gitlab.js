@@ -266,6 +266,7 @@ function formatPullRequest(request) {
     title = title.replace(/(DP-\d*)/g, '<b>$1</b>');
     title = title.replace(/(PRED-\d*)/g, '<b>$1</b>');
     title = title.replace(/(FRON-\d*)/g, '<b>$1</b>');
+    title = title.replace(/(STYL-\d*)/g, '<b>$1</b>');
     title = title.replace(/(WE-\d*)/g, '<b>$1</b>');
     title = title.replace(/(ANL-\d*)/g, '<b>$1</b>');
     title = title.replace(/\[([^\]]+)\]/ig, '<b style="background-color: rgba(0,255,255,0.5); color: black;">[$1]</b>');
@@ -770,6 +771,39 @@ function loadSettings() {
 
 function saveSettings() {
     localStorage.setItem('monar_SETTINGS', JSON.stringify(window['monar_SETTINGS']));
+}
+
+function getUrlsForMR(mergeRequestId) {
+    const projectId = getProjectId();
+    const urls = [];
+
+    return $.ajax(`/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/pipelines`)
+        .then(pipelines => pipelines.filter(pipeline => pipeline.status === 'success'))
+        .then(pipelines => {
+            const promises = [];
+
+            pipelines.forEach(pipeline => {
+                const p = $.ajax(`/api/v4/projects/${projectId}/pipelines/${pipeline.id}/jobs`)
+                .then(jobs => jobs.filter(job => job.name.match(/new domain/g)))
+                .then(jobs => {
+                    const promises2 = [];
+
+                    jobs.forEach(job => {
+                        const p2 = $.ajax(`/api/v4/projects/${projectId}/jobs/${job.id}/trace`)
+                        .then(data => {
+                            const match = data.match(/Go to (https:\/\/[^$]\S*)/m);
+                            if (match[1]) {
+                                urls.push(match[1]);
+                            }
+                        });
+                        promises2.push(p2);
+                    });
+                    return Promise.all(promises2);
+                });
+                promises.push(p);
+            });
+            return Promise.all(promises);
+        }).then(() => urls);
 }
 
 window['toggleUntaggedMerges'] = toggleUntaggedMerges;
