@@ -467,9 +467,16 @@ function prettifyPullRequestPage() {
         });
     });
 
+    // Deployed 
+    getUrlsForMR(window.gl.mrWidgetData.iid).then(urls => {
+        urls.forEach(url => {
+
+        });
+    });
+
     // Emotes
-    $('.emoji-list-container').css('opacity', 0.1).css('border-bottom', 'none');
-    $('.emoji-list-container').mouseenter(function() {
+    $('.emoji-list-container .awards').css('opacity', 0.1).css('border-bottom', 'none');
+    $('.emoji-list-container .awards').mouseenter(function() {
         $(this).css('opacity', 1);
     }).mouseleave(function() {
         $(this).css('opacity', 0.1);
@@ -598,11 +605,23 @@ function addBadges() {
                 return {prod: prod || {}, qa: qa || {}, master: master || {}, cloud: cloud || {}};
             });
 
-        const latestTag = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/tags`).then(data => (data || [{}])[0]);
+        const latestTag = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/tags`).then(data => (data || [{}]));
         const prodCommits = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/commits?ref_name=prod&per_page=100`);
 
-        Promise.all([latest, nightly, latestTag, prodCommits]).then(data => ({latest: data[0], nightly: data[1], tag: data[2], prodCommits: data[3]}))
+        Promise.all([latest, nightly, latestTag, prodCommits]).then(data => ({latest: data[0], nightly: data[1], tags: data[2], prodCommits: data[3]}))
             .then(data => {
+                let latestRCTag = null;
+                for (let i = 0; i < data.tags.length; i++) {
+                    if ((data.tags[i].name || '').includes('-rc')) {
+                        if (!latestRCTag) {
+                            latestRCTag = data.tags[i];
+                        }
+                    } else {
+                        data.tag = data.tags[i];
+                        break;
+                    }
+                }
+
                 let merges = 0;
                 const tmpArray = [];
                 for (let i = 0; i < data.prodCommits.length; i++) {
@@ -621,11 +640,23 @@ function addBadges() {
                 if ($('#monar-pipelines-global').length === 0) {
                     let badges = '';
 
+                    if (latestRCTag) {
+                        badges += `
+                        <table style="display: inline-block; margin-bottom: 24px;">
+                            <tr><td>
+                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${window.monar_GLOBALS.project}/commit/${latestRCTag.commit.id}">
+                                <img src="https://img.shields.io/badge/latest rc-${latestRCTag.name.replace(/-/g, ' ')}-yellowgreen.svg"></img>
+                            </a>
+                            </td></tr>
+                        </table>
+                        `;
+                    }
+
                     badges += `
                         <table style="display: inline-block">
                             <tr><td>
                             <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${window.monar_GLOBALS.project}/commit/${data.tag.commit.id}">
-                                <img src="https://img.shields.io/badge/latest tag-${data.tag.name}-green.svg"></img>
+                                <img src="https://img.shields.io/badge/latest tag-${data.tag.name.replace(/-/g, ' ')}-green.svg"></img>
                             </a>
                             </td></tr>
                             <tr><td>
@@ -837,5 +868,5 @@ setTimeout(function() {
         prettifyCreatePullRequestPage();
         addBadges();
     }
-}, 0);
+}, 50);
 
