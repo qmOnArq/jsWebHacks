@@ -218,19 +218,27 @@ function formatPullRequest(request) {
     if ($('#monar-pull-requests-buttons').length === 0) {
         $('.top-area').css('position', 'relative');
         $('.top-area').append('<div id="monar-pull-requests-buttons" style="display: inline-block; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%)"></div>');
-        $('#monar-pull-requests-buttons').append('<a id="monar-pull-requests-buttons-hide-wip" href="javascript:void(0)" class="btn btn-missing">Hide WIP</a>');
+        $('#monar-pull-requests-buttons').append('<a id="monar-pull-requests-buttons-hide-wip" href="javascript:void(0)" class="btn btn-sm btn-missing">Hide WIP</a>');
         $('#monar-pull-requests-buttons-hide-wip').on('click', function() {
             window['monar_SETTINGS'].hideWip = !window['monar_SETTINGS'].hideWip;
             $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-missing', !window['monar_SETTINGS'].hideWip);
-            $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-inverted-secondary', window['monar_SETTINGS'].hideWip);
+            $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-info', window['monar_SETTINGS'].hideWip);
             $('#monar-pull-requests-buttons-hide-wip').blur();
             saveSettings();
             hidePrStuff();
         });
         $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-missing', !window['monar_SETTINGS'].hideWip);
-        $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-inverted-secondary', window['monar_SETTINGS'].hideWip);
+        $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-info', window['monar_SETTINGS'].hideWip);
 
         hidePrStuff();
+
+        const projectName = '';
+        const urlMine = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=%E2%9C%93&state=opened&author_username=${window['monar_GLOBALS'].username}`;
+        $('#monar-pull-requests-buttons').append(`<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-mine" href="${urlMine}" class="btn btn-sm btn-success">Show mine</a>`);
+        const urlAssignedToMe = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=✓&state=opened&assignee_username=${window['monar_GLOBALS'].username}`;
+        $('#monar-pull-requests-buttons').append(`<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-my-rev" href="${urlAssignedToMe}" class="btn btn-sm btn-warning">Assigned to me</a>`);
+        const urlWithoutAssignee = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=✓&state=opened&assignee_id=None&wip=no`;
+        $('#monar-pull-requests-buttons').append(`<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-without-rev" href="${urlWithoutAssignee}" class="btn btn-sm btn-danger">Without assignee</a>`);
     }
 
     // Target
