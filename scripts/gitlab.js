@@ -232,7 +232,6 @@ function formatPullRequest(request) {
 
         hidePrStuff();
 
-        const projectName = '';
         const urlMine = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=%E2%9C%93&state=opened&author_username=${window['monar_GLOBALS'].username}`;
         $('#monar-pull-requests-buttons').append(`<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-mine" href="${urlMine}" class="btn btn-sm btn-success">Show mine</a>`);
         const urlAssignedToMe = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=✓&state=opened&assignee_username=${window['monar_GLOBALS'].username}`;
@@ -303,6 +302,10 @@ function formatPullRequest(request) {
     if (request.reviewerElement[0]) {
         $('img', request.reviewerElement).css(CONSTS('reviewerPhoto'));
         request.reviewerElement.css(CONSTS('reviewerWrapper'));
+
+        request.reviewerElement.each(function(index) {
+            $(this).css('right', (parseInt($(this).css('right')) + 30 * index) + 'px')
+        });
     }
 
     // Pipeline
