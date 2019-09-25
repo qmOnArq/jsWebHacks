@@ -120,6 +120,11 @@ function CONSTS(type) {
         approvedBg: {
             'background-color': 'rgba(105, 209, 0, 0.05)',
         },
+
+        green: '#1aaa55',
+        red: '#db3b21',
+        orange: '#fc9403',
+        blue: '#1f78d1',
     }[type];
 }
 
@@ -848,6 +853,16 @@ function getUrlsForMR(mergeRequestId) {
         }).then(() => urls);
 }
 
+function colorMergeRequestNumbers() {
+    $('.merge_counter, #state-opened .badge').each(function() {
+        const MRs = parseInt($(this).text(), 10);
+        const color = MRs < window['monar_GLOBALS'].MR_LIMITS.warning ? 'green' 
+            : (MRs < window['monar_GLOBALS'].MR_LIMITS.danger ? 'orange' : 'red');
+        $(this).css('background-color', CONSTS(color));
+        $(this).css('color', 'white');
+    });
+}
+
 window['toggleUntaggedMerges'] = toggleUntaggedMerges;
 window['hidePrStuff'] = hidePrStuff;
 
@@ -868,6 +883,10 @@ setTimeout(function() {
         projectId: getProjectId(),
 
         internalUsername: 'user.of.system',
+        MR_LIMITS: {
+            warning: 15,
+            danger: 28,
+        }
     };
 
     loadSettings();
@@ -878,6 +897,6 @@ setTimeout(function() {
         prettifyCommitList();
         prettifyCreatePullRequestPage();
         addBadges();
+        colorMergeRequestNumbers();
     }
 }, 50);
-
