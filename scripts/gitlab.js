@@ -411,11 +411,6 @@ function prettifyPullRequestPage() {
         return;
     }
 
-    if ($('#monar-styles').length === 0) {
-        const css = `<style id="monar-styles">.remove-before::before{display: none !important;} .remove-after::after{display: none !important;}</style>`;
-        document.head.insertAdjacentHTML('beforeEnd', css);
-    }
-
     // Approvals
     $('.approvals-required-text.text-muted').remove();
 
@@ -860,6 +855,9 @@ function colorMergeRequestNumbers() {
             : (MRs < window['monar_GLOBALS'].MR_LIMITS.danger ? 'orange' : 'red');
         $(this).css('background-color', CONSTS(color));
         $(this).css('color', 'white');
+        if (MRs >= window['monar_GLOBALS'].MR_LIMITS.blink) {
+            $(this).css('animation', 'monar_background_blink .75s ease-in-out infinite alternate')
+        }
     });
 }
 
@@ -886,12 +884,28 @@ setTimeout(function() {
         MR_LIMITS: {
             warning: 15,
             danger: 28,
+            blink: 38,
         }
     };
 
     loadSettings();
     
     if (window['monar_GLOBALS'].project) {
+        if ($('#monar-styles').length === 0) {
+            const css = `<style id="monar-styles">
+                .remove-before::before{display: none !important;} .remove-after::after{display: none !important;}
+
+                @keyframes monar_background_blink {
+                    100% {
+                    background-color: rgba(0,0,0,0);
+                    
+                    }
+                }                
+            </style>`;
+        
+            document.head.insertAdjacentHTML('beforeEnd', css);
+        }
+
         parseHtmlPullRequests().forEach(formatPullRequest);
         prettifyPullRequestPage();
         prettifyCommitList();
