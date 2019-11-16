@@ -30,11 +30,7 @@ module.exports = ({ mode } = { mode: 'production', presets: [] }) => {
                 sourceMapFilename: '[file].map',
                 path: path.resolve(__dirname, 'scripts'),
             },
-            optimization: {
-                splitChunks: {
-                    chunks: 'all',
-                },
-            },
+            optimization: {},
             plugins: [new CleanWebpackPlugin()],
         },
         modeConfig(mode),
