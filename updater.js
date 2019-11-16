@@ -1,12 +1,24 @@
 const CODE_KEY = 'MONAR_JS_WEB_HACK_CODE';
+const DEV_KEY = 'MONAR_JS_WEB_HACK_DEV';
+
 const BASE_URL = 'https://raw.githubusercontent.com/qmOnArq/jsWebHacks/master/scripts/';
+const DEV_BASE_URL = 'http://localhost:8080/';
+
+const IS_DEV = !!localStorage.getItem(DEV_KEY);
 
 function applyScript(url) {
+    if (IS_DEV) {
+        $.ajax(url).then(data => {
+            eval(data);
+        }).catch(console.error);
+        return;
+    }
+
     const codeCache = localStorage.getItem(CODE_KEY);
     if (codeCache) {
         eval(codeCache);
     }
-    
+
     $.ajax(url).then(data => {
         localStorage.setItem(CODE_KEY, data);
         if (codeCache !== data) {
@@ -31,4 +43,4 @@ function applyScript(url) {
 
 const script = ''; // e.g. 'gitlab.js';
 
-applyScript(BASE_URL + script);
+applyScript((IS_DEV ? DEV_BASE_URL : BASE_URL) + script);
