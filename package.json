@@ -1,0 +1,36 @@
+{
+  "name": "jswebhacks",
+  "version": "1.0.0",
+  "description": "1. Download and install [Custom JavaScript for websites](https://chrome.google.com/webstore/detail/custom-javascript-for-web/poakhlngfciodnhlhhgnaaelnpjljija)\r 2. Navigate to website you wish to run script on\r 3. Open installed extension\r 4. Paste the contents of [updater.js](https://raw.githubusercontent.com/qmOnArq/jsWebHacks/master/updater.js) into the extension\r 5. Modify `const script = '';` by using correct script filename (all available scripts are in `/scripts` folder)",
+  "main": "updater.js",
+  "scripts": {
+    "start": "npm run dev",
+    "webpack": "webpack",
+    "webpack-dev-server": "webpack-dev-server --env.mode development --open",
+    "dev": "npm run webpack-dev-server",
+    "build:dev": "npm run webpack -- --env.mode development",
+    "build:prod": "npm run webpack -- --env.mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qmOnArq/jsWebHacks.git"
+  },
+  "author": "mOnAr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qmOnArq/jsWebHacks/issues"
+  },
+  "homepage": "https://github.com/qmOnArq/jsWebHacks#readme",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "prettier": "^1.19.1",
+    "terser-webpack-plugin": "^2.2.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,1 @@
+import './localization_highlighter';
