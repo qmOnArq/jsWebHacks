@@ -2,7 +2,7 @@ const CODE_KEY = 'MONAR_JS_WEB_HACK_CODE';
 const DEV_KEY = 'MONAR_JS_WEB_HACK_DEV';
 
 const BASE_URL = 'https://raw.githubusercontent.com/qmOnArq/jsWebHacks/master/scripts/';
-const DEV_BASE_URL = 'http://localhost:8080/';
+const DEV_BASE_URL = 'https://localhost:8080/';
 
 const IS_DEV = !!localStorage.getItem(DEV_KEY);
 

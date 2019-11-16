@@ -1,5 +1,7 @@
 module.exports = env => ({
     devServer: {
+        https: true,
+        disableHostCheck: true,
         contentBase: './scripts',
         headers: {
             'Access-Control-Allow-Origin': '*',
