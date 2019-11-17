@@ -20,10 +20,19 @@ module.exports = ({ mode } = { mode: 'production', presets: [] }) => {
                         use: 'ts-loader',
                         exclude: /node_modules/,
                     },
+                    {
+                        test: /\.(html|svelte)$/,
+                        use: 'svelte-loader',
+                        exclude: /node_modules/,
+                    },
                 ],
             },
             resolve: {
-                extensions: ['.tsx', '.ts', '.js'],
+                alias: {
+                    svelte: path.resolve('node_modules', 'svelte'),
+                },
+                extensions: ['.tsx', '.ts', '.mjs', '.js', '.svelte'],
+                mainFields: ['svelte', 'browser', 'module', 'main'],
             },
             output: {
                 filename: '[name].js',

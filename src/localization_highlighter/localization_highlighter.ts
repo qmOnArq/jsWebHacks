@@ -1,3 +1,4 @@
+//@ts-nocheck
 const config = {
     subtree: true,
     characterData: true,

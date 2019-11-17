@@ -1,11 +1,15 @@
+//@ts-nocheck
+import { addPermissionsButton } from './gitlab-permissions/gitlab-permissions';
+
 function CONSTS(type) {
     return {
         feebas: {
-            'background-image': 'url("https://github.com/timzatko/feebas/blob/master/packages/desktop_app/src/favicon.256x256.png?raw=true")',
+            'background-image':
+                'url("https://github.com/timzatko/feebas/blob/master/packages/desktop_app/src/favicon.256x256.png?raw=true")',
             'background-repeat': 'no-repeat',
             'background-size': 'contain',
             'background-origin': 'content-box',
-            'padding': '4px',
+            padding: '4px',
             width: '40px',
             height: '40px',
             'border-radius': '50%',
@@ -73,7 +77,8 @@ function CONSTS(type) {
             overflow: 'hidden',
         },
 
-        authorPhotoHTML: '<div class="monar-author-photo"><div style="width: 100%; height: 100%; background-size: contain;"></div></div>',
+        authorPhotoHTML:
+            '<div class="monar-author-photo"><div style="width: 100%; height: 100%; background-size: contain;"></div></div>',
 
         reviewerPhoto: {
             width: '24px',
@@ -159,7 +164,10 @@ function parseHtmlPullRequests() {
             title: titleElement.data('monar-title'),
 
             idElement,
-            id: idElement.text().trim().substring(1),
+            id: idElement
+                .text()
+                .trim()
+                .substring(1),
 
             authorElement,
             author: {
@@ -222,8 +230,12 @@ function formatPullRequest(request) {
     // Buttons
     if ($('#monar-pull-requests-buttons').length === 0) {
         $('.top-area').css('position', 'relative');
-        $('.top-area').append('<div id="monar-pull-requests-buttons" style="display: inline-block; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%)"></div>');
-        $('#monar-pull-requests-buttons').append('<a id="monar-pull-requests-buttons-hide-wip" href="javascript:void(0)" class="btn btn-sm btn-missing">Hide WIP</a>');
+        $('.top-area').append(
+            '<div id="monar-pull-requests-buttons" style="display: inline-block; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%)"></div>',
+        );
+        $('#monar-pull-requests-buttons').append(
+            '<a id="monar-pull-requests-buttons-hide-wip" href="javascript:void(0)" class="btn btn-sm btn-missing">Hide WIP</a>',
+        );
         $('#monar-pull-requests-buttons-hide-wip').on('click', function() {
             window['monar_SETTINGS'].hideWip = !window['monar_SETTINGS'].hideWip;
             $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-missing', !window['monar_SETTINGS'].hideWip);
@@ -238,11 +250,17 @@ function formatPullRequest(request) {
         hidePrStuff();
 
         const urlMine = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=%E2%9C%93&state=opened&author_username=${window['monar_GLOBALS'].username}`;
-        $('#monar-pull-requests-buttons').append(`<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-mine" href="${urlMine}" class="btn btn-sm btn-success">Show mine</a>`);
+        $('#monar-pull-requests-buttons').append(
+            `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-mine" href="${urlMine}" class="btn btn-sm btn-success">Show mine</a>`,
+        );
         const urlAssignedToMe = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=✓&state=opened&assignee_username=${window['monar_GLOBALS'].username}`;
-        $('#monar-pull-requests-buttons').append(`<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-my-rev" href="${urlAssignedToMe}" class="btn btn-sm btn-warning">Assigned to me</a>`);
+        $('#monar-pull-requests-buttons').append(
+            `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-my-rev" href="${urlAssignedToMe}" class="btn btn-sm btn-warning">Assigned to me</a>`,
+        );
         const urlWithoutAssignee = `${window['monar_GLOBALS'].project}/merge_requests?scope=all&utf8=✓&state=opened&assignee_id=None&wip=no`;
-        $('#monar-pull-requests-buttons').append(`<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-without-rev" href="${urlWithoutAssignee}" class="btn btn-sm btn-danger">Without assignee</a>`);
+        $('#monar-pull-requests-buttons').append(
+            `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-without-rev" href="${urlWithoutAssignee}" class="btn btn-sm btn-danger">Without assignee</a>`,
+        );
     }
 
     // Target
@@ -262,7 +280,10 @@ function formatPullRequest(request) {
     }
     authorPhoto.css(CONSTS('authorPhoto'));
     authorPhoto.css('background-image', `url(${window['monar_GLOBALS'].defaultAvatar})`);
-    $('div', authorPhoto).css('background-image', `url('/uploads/-/system/user/avatar/${request.author.id}/avatar.png?width=44')`);
+    $('div', authorPhoto).css(
+        'background-image',
+        `url('/uploads/-/system/user/avatar/${request.author.id}/avatar.png?width=44')`,
+    );
 
     // Title modifications
     request.titleElement.css(CONSTS('titleBase'));
@@ -281,7 +302,7 @@ function formatPullRequest(request) {
     title = title.replace(/(STYL-\d*)/g, '<b>$1</b>');
     title = title.replace(/(WE-\d*)/g, '<b>$1</b>');
     title = title.replace(/(ANL-\d*)/g, '<b>$1</b>');
-    title = title.replace(/\[([^\]]+)\]/ig, '<b style="background-color: rgba(0,255,255,0.5); color: black;">[$1]</b>');
+    title = title.replace(/\[([^\]]+)\]/gi, '<b style="background-color: rgba(0,255,255,0.5); color: black;">[$1]</b>');
     title = title.replace(/WIP(:?)/g, '<b style="color: red;">WIP$1</b>');
     request.titleElement.html(title);
 
@@ -309,7 +330,7 @@ function formatPullRequest(request) {
         request.reviewerElement.css(CONSTS('reviewerWrapper'));
 
         request.reviewerElement.each(function(index) {
-            $(this).css('right', (parseInt($(this).css('right')) + 30 * index) + 'px')
+            $(this).css('right', parseInt($(this).css('right')) + 30 * index + 'px');
         });
     }
 
@@ -343,7 +364,7 @@ function formatPullRequest(request) {
         let unresolved = 0;
         $.ajax(`/api/v4/projects/${projectId}/merge_requests/${request.id}/discussions`)
             .then(function(data) {
-                (data || []).forEach(function (item) {
+                (data || []).forEach(function(item) {
                     if (item.notes && item.notes[0]) {
                         const note = item.notes[0];
                         if (note.resolvable && !note.resolved) {
@@ -353,18 +374,18 @@ function formatPullRequest(request) {
                 });
 
                 if (unresolved > 0) {
-                    $('a', request.commentsElement).prepend(`<span style="color: red;"><i aria-hidden="true" data-hidden="true" class="fa fa-crosshairs"></i><span>${unresolved}</span></span>&nbsp;&nbsp;&nbsp;`);
+                    $('a', request.commentsElement).prepend(
+                        `<span style="color: red;"><i aria-hidden="true" data-hidden="true" class="fa fa-crosshairs"></i><span>${unresolved}</span></span>&nbsp;&nbsp;&nbsp;`,
+                    );
                 }
             })
             .catch(function(x) {
                 console.log(x.responseJSON);
             });
 
-
         // Approvals
         $.ajax(`/api/v4/projects/${projectId}/merge_requests/${request.id}/approvals`)
             .then(function(data) {
-
                 (data.approved_by || []).forEach(function(item, index) {
                     item = item.user;
                     // Author photo
@@ -382,7 +403,7 @@ function formatPullRequest(request) {
                         border: '2px solid #69D100',
                         position: 'absolute',
                         top: '34px',
-                        right: (index * 30) + 215 + 'px',
+                        right: index * 30 + 215 + 'px',
                     };
 
                     let approvePhoto = $('.' + className, request.element);
@@ -437,14 +458,24 @@ function prettifyPullRequestPage() {
     pipelineWrap.addClass('remove-before');
 
     // Cleanup first box
-    $('.diverged-commits-count').contents().filter(function() {
-        return (this.nodeType == 3);
-    }).remove();
+    $('.diverged-commits-count')
+        .contents()
+        .filter(function() {
+            return this.nodeType == 3;
+        })
+        .remove();
     $('.diverged-commits-count').css('font-size', '10px');
 
-    $('.git-merge-container .normal strong').contents().filter(function() {
-        return $(this).text().trim() === 'Request to merge';
-    }).remove();
+    $('.git-merge-container .normal strong')
+        .contents()
+        .filter(function() {
+            return (
+                $(this)
+                    .text()
+                    .trim() === 'Request to merge'
+            );
+        })
+        .remove();
 
     // Move "Check out branch"
     $('.js-check-out-branch').insertAfter($('.branch-actions ul.dropdown-menu li:last-child'));
@@ -480,31 +511,37 @@ function prettifyPullRequestPage() {
 
     // Deployed
     getUrlsForMR(window.gl.mrWidgetData.iid).then(urls => {
-        urls.forEach(url => {
-
-        });
+        urls.forEach(url => {});
     });
 
     // Emotes
-    $('.emoji-list-container .awards').css('opacity', 0.1).css('border-bottom', 'none');
-    $('.emoji-list-container .awards').mouseenter(function() {
-        $(this).css('opacity', 1);
-    }).mouseleave(function() {
-        $(this).css('opacity', 0.1);
-    });
+    $('.emoji-list-container .awards')
+        .css('opacity', 0.1)
+        .css('border-bottom', 'none');
+    $('.emoji-list-container .awards')
+        .mouseenter(function() {
+            $(this).css('opacity', 1);
+        })
+        .mouseleave(function() {
+            $(this).css('opacity', 0.1);
+        });
 
     // Feebas - main
     if (isFrontend()) {
         if ($('#monar-feebas-main').length === 0) {
             const href = `feebas://app:${window.gl.mrWidgetData.diff_head_sha}`;
-            $('.mr-state-widget.prepend-top-default').append(`<a title="Open in Feebas" id="monar-feebas-main" href="${href}"></a>`);
+            $('.mr-state-widget.prepend-top-default').append(
+                `<a title="Open in Feebas" id="monar-feebas-main" href="${href}"></a>`,
+            );
             $('#monar-feebas-main').css(CONSTS('feebas'));
             $('#monar-feebas-main').css({ position: 'absolute', right: '0px', top: '-45px' });
-            $('#monar-feebas-main').mouseenter(function() {
-                $(this).css('background-color', '#1aaa55');
-            }).mouseleave(function() {
-                $(this).css('background-color', 'transparent');
-            });
+            $('#monar-feebas-main')
+                .mouseenter(function() {
+                    $(this).css('background-color', '#1aaa55');
+                })
+                .mouseleave(function() {
+                    $(this).css('background-color', 'transparent');
+                });
         }
 
         // Feebas - commits
@@ -521,11 +558,13 @@ function prettifyPullRequestPage() {
                     $('#' + id).css(CONSTS('feebas'));
                     $('#' + id).css('margin-left', '15px');
 
-                    $('#' + id).mouseenter(function() {
-                        $(this).css('background-color', '#1aaa55');
-                    }).mouseleave(function() {
-                        $(this).css('background-color', 'transparent');
-                    });
+                    $('#' + id)
+                        .mouseenter(function() {
+                            $(this).css('background-color', '#1aaa55');
+                        })
+                        .mouseleave(function() {
+                            $(this).css('background-color', 'transparent');
+                        });
                 });
             }
         }, 500);
@@ -553,11 +592,13 @@ function prettifyCommitList() {
                     $('#' + id).css(CONSTS('feebas'));
                     $('#' + id).css('margin-left', '15px');
 
-                    $('#' + id).mouseenter(function() {
-                        $(this).css('background-color', '#1aaa55');
-                    }).mouseleave(function() {
-                        $(this).css('background-color', 'transparent');
-                    });
+                    $('#' + id)
+                        .mouseenter(function() {
+                            $(this).css('background-color', '#1aaa55');
+                        })
+                        .mouseleave(function() {
+                            $(this).css('background-color', 'transparent');
+                        });
                 });
             }, 500);
         }
@@ -575,7 +616,10 @@ function prettifyCreatePullRequestPage() {
     }
 
     let $titleRow = $('#merge_request_title').closest('.form-group.row');
-    $('#merge_request_target_branch').closest('.form-group.row').clone().insertBefore($titleRow);
+    $('#merge_request_target_branch')
+        .closest('.form-group.row')
+        .clone()
+        .insertBefore($titleRow);
 }
 
 function addBadges() {
@@ -583,43 +627,47 @@ function addBadges() {
         return;
     }
 
-    if (true || isFrontend() && window['monar_GLOBALS'].projectId) {
+    if (window['monar_GLOBALS'].projectId) {
         const latest = Promise.all([
-            fetchPipelineData({ref: 'prod'}).then(data => (data || [{}])[0]),
-            fetchPipelineData({ref: 'qa'}).then(data => (data || [{}])[0]),
-            fetchPipelineData({ref: 'master'}).then(data => (data || [{}])[0]),
-            fetchPipelineData({ref: 'cloud'}).then(data => (data || [{}])[0]),
-        ]).then(data => ({prod: data[0], qa: data[1], master: data[2], cloud: data[3]}));
+            fetchPipelineData({ ref: 'prod' }).then(data => (data || [{}])[0]),
+            fetchPipelineData({ ref: 'qa' }).then(data => (data || [{}])[0]),
+            fetchPipelineData({ ref: 'master' }).then(data => (data || [{}])[0]),
+            fetchPipelineData({ ref: 'cloud' }).then(data => (data || [{}])[0]),
+        ]).then(data => ({ prod: data[0], qa: data[1], master: data[2], cloud: data[3] }));
 
-        const nightly = fetchPipelineData({username: window['monar_GLOBALS'].internalUsername})
-            .then(data => {
-                let prod, qa, master, cloud;
-                for (let i = 0; i < (data || []).length; i++) {
-                    const item = data[i];
-                    if (item.ref === 'master' && !master) {
-                        master = item;
-                    }
-                    if (item.ref === 'qa' && !qa) {
-                        qa = item;
-                    }
-                    if (item.ref === 'prod' && !prod) {
-                        prod = item;
-                    }
-                    if (item.ref === 'cloud' && !cloud) {
-                        cloud = item;
-                    }
-                    if (master && qa && prod && cloud) {
-                        break;
-                    }
+        const nightly = fetchPipelineData({ username: window['monar_GLOBALS'].internalUsername }).then(data => {
+            let prod, qa, master, cloud;
+            for (let i = 0; i < (data || []).length; i++) {
+                const item = data[i];
+                if (item.ref === 'master' && !master) {
+                    master = item;
                 }
+                if (item.ref === 'qa' && !qa) {
+                    qa = item;
+                }
+                if (item.ref === 'prod' && !prod) {
+                    prod = item;
+                }
+                if (item.ref === 'cloud' && !cloud) {
+                    cloud = item;
+                }
+                if (master && qa && prod && cloud) {
+                    break;
+                }
+            }
 
-                return {prod: prod || {}, qa: qa || {}, master: master || {}, cloud: cloud || {}};
-            });
+            return { prod: prod || {}, qa: qa || {}, master: master || {}, cloud: cloud || {} };
+        });
 
-        const latestTag = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/tags`).then(data => (data || [{}]));
-        const prodCommits = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/commits?ref_name=prod&per_page=100`);
+        const latestTag = $.ajax(`/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/tags`).then(
+            data => data || [{}],
+        );
+        const prodCommits = $.ajax(
+            `/api/v4/projects/${window['monar_GLOBALS'].projectId}/repository/commits?ref_name=prod&per_page=100`,
+        );
 
-        Promise.all([latest, nightly, latestTag, prodCommits]).then(data => ({latest: data[0], nightly: data[1], tags: data[2], prodCommits: data[3]}))
+        Promise.all([latest, nightly, latestTag, prodCommits])
+            .then(data => ({ latest: data[0], nightly: data[1], tags: data[2], prodCommits: data[3] }))
             .then(data => {
                 let latestRCTag = null;
                 for (let i = 0; i < data.tags.length; i++) {
@@ -655,8 +703,13 @@ function addBadges() {
                         badges += `
                         <table style="display: inline-block; margin-bottom: 24px;">
                             <tr><td>
-                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${window.monar_GLOBALS.project}/commit/${latestRCTag.commit.id}">
-                                <img src="https://img.shields.io/badge/latest rc-${latestRCTag.name.replace(/-/g, ' ')}-yellowgreen.svg"></img>
+                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${
+                                window.monar_GLOBALS.project
+                            }/commit/${latestRCTag.commit.id}">
+                                <img src="https://img.shields.io/badge/latest rc-${latestRCTag.name.replace(
+                                    /-/g,
+                                    ' ',
+                                )}-yellowgreen.svg"></img>
                             </a>
                             </td></tr>
                         </table>
@@ -666,12 +719,17 @@ function addBadges() {
                     badges += `
                         <table style="display: inline-block">
                             <tr><td>
-                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${window.monar_GLOBALS.project}/commit/${data.tag.commit.id}">
-                                <img src="https://img.shields.io/badge/latest tag-${data.tag.name.replace(/-/g, ' ')}-green.svg"></img>
+                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="${
+                                window.monar_GLOBALS.project
+                            }/commit/${data.tag.commit.id}">
+                                <img src="https://img.shields.io/badge/latest tag-${data.tag.name.replace(
+                                    /-/g,
+                                    ' ',
+                                )}-green.svg"></img>
                             </a>
                             </td></tr>
                             <tr><td>
-                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="javascript:toggleUntaggedMerges(true)">
+                            <a style="vertical-align: top; display: inline-block; margin-right: 40px;" href="javascript:toggleUntaggedMerges()">
                                 <img src="https://img.shields.io/badge/untagged merges-${merges}-green.svg"></img>
                             </a>
                             </td></tr>
@@ -679,9 +737,9 @@ function addBadges() {
                         `;
 
                     badges += '<table style="display: inline-block">';
-                    (isFrontend() ? ['nightly', 'latest'] : ['latest']).forEach(function (time) {
+                    (isFrontend() ? ['nightly', 'latest'] : ['latest']).forEach(function(time) {
                         badges += `<tr><td style="text-align: right;"><img src="${getBadgeUrl(time, '')}"></img></td>`;
-                        ['prod', 'cloud', 'qa', 'master'].forEach(function (branch) {
+                        ['prod', 'cloud', 'qa', 'master'].forEach(function(branch) {
                             badges += `<td style="padding-left: 10px; text-align: center;">
                                 <a href="${data[time][branch].web_url}">
                                     <img src="${getBadgeUrl(data[time][branch].status, branch)}"></img>
@@ -745,19 +803,11 @@ function getProjectId() {
 }
 
 function isPullRequestsListPage() {
-    if ($('div.merge-request').length !== 1) {
-        return false;
-    }
-
-    return true;
+    return $('div.merge-request').length === 1;
 }
 
 function isPullRequestViewPage() {
-    if ($('#content-body .merge-request .merge-request-details').length !== 1) {
-        return false;
-    }
-
-    return true;
+    return $('#content-body .merge-request .merge-request-details').length === 1;
 }
 
 function getJiraUrl() {
@@ -765,6 +815,10 @@ function getJiraUrl() {
 }
 
 function toggleUntaggedMerges(show) {
+    if (arguments.length === 0) {
+        show = $('#monar_untagged_merges_panel').is(':hidden') || $('#monar_untagged_merges_panel').length === 0;
+    }
+
     if (show) {
         $('#content-body').hide();
         $('#monar_untagged_merges_panel').show();
@@ -774,7 +828,8 @@ function toggleUntaggedMerges(show) {
             const jira = getJiraUrl();
             let html = '<div id="monar_untagged_merges_panel" style="padding: 20px">';
             html += `<h3 style="padding-bottom: 20px">Untagged merges (${merges.length})`;
-            html += '<a href="javascript:toggleUntaggedMerges(false)" style="margin-left: 16px; font-size: 14px;">(close)</a>'
+            html +=
+                '<a href="javascript:toggleUntaggedMerges(false)" style="margin-left: 16px; font-size: 14px;">(close)</a>';
             html += '</h3>';
             html += '<table style="width: 100%">';
             merges.forEach(commit => {
@@ -787,7 +842,7 @@ function toggleUntaggedMerges(show) {
                 const date = new Date(commit.created_at);
 
                 html += '<tr>';
-                html += `<td><a href="${jira}/browse/${jiraTicket}">${jiraTicket}</a></td>`
+                html += `<td><a href="${jira}/browse/${jiraTicket}">${jiraTicket}</a></td>`;
                 html += `<td><a href="${window.monar_GLOBALS.project}/commit/${commit.id}">${title}</a></td>`;
                 html += `<td>${commit.short_id}</td>`;
                 html += `<td>${commit.author_name}</td>`;
@@ -795,9 +850,11 @@ function toggleUntaggedMerges(show) {
                 html += `<td>${date.toLocaleTimeString()}</td>`;
                 html += '</tr>';
             });
-            html += '</table>'
+            html += '</table>';
             html += '</div>';
-            $('#content-body').parent().append(html);
+            $('#content-body')
+                .parent()
+                .append(html);
         }
     } else {
         $('#content-body').show();
@@ -826,37 +883,41 @@ function getUrlsForMR(mergeRequestId) {
 
             pipelines.forEach(pipeline => {
                 const p = $.ajax(`/api/v4/projects/${projectId}/pipelines/${pipeline.id}/jobs`)
-                .then(jobs => jobs.filter(job => job.name.match(/new domain/g)))
-                .then(jobs => {
-                    const promises2 = [];
+                    .then(jobs => jobs.filter(job => job.name.match(/new domain/g)))
+                    .then(jobs => {
+                        const promises2 = [];
 
-                    jobs.forEach(job => {
-                        const p2 = $.ajax(`/api/v4/projects/${projectId}/jobs/${job.id}/trace`)
-                        .then(data => {
-                            const match = data.match(/Go to (https:\/\/[^$]\S*)/m);
-                            if (match[1]) {
-                                urls.push(match[1]);
-                            }
+                        jobs.forEach(job => {
+                            const p2 = $.ajax(`/api/v4/projects/${projectId}/jobs/${job.id}/trace`).then(data => {
+                                const match = data.match(/Go to (https:\/\/[^$]\S*)/m);
+                                if (match[1]) {
+                                    urls.push(match[1]);
+                                }
+                            });
+                            promises2.push(p2);
                         });
-                        promises2.push(p2);
+                        return Promise.all(promises2);
                     });
-                    return Promise.all(promises2);
-                });
                 promises.push(p);
             });
             return Promise.all(promises);
-        }).then(() => urls);
+        })
+        .then(() => urls);
 }
 
 function colorMergeRequestNumbers() {
     $('.merge_counter, #state-opened .badge').each(function() {
         const MRs = parseInt($(this).text(), 10);
-        const color = MRs < window['monar_GLOBALS'].MR_LIMITS.warning ? 'green'
-            : (MRs < window['monar_GLOBALS'].MR_LIMITS.danger ? 'orange' : 'red');
+        const color =
+            MRs < window['monar_GLOBALS'].MR_LIMITS.warning
+                ? 'green'
+                : MRs < window['monar_GLOBALS'].MR_LIMITS.danger
+                ? 'orange'
+                : 'red';
         $(this).css('background-color', CONSTS(color));
         $(this).css('color', 'white');
         if (MRs >= window['monar_GLOBALS'].MR_LIMITS.blink) {
-            $(this).css('animation', 'monar_background_blink .75s ease-in-out infinite alternate')
+            $(this).css('animation', 'monar_background_blink .75s ease-in-out infinite alternate');
         }
     });
 }
@@ -864,7 +925,7 @@ function colorMergeRequestNumbers() {
 window['toggleUntaggedMerges'] = toggleUntaggedMerges;
 window['hidePrStuff'] = hidePrStuff;
 
-setTimeout(function() {
+setTimeout(() => {
     window['monar_GLOBALS'] = {
         id: gon.current_user_id,
         username: gon.current_username,
@@ -874,8 +935,7 @@ setTimeout(function() {
 
         untaggedMerges: [],
 
-        project:
-            window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath
+        project: window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath
             ? window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath.replace('/issues', '')
             : '',
         projectId: getProjectId(),
@@ -885,7 +945,7 @@ setTimeout(function() {
             warning: 15,
             danger: 28,
             blink: 38,
-        }
+        },
     };
 
     loadSettings();
@@ -912,5 +972,6 @@ setTimeout(function() {
         prettifyCreatePullRequestPage();
         addBadges();
         colorMergeRequestNumbers();
+        addPermissionsButton();
     }
 }, 50);
