@@ -318,7 +318,7 @@ function addBadges() {
                     badges += '<table style="display: inline-block">';
                     (isFrontend() ? ['nightly', 'latest'] : ['latest']).forEach(function(time) {
                         badges += `<tr><td style="text-align: right;"><img src="${getBadgeUrl(time, '')}"></img></td>`;
-                        ['prod', 'cloud', 'qa', 'master'].forEach(function(branch) {
+                        ['prod', 'qa', 'master'].forEach(function(branch) {
                             badges += `<td style="padding-left: 10px; text-align: center;">
                                 <a href="${data[time][branch].web_url}">
                                     <img src="${getBadgeUrl(data[time][branch].status, branch)}"></img>

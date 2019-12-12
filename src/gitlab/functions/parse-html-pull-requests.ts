@@ -13,10 +13,12 @@ export function parseHtmlPullRequests() {
         const downvoteElement = $('.issuable-downvotes', element);
         const commentsElement = $('.issuable-comments', element);
         const approveElement = $('.issuable-info .badge:contains("approved")', element);
+        const systemElement = $('.issuable-info .badge:contains("system")', element);
         const reviewerElement = $('.issuable-meta .author-link', element);
         const pipelineElement = $('.issuable-pipeline-status', element);
         const updatedAtElement = $('.issuable-updated-at', element);
         const statusElement = $('.issuable-status', element);
+        const bottomTextElement = $('.issuable-authored', element);
 
         if (!titleElement.data('monar-title')) {
             titleElement.data('monar-title', titleElement.text().trim());
@@ -41,6 +43,8 @@ export function parseHtmlPullRequests() {
                 id: authorElement.data('userId'),
             },
 
+            bottomTextElement,
+
             targetElement,
             target: targetElement.text().trim(),
 
@@ -58,6 +62,7 @@ export function parseHtmlPullRequests() {
 
             approveElement,
             isApproved: approveElement[0],
+            isSystem: systemElement[0],
 
             statusElement,
             status: statusElement.text().trim(),

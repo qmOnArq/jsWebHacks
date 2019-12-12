@@ -1,5 +1,5 @@
 import { getProjectId } from './get-project-id';
-import { CONSTS_CSS, CONSTS_STRINGS } from './CONSTS';
+import { CONSTS_CSS, CONSTS_STRINGS, REPLACE } from './CONSTS';
 import { saveSettings } from './save-load-settings';
 import { hidePrStuff } from './hide-pr-stuff';
 
@@ -87,6 +87,13 @@ export function formatPullRequest(request: any) {
     title = title.replace(/\[([^\]]+)\]/gi, '<b style="background-color: rgba(0,255,255,0.5); color: black;">[$1]</b>');
     title = title.replace(/WIP(:?)/g, '<b style="color: red;">WIP$1</b>');
     request.titleElement.html(title);
+    request.titleElement.css({
+        display: 'inline-block',
+        'max-width': '440px',
+        overflow: 'hidden',
+        'text-overflow': 'ellipsis',
+        'white-space': 'nowrap',
+    });
 
     // Upvoted
     if (request.isUpvoted) {
@@ -99,6 +106,11 @@ export function formatPullRequest(request: any) {
     // Conflict
     if (request.hasConflict) {
         request.conflictElement.css(CONSTS_CSS('conflictIcon'));
+    }
+
+    // System
+    if (request.isSystem) {
+        request.element.css(CONSTS_CSS('systemBg'));
     }
 
     // Approved
@@ -139,6 +151,33 @@ export function formatPullRequest(request: any) {
         request.statusElement.css(CONSTS_CSS('statusWrapper'));
     }
 
+    // Bottom text
+    if (request.bottomTextElement[0]) {
+        request.bottomTextElement.html(request.bottomTextElement.html().replace('opened', ''));
+        request.bottomTextElement.html(request.bottomTextElement.html().replace('by', '·'));
+    }
+
+    // Time
+    if ($('time', request.element)[0]) {
+        $('time', request.element).each(function(this: any) {
+            $(this).html(
+                $(this)
+                    .html()
+                    .replace('just now', 'now')
+                    .replace(' minutes', 'm')
+                    .replace(' minute', 'm')
+                    .replace(' hours', 'h')
+                    .replace(' hour', 'h')
+                    .replace(' days', 'd')
+                    .replace(' day', 'd')
+                    .replace(' weeks', 'w')
+                    .replace(' week', 'w')
+                    .replace(' months', 'mon')
+                    .replace(' month', 'mon'),
+            );
+        });
+    }
+
     // Line
 
     if (projectId !== null) {
@@ -163,6 +202,27 @@ export function formatPullRequest(request: any) {
             })
             .catch(function(x: any) {
                 console.log(x.responseJSON);
+            });
+
+        // Changes
+        $.ajax(`${window.monar_GLOBALS.project}/merge_requests/${request.id}/diffs.json?w=0`)
+            .then((data: any) => {
+                const size = data.size;
+                const added = data.added_lines;
+                const removed = data.removed_lines;
+
+                const html = `
+                    <div style="display: inline-block; position: absolute; left: 525px;">
+                    ${CONSTS_STRINGS('changed').replace(REPLACE, size)}
+                    ${CONSTS_STRINGS('added').replace(REPLACE, added)}
+                    ${CONSTS_STRINGS('removed').replace(REPLACE, removed)}
+                    </div>
+                `;
+
+                $('.merge-request-title.title', request.element).append(html);
+            })
+            .catch((x: any) => {
+                console.log(x);
             });
 
         // Approvals
