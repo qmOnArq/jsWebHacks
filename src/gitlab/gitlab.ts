@@ -1,6 +1,4 @@
 //@ts-nocheck
-import { addPermissionsButton } from './gitlab-permissions/gitlab-permissions';
-
 function CONSTS(type) {
     return {
         feebas: {
@@ -958,9 +956,9 @@ setTimeout(() => {
                 @keyframes monar_background_blink {
                     100% {
                     background-color: rgba(0,0,0,0);
-                    
+
                     }
-                }                
+                }
             </style>`;
 
             document.head.insertAdjacentHTML('beforeEnd', css);
@@ -972,6 +970,5 @@ setTimeout(() => {
         prettifyCreatePullRequestPage();
         addBadges();
         colorMergeRequestNumbers();
-        addPermissionsButton();
     }
 }, 50);
