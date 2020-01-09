@@ -149,6 +149,27 @@ function prettifyPullRequestPage() {
         }, 500);
     }
 
+    // Approve button
+    function createApproveButton() {
+        const $buttonsRow = $('.detail-page-header-actions.js-issuable-actions .issue-btn-group');
+        const $button = $('[data-qa-selector="approve_button"]').clone(true, true);
+        $buttonsRow.prepend($button);
+        $button.css({float: 'left'});
+        $button.removeClass('btn-sm');
+        $button.attr('data-qa-selector', '-');
+        $button.on('click', function(){
+            $('[data-qa-selector="approve_button"]').trigger('click');
+            $(this).off('click');
+            $(this).addClass('disabled');
+            setTimeout(() => {
+                $(this).remove();
+                createApproveButton();
+            }, 1000);
+        });
+    }
+    createApproveButton();
+
+
     // Remove errors
     setInterval(function() {
         $('.err').removeClass('err');
@@ -484,7 +505,17 @@ function colorMergeRequestNumbers() {
 window['toggleUntaggedMerges'] = toggleUntaggedMerges;
 window['hidePrStuff'] = hidePrStuff;
 
-setTimeout(() => {
+let startFails = 0;
+
+function start() {
+    if (!window.gon || !window.gl || !window.gl.projectOptions) {
+        startFails++;
+        if (startFails < 5) {
+            setTimeout(() => start(), 50);
+        }
+        return;
+    }
+
     window.monar_GLOBALS = {
         id: window.gon.current_user_id,
         username: window.gon.current_username,
@@ -532,4 +563,6 @@ setTimeout(() => {
         addBadges();
         colorMergeRequestNumbers();
     }
-}, 50);
+}
+
+start();
