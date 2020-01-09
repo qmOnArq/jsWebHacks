@@ -68,30 +68,32 @@ function prettifyPullRequestPage() {
     $('.branch-actions ul.dropdown-menu').css('overflow', 'hidden');
 
     // Assign myself
-    let assignButtonElement = $('#monar-assign-btn');
-    if (assignButtonElement.length === 0) {
-        const assignButton = `<a id="monar-assign-btn" href="#" style="position: absolute; right: 0; top: 20px; color: rgb(0, 82, 204);"></a>`;
-        $('.breadcrumbs-list').after($(assignButton));
-        assignButtonElement = $('#monar-assign-btn');
-    }
+    if (window.gl.mrWidgetData) {
+        let assignButtonElement = $('#monar-assign-btn');
+        if (assignButtonElement.length === 0) {
+            const assignButton = `<a id="monar-assign-btn" href="#" style="position: absolute; right: 0; top: 20px; color: rgb(0, 82, 204);"></a>`;
+            $('.breadcrumbs-list').after($(assignButton));
+            assignButtonElement = $('#monar-assign-btn');
+        }
     assignButtonElement.off('click');
-    const assignedToYou = parseInt($('.block.assignee input[type=hidden]').val()) === window.monar_GLOBALS.id;
-    assignButtonElement.html(assignedToYou ? 'Unassign me' : 'Assign me');
-    assignButtonElement.click(function() {
-        $.ajax({
-            url: `/${window.gl.mrWidgetData.source_project_full_path}/merge_requests/${window.gl.mrWidgetData.iid}.json`,
-            type: 'PUT',
-            data: { merge_request: { assignee_id: assignedToYou ? '0' : window.monar_GLOBALS.id } },
-            success: function(result) {
-                location.reload();
-            },
+        const assignedToYou = parseInt($('.block.assignee input[type=hidden]').val()) === window.monar_GLOBALS.id;
+        assignButtonElement.html(assignedToYou ? 'Unassign me' : 'Assign me');
+        assignButtonElement.click(function() {
+            $.ajax({
+                url: `/${window.gl.mrWidgetData.source_project_full_path}/merge_requests/${window.gl.mrWidgetData.iid}.json`,
+                type: 'PUT',
+                data: { merge_request: { assignee_id: assignedToYou ? '0' : window.monar_GLOBALS.id } },
+                success: function(result) {
+                    location.reload();
+                },
+            });
         });
-    });
 
-    // Deployed
-    getUrlsForMR(window.gl.mrWidgetData.iid).then(urls => {
-        urls.forEach(url => {});
-    });
+        // Deployed
+        getUrlsForMR(window.gl.mrWidgetData.iid).then(urls => {
+            urls.forEach(url => {});
+        });
+    }
 
     // Emotes
     $('.emoji-list-container .awards')
@@ -106,7 +108,7 @@ function prettifyPullRequestPage() {
         });
 
     // Feebas - main
-    if (isFrontend()) {
+    if (isFrontend() && window.gl.mrWidgetData) {
         if ($('#monar-feebas-main').length === 0) {
             const href = `feebas://app:${window.gl.mrWidgetData.diff_head_sha}`;
             $('.mr-state-widget.prepend-top-default').append(
