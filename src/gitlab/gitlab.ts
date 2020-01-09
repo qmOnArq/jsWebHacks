@@ -193,12 +193,6 @@ function prettifyCreatePullRequestPage() {
             titleElement.value = `${titleRegexMatch[1]} ${titleRegexMatch[2]}`;
         }
     }
-
-    let $titleRow = $('#merge_request_title').closest('.form-group.row');
-    $('#merge_request_target_branch')
-        .closest('.form-group.row')
-        .clone()
-        .insertBefore($titleRow);
 }
 
 function addBadges() {
