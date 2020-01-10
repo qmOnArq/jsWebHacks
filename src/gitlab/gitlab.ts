@@ -5,6 +5,7 @@ import { CONSTS_CSS, CONSTS_STRINGS } from './functions/CONSTS';
 import { loadSettings } from './functions/save-load-settings';
 import { hidePrStuff } from './functions/hide-pr-stuff';
 import { parseHtmlPullRequests } from './functions/parse-html-pull-requests';
+import { prettifyCreatePullRequestPage } from './functions/prettify-create-pull-request-page';
 
 function prettifyPullRequestPage() {
     if (!isPullRequestsListPage()) {
@@ -75,7 +76,7 @@ function prettifyPullRequestPage() {
             $('.breadcrumbs-list').after($(assignButton));
             assignButtonElement = $('#monar-assign-btn');
         }
-    assignButtonElement.off('click');
+        assignButtonElement.off('click');
         const assignedToYou = parseInt($('.block.assignee input[type=hidden]').val()) === window.monar_GLOBALS.id;
         assignButtonElement.html(assignedToYou ? 'Unassign me' : 'Assign me');
         assignButtonElement.click(function() {
@@ -156,10 +157,10 @@ function prettifyPullRequestPage() {
         const $buttonsRow = $('.detail-page-header-actions.js-issuable-actions .issue-btn-group');
         const $button = $('[data-qa-selector="approve_button"]').clone(true, true);
         $buttonsRow.prepend($button);
-        $button.css({float: 'left'});
+        $button.css({ float: 'left' });
         $button.removeClass('btn-sm');
         $button.attr('data-qa-selector', '-');
-        $button.on('click', function(){
+        $button.on('click', function() {
             $('[data-qa-selector="approve_button"]').trigger('click');
             $(this).off('click');
             $(this).addClass('disabled');
@@ -170,7 +171,6 @@ function prettifyPullRequestPage() {
         });
     }
     createApproveButton();
-
 
     // Remove errors
     setInterval(function() {
@@ -203,17 +203,6 @@ function prettifyCommitList() {
                         });
                 });
             }, 500);
-        }
-    }
-}
-
-function prettifyCreatePullRequestPage() {
-    const titleElement = document.querySelector('.form-control.qa-issuable-form-title');
-    if (titleElement) {
-        const titleRegex = /Resolve (.*?) \"(.*?)\"/g;
-        const titleRegexMatch = titleRegex.exec(titleElement.value);
-        if (titleRegexMatch && titleRegexMatch.length === 3) {
-            titleElement.value = `${titleRegexMatch[1]} ${titleRegexMatch[2]}`;
         }
     }
 }
