@@ -16,16 +16,16 @@ const consts_strings = {
 
     changed: `
         <div class="diff-stats-group" style="display: inline-block; transform: scale(0.8); margin-right: -6px;">
-            <strong>${~REPLACE}</strong>
+            <strong>~${REPLACE}</strong>
         </div>`,
 
     added: `
         <div class="diff-stats-group cgreen" style="display: inline-block; transform: scale(0.8); margin-right: -6px;">
-            <strong>${+REPLACE}</strong>
+            <strong>+${REPLACE}</strong>
         </div>`,
     removed: `
         <div class="diff-stats-group cred" style="display: inline-block; transform: scale(0.8); margin-right: -6px;">
-            <strong>${-REPLACE}</strong>
+            <strong>-${REPLACE}</strong>
         </div>`,
 
     authorPhotoHTML:
