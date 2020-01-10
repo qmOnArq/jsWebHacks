@@ -16,25 +16,16 @@ const consts_strings = {
 
     changed: `
         <div class="diff-stats-group" style="display: inline-block; transform: scale(0.8); margin-right: -6px;">
-            <svg aria-hidden="true" class="diff-stats-icon text-secondary s16 ic-doc-code" style="position: relative; top: 3px; margin-right: -2px;">
-                <use xlink:href="/assets/icons-4009ebf96719f129f954d643e65f87152b5e6c4a4917130c4a696beb54af9949.svg#doc-code"></use>
-            </svg>
-            <strong>${REPLACE}</strong>
+            <strong>${~REPLACE}</strong>
         </div>`,
 
     added: `
         <div class="diff-stats-group cgreen" style="display: inline-block; transform: scale(0.8); margin-right: -6px;">
-            <svg aria-hidden="true" class="diff-stats-icon s16 ic-file-addition" style="position: relative; top: 3px; margin-right: -2px;">
-                <use xlink:href="/assets/icons-4009ebf96719f129f954d643e65f87152b5e6c4a4917130c4a696beb54af9949.svg#file-addition"></use>
-            </svg>
-            <strong>${REPLACE}</strong>
+            <strong>${+REPLACE}</strong>
         </div>`,
     removed: `
         <div class="diff-stats-group cred" style="display: inline-block; transform: scale(0.8); margin-right: -6px;">
-            <svg aria-hidden="true" class="diff-stats-icon s16 ic-file-deletion" style="position: relative; top: 3px; margin-right: -2px;">
-                <use xlink:href="/assets/icons-4009ebf96719f129f954d643e65f87152b5e6c4a4917130c4a696beb54af9949.svg#file-deletion"></use>
-            </svg>
-            <strong>${REPLACE}</strong>
+            <strong>${-REPLACE}</strong>
         </div>`,
 
     authorPhotoHTML:
