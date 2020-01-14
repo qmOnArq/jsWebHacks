@@ -25,6 +25,9 @@ declare global {
             };
         };
 
+        toggleUntaggedMerges: any;
+        hidePrStuff: any;
+
         gl: any;
         gon: any;
     }
