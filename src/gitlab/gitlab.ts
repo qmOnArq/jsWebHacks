@@ -11,6 +11,7 @@ import { toggleUntaggedMerges } from './functions/toggle-untagged-merges';
 import { prettifyPullRequestPage } from './functions/prettify-pull-request-page';
 import { addCustomStyles } from './functions/add-custom-styles';
 import { prettifyPullRequestCommitPage } from './functions/prettify-pull-request-commit-page';
+import { CommentParser } from './services/comment-parser';
 
 window.toggleUntaggedMerges = toggleUntaggedMerges;
 window.hidePrStuff = hidePrStuff;
@@ -53,13 +54,15 @@ function start() {
     if (window.monar_GLOBALS.project) {
         addCustomStyles();
 
-        parseHtmlPullRequests().forEach(formatPullRequest);
-        prettifyPullRequestPage();
-        prettifyCommitList();
-        prettifyCreatePullRequestPage();
-        addBadges();
-        colorMergeRequestNumbers();
-        prettifyPullRequestCommitPage();
+        CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid).then(() => {
+            parseHtmlPullRequests().forEach(formatPullRequest);
+            prettifyPullRequestPage();
+            prettifyCommitList();
+            prettifyCreatePullRequestPage();
+            addBadges();
+            colorMergeRequestNumbers();
+            prettifyPullRequestCommitPage();
+        });
     }
 }
 

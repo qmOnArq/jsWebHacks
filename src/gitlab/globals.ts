@@ -1,6 +1,10 @@
+import { CommentParser } from "./services/comment-parser";
+
 export {};
 declare global {
     interface Window {
+        monar_MR_DATA?: CommentParser.MergeRequestCommentData;
+
         monar_SETTINGS: {
             hideWip: boolean;
         };
