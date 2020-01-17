@@ -1,4 +1,5 @@
 import { getJiraUrl } from './get-jira-url';
+import { FADE_SPEED } from './CONSTS';
 
 export function toggleUntaggedMerges(show: boolean) {
     if (arguments.length === 0) {
@@ -6,8 +7,8 @@ export function toggleUntaggedMerges(show: boolean) {
     }
 
     if (show) {
-        $('#content-body').hide();
-        $('#monar_untagged_merges_panel').show();
+        $('#content-body').fadeOut(FADE_SPEED);
+        $('#monar_untagged_merges_panel').fadeIn(FADE_SPEED);
 
         if ($('#monar_untagged_merges_panel').length === 0) {
             const merges = window.monar_GLOBALS.untaggedMerges || [];
@@ -21,7 +22,7 @@ export function toggleUntaggedMerges(show: boolean) {
             merges.forEach(commit => {
                 let match = commit.title.match(/'([\S]*)'/);
                 match = match || commit.message.match(/'([\S]*)'/);
-                const title = match ? match[1] : 'UNKOWN';
+                const title = match ? match[1] : 'UNKNOWN';
                 match = title.match(/^([^ -]*-\d*)/);
                 const jiraTicket = match ? match[1] : '';
 
@@ -43,7 +44,7 @@ export function toggleUntaggedMerges(show: boolean) {
                 .append(html);
         }
     } else {
-        $('#content-body').show();
-        $('#monar_untagged_merges_panel').hide();
+        $('#content-body').fadeIn(FADE_SPEED);
+        $('#monar_untagged_merges_panel').fadeOut(FADE_SPEED);
     }
 }

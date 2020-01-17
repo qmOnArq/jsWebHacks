@@ -15,7 +15,6 @@ export function addBadges() {
         ]).then(data => ({ prod: data[0], qa: data[1], master: data[2], cloud: data[3] }));
 
         const nightly = fetchPipelineData({ username: window.monar_GLOBALS.internalUsername }).then(data => {
-            console.log(data);
             let prod, qa, master, cloud;
             for (let i = 0; i < (data || []).length; i++) {
                 const item = data[i];

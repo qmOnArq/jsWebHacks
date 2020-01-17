@@ -10,6 +10,7 @@ import { prettifyCommitList } from './functions/prettify-commit-list';
 import { toggleUntaggedMerges } from './functions/toggle-untagged-merges';
 import { prettifyPullRequestPage } from './functions/prettify-pull-request-page';
 import { addCustomStyles } from './functions/add-custom-styles';
+import { prettifyPullRequestCommitPage } from './functions/prettify-pull-request-commit-page';
 
 window.toggleUntaggedMerges = toggleUntaggedMerges;
 window.hidePrStuff = hidePrStuff;
@@ -58,6 +59,7 @@ function start() {
         prettifyCreatePullRequestPage();
         addBadges();
         colorMergeRequestNumbers();
+        prettifyPullRequestCommitPage();
     }
 }
 

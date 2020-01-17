@@ -8,6 +8,8 @@ export function CONSTS_CSS(type: keyof typeof consts_css) {
 
 export const REPLACE = `{{REPLACE}}`;
 
+export const FADE_SPEED = 200;
+
 const consts_strings = {
     green: '#1aaa55',
     red: '#db3b21',
