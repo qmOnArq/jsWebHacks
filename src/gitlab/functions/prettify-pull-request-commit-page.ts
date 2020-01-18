@@ -6,7 +6,6 @@ export function prettifyPullRequestCommitPage() {
     }
 
     // approve commit
-    // TODO
     createApproveCommitButton();
 }
 
