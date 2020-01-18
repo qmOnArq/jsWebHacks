@@ -2,7 +2,7 @@ import { getProjectId } from '../../functions/get-project-id';
 import { Deferred } from '../../classes/deferred';
 
 export namespace GitlabDiscussions {
-    export interface Item {
+    export interface Discussion {
         id: string;
         individual_note: boolean;
         notes: Note[];
@@ -48,10 +48,10 @@ export namespace GitlabDiscussions {
 
     export function getMergeRequestDiscussions(mergeRequestId: number) {
         const projectId = getProjectId();
-        const result = new Deferred<Item[]>();
+        const result = new Deferred<Discussion[]>();
 
         $.ajax(`/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/discussions`)
-            .then((data: Item[]) => {
+            .then((data: Discussion[]) => {
                 result.resolve(data);
             })
             .catch(result.reject);
@@ -61,15 +61,14 @@ export namespace GitlabDiscussions {
 
     export function createMergeRequestThread(mergeRequestId: number, text: string) {
         const projectId = getProjectId();
-        // TODO - test and type
-        const result = new Deferred();
+        const result = new Deferred<Discussion>();
 
         $.ajax({
             url: `/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/discussions`,
             method: 'POST',
             data: {
                 body: text,
-            }
+            },
         })
             .then((data: any) => {
                 result.resolve(data);
@@ -81,14 +80,32 @@ export namespace GitlabDiscussions {
 
     export function modifyMergeRequestNote(mergeRequestId: number, discussionId: string, noteId: number, text: string) {
         const projectId = getProjectId();
-        // TODO - test and type
-        const result = new Deferred();
+        const result = new Deferred<Note>();
 
         $.ajax({
             url: `/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/discussions/${discussionId}/notes/${noteId}`,
             method: 'PUT',
             data: {
-                body: text
+                body: text,
+            },
+        })
+            .then((data: any) => {
+                result.resolve(data);
+            })
+            .catch(result.reject);
+
+        return result.promise;
+    }
+
+    export function resolveMergeRequestThread(mergeRequestId: number, threadId: string, newStatus: boolean) {
+        const projectId = getProjectId();
+        const result = new Deferred<Discussion>();
+
+        $.ajax({
+            url: `/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/discussions/${threadId}`,
+            method: 'PUT',
+            data: {
+                resolved: newStatus,
             },
         })
             .then((data: any) => {

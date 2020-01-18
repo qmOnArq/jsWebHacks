@@ -58,7 +58,8 @@ export namespace CommentParser {
 
     export interface MergeRequestCommentData {
         approvals: CommitApprovals.Approvals;
-        noteId: number | null;
+        yourNoteId: number | null;
+        yourDiscussionId: string | null;
     }
 
     export function saveMergeRequestCommentData(mergeRequestId: number | undefined) {
@@ -66,16 +67,29 @@ export namespace CommentParser {
             return Promise.resolve();
         }
 
-        const approvals = window.monar_MR_DATA?.approvals || {};
+        if (!window.monar_MR_DATA) {
+            return Promise.reject('toggleCommitApproval: no monar_MR_DATA');
+        }
+
+        const approvals = window.monar_MR_DATA.approvals || {};
         const yourApprovals = Object.keys(approvals).filter(id => {
             const apps = approvals[id] || [];
             return apps.some(app => app.username === window.monar_GLOBALS.username);
         });
         const message = generateMessage(yourApprovals);
-        console.log(message);
-        // TODO
 
-        return Promise.resolve();
+        if (window.monar_MR_DATA.yourNoteId && window.monar_MR_DATA.yourDiscussionId) {
+            return GitlabDiscussions.modifyMergeRequestNote(
+                mergeRequestId,
+                window.monar_MR_DATA.yourDiscussionId,
+                window.monar_MR_DATA.yourNoteId,
+                message,
+            ).then(() => {});
+        } else {
+            return GitlabDiscussions.createMergeRequestThread(mergeRequestId, message).then(thread =>
+                GitlabDiscussions.resolveMergeRequestThread(mergeRequestId, thread.id, true).then(() => {}),
+            );
+        }
     }
 
     export function fetchMergeRequestCommentData(mergeRequestId: number | undefined) {
@@ -86,7 +100,8 @@ export namespace CommentParser {
         const result = new Deferred<MergeRequestCommentData>();
         const object: MergeRequestCommentData = {
             approvals: {},
-            noteId: null // TODO
+            yourNoteId: null,
+            yourDiscussionId: null,
         };
 
         GitlabDiscussions.getMergeRequestDiscussions(mergeRequestId).then(discussions => {
@@ -94,6 +109,10 @@ export namespace CommentParser {
                 (discussion.notes || []).forEach(note => {
                     const parsedNote = parseMessage(note.body);
                     if (parsedNote) {
+                        if (note.author && note.author.username === window.monar_GLOBALS.username) {
+                            object.yourNoteId = note.id;
+                            object.yourDiscussionId = discussion.id;
+                        }
                         (parsedNote.approvedCommits || []).forEach(id => {
                             object.approvals[id] = object.approvals[id] || [];
                             object.approvals[id].push({

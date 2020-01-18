@@ -12,6 +12,8 @@ import { prettifyPullRequestPage } from './functions/prettify-pull-request-page'
 import { addCustomStyles } from './functions/add-custom-styles';
 import { prettifyPullRequestCommitPage } from './functions/prettify-pull-request-commit-page';
 import { CommentParser } from './services/comment-parser';
+import { Changelog } from './functions/changelog';
+import createChangelogUI = Changelog.createOpenChangelogButton;
 
 window.toggleUntaggedMerges = toggleUntaggedMerges;
 window.hidePrStuff = hidePrStuff;
@@ -55,6 +57,7 @@ function start() {
         addCustomStyles();
 
         CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid).then(() => {
+            createChangelogUI();
             parseHtmlPullRequests().forEach(formatPullRequest);
             prettifyPullRequestPage();
             prettifyCommitList();

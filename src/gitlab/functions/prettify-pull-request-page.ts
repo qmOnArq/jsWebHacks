@@ -1,7 +1,7 @@
 import { isPullRequestsListPage } from './is-pull-requests-list-page';
 import { isFrontend } from './is-frontend';
-import { CONSTS_CSS } from './CONSTS';
-import { createFeebasCommitButtons } from './feebas';
+import { createFeebasCommitButtons, createMainFeebasMergeRequestButton } from './feebas';
+import { CommitApprovals } from "../services/commit-approvals";
 
 export function prettifyPullRequestPage() {
     if (!isPullRequestsListPage()) {
@@ -78,23 +78,7 @@ export function prettifyPullRequestPage() {
 
     // Feebas - main
     if (isFrontend() && window.gl.mrWidgetData) {
-        if ($('#monar-feebas-main').length === 0) {
-            const href = `feebas://app:${window.gl.mrWidgetData.diff_head_sha}`;
-            $('.mr-state-widget.prepend-top-default').append(
-                `<a title="Open in Feebas" id="monar-feebas-main" href="${href}"></a>`,
-            );
-            $('#monar-feebas-main').css(CONSTS_CSS('feebas'));
-            $('#monar-feebas-main').css({ position: 'absolute', right: '0px', top: '-45px' });
-            $('#monar-feebas-main')
-                .mouseenter(function() {
-                    $(this).css('background-color', '#1aaa55');
-                })
-                .mouseleave(function() {
-                    $(this).css('background-color', 'transparent');
-                });
-        }
-
-        // Feebas - commits
+        createMainFeebasMergeRequestButton();
         createFeebasCommitButtons();
     }
 
@@ -117,6 +101,7 @@ export function prettifyPullRequestPage() {
         });
     }
     createApproveButton();
+    CommitApprovals.GUI.markApprovedCommits();
 
     // Remove errors
     setInterval(() => {

@@ -7,7 +7,7 @@ export function prettifyPullRequestCommitPage() {
 
     // approve commit
     // TODO
-    // createApproveCommitButton();
+    createApproveCommitButton();
 }
 
 function createApproveCommitButton() {
@@ -19,10 +19,8 @@ function createApproveCommitButton() {
         return;
     }
 
-    const approvals = window.monar_MR_DATA.approvals;
     const commitId = getCommitIdFromUrl();
-    const commitApprovals = approvals[commitId] || [];
-    const isApprovedByYou = commitApprovals.some(approval => approval.username === window.monar_GLOBALS.username);
+    const isApprovedByYou = CommitApprovals.isApprovedByYou(commitId);
 
     $('#MONAR_APPROVE_COMMIT').remove();
     const $button = $(`
@@ -35,7 +33,7 @@ function createApproveCommitButton() {
     $button.on('click', function() {
         $(this).off('click');
         $(this).addClass('disabled');
-        CommitApprovals.toggleCommitApproval(window.gl.mrWidgetData.iid, commitId).then(() => {
+        CommitApprovals.toggleCommitApproval(window.gl.mrWidgetData.iid, commitId, !isApprovedByYou).then(() => {
             createApproveCommitButton();
         });
     });
