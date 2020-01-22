@@ -1,5 +1,6 @@
 import { isPullRequestViewPage } from './is-pull-request-view-page';
 import { isFrontend } from './is-frontend';
+import { GitlabPipelines } from '../services/gitlab-api/pipelines-api';
 
 export function addBadges() {
     if (isPullRequestViewPage()) {
@@ -14,29 +15,15 @@ export function addBadges() {
             fetchPipelineData({ ref: 'cloud' }).then(data => (data || [{}])[0]),
         ]).then(data => ({ prod: data[0], qa: data[1], master: data[2], cloud: data[3] }));
 
-        const nightly = fetchPipelineData({ username: window.monar_GLOBALS.internalUsername }).then(data => {
-            let prod, qa, master, cloud;
-            for (let i = 0; i < (data || []).length; i++) {
-                const item = data[i];
-                if (item.ref === 'master' && !master) {
-                    master = item;
-                }
-                if (item.ref === 'qa' && !qa) {
-                    qa = item;
-                }
-                if (item.ref === 'prod' && !prod) {
-                    prod = item;
-                }
-                if (item.ref === 'cloud' && !cloud) {
-                    cloud = item;
-                }
-                if (master && qa && prod && cloud) {
-                    break;
-                }
-            }
-
-            return { prod: prod || {}, qa: qa || {}, master: master || {}, cloud: cloud || {} };
-        });
+        const nightly = !isFrontend()
+            ? Promise.resolve({})
+            : Promise.all([
+                  GitlabPipelines.getPipelineSchedule(window.monar_GLOBALS.nightlySchedules.master),
+                  GitlabPipelines.getPipelineSchedule(window.monar_GLOBALS.nightlySchedules.qa),
+                  GitlabPipelines.getPipelineSchedule(window.monar_GLOBALS.nightlySchedules.prod),
+              ])
+                  .then(data => data.map(item => item.last_pipeline || {}))
+                  .then(data => ({ master: data[0], qa: data[1], prod: data[2] }));
 
         const latestTag = $.ajax(`/api/v4/projects/${window.monar_GLOBALS.projectId}/repository/tags`).then(
             data => data || [{}],
@@ -123,7 +110,10 @@ export function addBadges() {
 
                     badges += '<table style="display: inline-block">';
                     (isFrontend() ? (['nightly', 'latest'] as const) : (['latest'] as const)).forEach(time => {
-                        badges += `<tr><td style="text-align: right;"><img src="${getBadgeUrl(time, '')}" alt="${time}" /></td>`;
+                        badges += `<tr><td style="text-align: right;"><img src="${getBadgeUrl(
+                            time,
+                            '',
+                        )}" alt="${time}" /></td>`;
                         ['prod', 'qa', 'master'].forEach(branch => {
                             badges += `<td style="padding-left: 10px; text-align: center;">
                                 <a href="${data[time][branch].web_url}">

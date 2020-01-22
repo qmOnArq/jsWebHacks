@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '22.01.2020',
+        text: `
+<h1>Bugfixes</h1>
+<ul>
+    <li>Nightly pipeline badges used by FE repository should be working correctly again</li>
+</ul>
+        `
+    },
+    {
         date: '18.01.2020',
         text: `
 <h1>Commit approvals</h1>

@@ -2,6 +2,7 @@ import { getProjectId } from './get-project-id';
 import { CONSTS_CSS, CONSTS_STRINGS, REPLACE } from './CONSTS';
 import { saveSettings } from './save-load-settings';
 import { hidePrStuff } from './hide-pr-stuff';
+import { GitlabDiscussions } from '../services/gitlab-api/discussions-api';
 
 export function formatPullRequest(request: any) {
     const projectId = getProjectId();
@@ -183,9 +184,9 @@ export function formatPullRequest(request: any) {
     if (projectId !== null) {
         // Unresolved discussions
         let unresolved = 0;
-        $.ajax(`/api/v4/projects/${projectId}/merge_requests/${request.id}/discussions`)
+        GitlabDiscussions.getMergeRequestDiscussions(request.id)
             .then(function(data) {
-                (data || []).forEach(function(item: any) {
+                (data || []).forEach(item => {
                     if (item.notes && item.notes[0]) {
                         const note = item.notes[0];
                         if (note.resolvable && !note.resolved) {
@@ -200,7 +201,7 @@ export function formatPullRequest(request: any) {
                     );
                 }
             })
-            .catch(function(x: any) {
+            .catch((x: any) => {
                 console.log(x.responseJSON);
             });
 
