@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '16.03.2020',
+        text: `
+<h1>Bugfixes</h1>
+<ul>
+    <li>Attempt to fix approve button after gitlab update</li>
+</ul>
+        `
+    },
+    {
         date: '22.01.2020',
         text: `
 <h1>Bugfixes</h1>

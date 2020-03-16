@@ -14,6 +14,7 @@ import { prettifyPullRequestCommitPage } from './functions/prettify-pull-request
 import { CommentParser } from './services/comment-parser';
 import { Changelog } from './functions/changelog';
 import createChangelogUI = Changelog.createOpenChangelogButton;
+import { test } from "./functions/is-frontend";
 
 window.toggleUntaggedMerges = toggleUntaggedMerges;
 window.hidePrStuff = hidePrStuff;
@@ -61,6 +62,7 @@ function start() {
 
     if (window.monar_GLOBALS.project) {
         addCustomStyles();
+        test();
 
         CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid).then(() => {
             createChangelogUI();

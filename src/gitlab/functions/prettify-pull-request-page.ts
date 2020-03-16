@@ -83,9 +83,22 @@ export function prettifyPullRequestPage() {
     }
 
     // Approve button
+    let approveButtonTries = 0;
     function createApproveButton() {
         const $buttonsRow = $('.detail-page-header-actions.js-issuable-actions .issue-btn-group');
         const $button = $('[data-qa-selector="approve_button"]').clone(true, true);
+
+        if ($button.length === 0) {
+            approveButtonTries++;
+            if (approveButtonTries > 10) {
+                return;
+            }
+            setTimeout(() => {
+                createApproveButton();
+            }, 100);
+            return;
+        }
+
         $buttonsRow.prepend($button);
         $button.css({ float: 'left' });
         $button.removeClass('btn-sm');
@@ -96,10 +109,12 @@ export function prettifyPullRequestPage() {
             $(this).addClass('disabled');
             setTimeout(() => {
                 $(this).remove();
+                approveButtonTries = 0;
                 createApproveButton();
             }, 1000);
         });
     }
+    approveButtonTries = 0;
     createApproveButton();
     CommitApprovals.GUI.markApprovedCommits();
 
