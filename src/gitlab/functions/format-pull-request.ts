@@ -3,6 +3,7 @@ import { CONSTS_CSS, CONSTS_STRINGS, REPLACE } from './CONSTS';
 import { saveSettings } from './save-load-settings';
 import { hidePrStuff } from './hide-pr-stuff';
 import { GitlabDiscussions } from '../services/gitlab-api/discussions-api';
+import { Colors } from '../services/colors';
 
 export function formatPullRequest(request: any) {
     const projectId = getProjectId();
@@ -47,12 +48,15 @@ export function formatPullRequest(request: any) {
     }
 
     // Target
-    if (request.target === 'prod') {
-        request.targetElement.css(CONSTS_CSS('prod'));
-    } else if (request.target === 'qa') {
-        request.targetElement.css(CONSTS_CSS('qa'));
-    } else if (request.target === 'cloud') {
-        request.targetElement.css(CONSTS_CSS('cloud'));
+    for (const [version, value] of Object.entries(window.monar.versionData!.versionData)) {
+        if (request.target === value.branch.name) {
+            request.targetElement.css(CONSTS_CSS('markedTarget'));
+            request.targetElement.css('background', value.color);
+            request.targetElement.css('color', 'black');
+            if (!Colors.isContrastingColorDark(Colors.getRGBValues(value.color))) {
+                request.targetElement.css('color', 'white');
+            }
+        }
     }
 
     // Author photo

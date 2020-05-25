@@ -1,9 +1,14 @@
-import { CommentParser } from "./services/comment-parser";
+import { CommentParser } from './services/comment-parser';
+import { VersionData } from './services/branching-versions';
 
 export {};
 declare global {
     interface Window {
         monar_MR_DATA?: CommentParser.MergeRequestCommentData;
+
+        monar: Partial<{
+            versionData: VersionData;
+        }>;
 
         monar_SETTINGS: {
             hideWip: boolean;
@@ -44,7 +49,7 @@ declare global {
                 master: number;
                 qa: number;
                 prod: number;
-            }
+            };
         };
 
         toggleUntaggedMerges: any;

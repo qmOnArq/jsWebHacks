@@ -14,7 +14,7 @@ import { prettifyPullRequestCommitPage } from './functions/prettify-pull-request
 import { CommentParser } from './services/comment-parser';
 import { Changelog } from './functions/changelog';
 import createChangelogUI = Changelog.createOpenChangelogButton;
-import { test } from "./functions/is-frontend";
+import { BranchingVersions } from './services/branching-versions';
 
 window.toggleUntaggedMerges = toggleUntaggedMerges;
 window.hidePrStuff = hidePrStuff;
@@ -29,6 +29,8 @@ function start() {
         }
         return;
     }
+
+    window.monar = {};
 
     window.monar_GLOBALS = {
         id: window.gon.current_user_id,
@@ -62,15 +64,17 @@ function start() {
 
     if (window.monar_GLOBALS.project) {
         addCustomStyles();
-        test();
 
-        CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid).then(() => {
+        Promise.all([
+            CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid),
+            BranchingVersions.initialize(),
+        ]).then(() => {
             createChangelogUI();
             parseHtmlPullRequests().forEach(formatPullRequest);
             prettifyPullRequestPage();
             prettifyCommitList();
             prettifyCreatePullRequestPage();
-            addBadges();
+            BranchingVersions.fetchMoreDetails().then(() => addBadges());
             colorMergeRequestNumbers();
             prettifyPullRequestCommitPage();
         });

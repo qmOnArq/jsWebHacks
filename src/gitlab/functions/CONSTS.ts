@@ -50,25 +50,7 @@ const consts_css = {
         'background-color': 'transparent',
     },
 
-    prod: {
-        'background-color': 'red',
-        color: 'white',
-        'border-radius': '3px',
-        display: 'inline-block',
-        padding: '0 4px 0 2px',
-    },
-
-    cloud: {
-        'background-color': 'orange',
-        color: 'white',
-        'border-radius': '3px',
-        display: 'inline-block',
-        padding: '0 4px 0 2px',
-    },
-
-    qa: {
-        'background-color': 'yellow',
-        color: 'black',
+    markedTarget: {
         'border-radius': '3px',
         display: 'inline-block',
         padding: '0 4px 0 2px',
