@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '26.06.2020',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li><b>FE only:</b> Automatically set "No. approvals required" based on labels</li>
+</ul>
+        `
+    },
+    {
         date: '25.05.2020',
         text: `
 <h1>Changes</h1>

@@ -1,3 +1,5 @@
+import { isFrontend } from './is-frontend';
+
 export function prettifyCreatePullRequestPage() {
     // Title
     const titleElement: HTMLInputElement | null = document.querySelector('.form-control.qa-issuable-form-title');
@@ -30,9 +32,12 @@ export function prettifyCreatePullRequestPage() {
 
 function markSelectedLabels() {
     const selectedLabelIds: string[] = [];
-    $('.qa-issuable-label').closest('.issuable-form-select-holder').find('input[type="hidden"]').each(function() {
-        selectedLabelIds.push($(this).attr('value') || '');
-    });
+    $('.qa-issuable-label')
+        .closest('.issuable-form-select-holder')
+        .find('input[type="hidden"]')
+        .each(function() {
+            selectedLabelIds.push($(this).attr('value') || '');
+        });
 
     $('[data-monar="CUSTOM_LABEL_BUTTON"]').each(function() {
         const id = $(this).attr('data-id') || '-';
@@ -44,7 +49,20 @@ function markSelectedLabels() {
             $('span', this).css('border-color', 'transparent');
         }
     });
+
+    // Automatic No. approvals required
+    if (isFrontend()) {
+        const requiresDev = selectedLabelIds.includes(devReviewId);
+        const requiresStyler = selectedLabelIds.includes(designReviewId) || selectedLabelIds.includes(styleReviewId);
+        const neededAmount = Math.max(1, (requiresDev ? 1 : 0) + (requiresStyler ? 1 : 0));
+        $('.js-approvals-required input').val(neededAmount);
+        $('input[name="merge_request[approval_rules_attributes][][approvals_required]"]').val(neededAmount);
+    }
 }
+
+let devReviewId = 'x';
+let designReviewId = 'x';
+let styleReviewId = 'x';
 
 function createLabelButtons() {
     let tries = 0;
@@ -58,10 +76,32 @@ function createLabelButtons() {
             return;
         }
 
+        $(`.dropdown-menu-labels .label-item`).on('click', function() {
+            setTimeout(() => {
+                markSelectedLabels();
+            });
+        });
+
+        $(`.dropdown-menu-labels .dropdown-clear-active`).on('click', function() {
+            setTimeout(() => {
+                markSelectedLabels();
+            });
+        });
+
         $('.dropdown-menu-labels .label-item').each(function() {
-            const name = $(this).text().trim();
+            const name = $(this)
+                .text()
+                .trim();
             const color = $('span', this).attr('style');
             const id = $(this).attr('data-label-id');
+
+            if (name === 'dev review') {
+                devReviewId = id || 'x';
+            } else if (name === 'design review') {
+                designReviewId = id || 'x';
+            } else if (name === 'style review') {
+                styleReviewId = id || 'x';
+            }
 
             const html = `
                 <a class="label-link" data-id="${id}" data-monar="CUSTOM_LABEL_BUTTON" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;">
