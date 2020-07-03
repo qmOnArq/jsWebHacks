@@ -45,11 +45,6 @@ declare global {
                 danger: number;
                 blink: number;
             };
-            nightlySchedules: {
-                master: number;
-                qa: number;
-                prod: number;
-            };
         };
 
         toggleUntaggedMerges: any;
