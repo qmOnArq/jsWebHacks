@@ -54,10 +54,30 @@ export function addBadges() {
         }
         badges += `</tr>`;
 
+        badges += `<tr>`;
+        badges += `<td style="padding-left: 10px; text-align: right;">
+                    <img src="${getBadgeUrl('nightly', '')}" alt="nightly" />
+                    </td>`;
+
+        for (const version of [...window.monar.versionData.versions, 'master']) {
+            const value = window.monar.versionData.versionData[version];
+
+            badges += `<td style="padding-left: 10px; text-align: left;">`;
+            if (value.nightly) {
+                badges += `
+                <a href="${value.nightly.web_url}">
+                    <img src="${getBadgeUrl(value.nightly.status, value.nightly.ref)}" alt="${value.nightly.ref}" />
+                </a>
+                `;
+            }
+            badges += `</td>`;
+        }
+        badges += `</tr>`;
+
         badges += '</table>';
 
         $('nav.breadcrumbs .breadcrumbs-container').append(`
-            <div style="position: absolute; right: 0; top: -1px;" id="monar-pipelines-global">
+            <div id="monar-pipelines-global">
                 ${badges}
             </div>
         `);
@@ -98,7 +118,7 @@ function getBadgeUrl(status: PipelineStatus, text: string) {
     return `https://img.shields.io/badge/${text}-${statusWord}-${color}.svg`;
 }
 
-type PipelineStatus =
+export type PipelineStatus =
     | 'running'
     | 'pending'
     | 'success'
