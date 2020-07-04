@@ -52,12 +52,6 @@ function start() {
             danger: 28,
             blink: 38,
         },
-
-        nightlySchedules: {
-            master: 6,
-            qa: 7,
-            prod: 8,
-        },
     };
 
     loadSettings();

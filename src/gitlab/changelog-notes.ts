@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '04.07.2020',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li>Nightly pipeline badges brought back to action</li>
+</ul>
+        `
+    },
+    {
         date: '26.06.2020',
         text: `
 <h1>Changes</h1>

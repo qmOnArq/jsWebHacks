@@ -1,6 +1,7 @@
 import { getProjectId } from '../../functions/get-project-id';
 import { Deferred } from '../../classes/deferred';
 import { GitlabDiscussions } from './discussions-api';
+import { PipelineStatus } from '../../functions/add-badges';
 
 export namespace GitlabPipelines {
     export interface PipelineScheduleBase {
@@ -17,12 +18,7 @@ export namespace GitlabPipelines {
     }
 
     export interface PipelineSchedule extends PipelineScheduleBase {
-        last_pipeline: {
-            id: number;
-            sha: string;
-            ref: string;
-            status: string;
-        };
+        last_pipeline: PipelineBase;
         variables: { key: string; variable_type: string; value: string }[];
     }
 
@@ -31,7 +27,7 @@ export namespace GitlabPipelines {
         id: number;
         ref: string;
         sha: string;
-        status: string;
+        status: PipelineStatus;
         updated_at: string;
         web_url: string;
     }

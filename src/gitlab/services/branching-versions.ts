@@ -3,7 +3,6 @@ import { Deferred } from '../classes/deferred';
 import { GitlabPipelines } from './gitlab-api/pipelines-api';
 import { Colors } from './colors';
 import { GitlabTags } from './gitlab-api/tags-api';
-import { GitlabCommits } from './gitlab-api/commits-api';
 
 export namespace BranchingVersions {
     export function initialize() {
@@ -18,10 +17,9 @@ export namespace BranchingVersions {
             .then(branches => {
                 branches.forEach(branch => {
                     const name = branch.name;
-                    const isVersionBranch = !!name.match(/^v1\.\d+$/);
 
-                    if (isVersionBranch) {
-                        const version = parseInt(name.match(/^v1\.(\d+)$/)![1], 10);
+                    if (isVersionBranch(name)) {
+                        const version = parseVersion(name);
                         versionData.versions.push(version);
                         versionData.versions.sort();
                         versionData.maxVersion = Math.max(version, versionData.maxVersion);
@@ -85,6 +83,17 @@ export namespace BranchingVersions {
                     window.monar.versionData!.versionData[item.version].tag = item.tag;
                 });
             })
+            .then(() => GitlabPipelines.getPipelineSchedules())
+            .then(data => Promise.all(data.map(pipeline => GitlabPipelines.getPipelineSchedule(pipeline.id))))
+            .then(data => data.map(pipeline => pipeline.last_pipeline))
+            .then(data => {
+                return data.forEach(schedule => {
+                    if (isVersionBranch(schedule.ref) || schedule.ref === 'master') {
+                        const key = isVersionBranch(schedule.ref) ? parseVersion(schedule.ref) : 'master';
+                        window.monar.versionData!.versionData[key].nightly = schedule;
+                    }
+                });
+            })
             .then(() => {
                 return deferred.resolve();
             });
@@ -93,6 +102,14 @@ export namespace BranchingVersions {
 
         // TODO tag pipeline
         // TODO branch untagged merges
+    }
+
+    function isVersionBranch(name: string) {
+        return !!name.match(/^v1\.\d+$/);
+    }
+
+    function parseVersion(name: string) {
+        return parseInt(name.match(/^v1\.(\d+)$/)![1], 10);
     }
 }
 
@@ -105,6 +122,7 @@ export interface VersionData {
             color: string;
             pipeline?: GitlabPipelines.PipelineBase;
             tag?: GitlabTags.TagBase;
+            nightly?: GitlabPipelines.PipelineBase;
         }
     >;
     minVersion: number;
