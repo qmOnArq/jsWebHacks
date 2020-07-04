@@ -81,7 +81,7 @@ export function addBadges() {
         badges += '</table>';
 
         $('nav.breadcrumbs .breadcrumbs-container').append(`
-            <div id="monar-pipelines-global">
+            <div style="margin-top: -10px; margin-bottom: -10px;" id="monar-pipelines-global">
                 ${badges}
             </div>
         `);
