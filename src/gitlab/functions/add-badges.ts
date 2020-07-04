@@ -33,46 +33,50 @@ export function addBadges() {
         }
         badges += `</tr>`;
 
-        badges += `<tr>`;
-        badges += `<td style="padding-left: 10px; text-align: right;">
+        if (Object.values(window.monar.versionData.versionData).filter(version => version.tag).length) {
+            badges += `<tr>`;
+            badges += `<td style="padding-left: 10px; text-align: right;">
                     <img src="${getBadgeUrl('tags', '')}" alt="Branches" />
                     </td>`;
-        for (const version of [...window.monar.versionData.versions, 'master']) {
-            const value = window.monar.versionData.versionData[version];
+            for (const version of [...window.monar.versionData.versions, 'master']) {
+                const value = window.monar.versionData.versionData[version];
 
-            if (value.tag) {
-                badges += `
+                if (value.tag) {
+                    badges += `
                 <td style="padding-left: 10px; text-align: left;">
                     <a href="${window.monar_GLOBALS.project}/tags/${value.tag.name}">
                         <img src="${getBadgeUrl(value.tag?.name as any, value.tag.name)}" alt="${value.tag.name}" />
                     </a>
                 </td>
             `;
-            } else {
-                badges += '<td style="padding-left: 10px; text-align: left;"></td>';
+                } else {
+                    badges += '<td style="padding-left: 10px; text-align: left;"></td>';
+                }
             }
+            badges += `</tr>`;
         }
-        badges += `</tr>`;
 
-        badges += `<tr>`;
-        badges += `<td style="padding-left: 10px; text-align: right;">
+        if (Object.values(window.monar.versionData.versionData).filter(version => version.nightly).length) {
+            badges += `<tr>`;
+            badges += `<td style="padding-left: 10px; text-align: right;">
                     <img src="${getBadgeUrl('nightly', '')}" alt="nightly" />
                     </td>`;
 
-        for (const version of [...window.monar.versionData.versions, 'master']) {
-            const value = window.monar.versionData.versionData[version];
+            for (const version of [...window.monar.versionData.versions, 'master']) {
+                const value = window.monar.versionData.versionData[version];
 
-            badges += `<td style="padding-left: 10px; text-align: left;">`;
-            if (value.nightly) {
-                badges += `
+                badges += `<td style="padding-left: 10px; text-align: left;">`;
+                if (value.nightly) {
+                    badges += `
                 <a href="${value.nightly.web_url}">
                     <img src="${getBadgeUrl(value.nightly.status, value.nightly.ref)}" alt="${value.nightly.ref}" />
                 </a>
                 `;
+                }
+                badges += `</td>`;
             }
-            badges += `</td>`;
+            badges += `</tr>`;
         }
-        badges += `</tr>`;
 
         badges += '</table>';
 
