@@ -86,6 +86,7 @@ export function formatPullRequest(request: any) {
     title = title.replace(/(DP-\d*)/g, '<b>$1</b>');
     title = title.replace(/(PRED-\d*)/g, '<b>$1</b>');
     title = title.replace(/(FRON-\d*)/g, '<b>$1</b>');
+    title = title.replace(/(E2E-\d*)/g, '<b>$1</b>');
     title = title.replace(/(STYL-\d*)/g, '<b>$1</b>');
     title = title.replace(/(WE-\d*)/g, '<b>$1</b>');
     title = title.replace(/(ANL-\d*)/g, '<b>$1</b>');
@@ -208,6 +209,21 @@ export function formatPullRequest(request: any) {
             .catch((x: any) => {
                 console.log(x.responseJSON);
             });
+
+        const tasks = /(\d+) of (\d+).*/g.exec(request.tasksElement.text().trim());
+
+        if (tasks) {
+            request.tasksElement.css({ opacity: '0' });
+
+            const done = parseInt(tasks[1], 10);
+            const total = parseInt(tasks[2], 10);
+
+            const doneStyle = done >= total ? 'color: #1aaa55' : '';
+
+            $('.merge-request-title.title', request.element).append(
+                `<span style="position: absolute; top: 11px; right: 330px; font-weight: normal; ${doneStyle}"><i aria-hidden="true" data-hidden="true" class="fa fa-check-square-o"></i> <span>${done}/${total}</span></span>&nbsp;&nbsp;&nbsp;`,
+            );
+        }
 
         // Changes
         $.ajax(`${window.monar_GLOBALS.project}/merge_requests/${request.id}/diffs.json?w=0`)

@@ -19,6 +19,7 @@ export function parseHtmlPullRequests() {
         const updatedAtElement = $('.issuable-updated-at', element);
         const statusElement = $('.issuable-status', element);
         const bottomTextElement = $('.issuable-authored', element);
+        const tasksElement = $('.task-status', element);
 
         if (!titleElement.data('monar-title')) {
             titleElement.data('monar-title', titleElement.text().trim());
@@ -70,6 +71,8 @@ export function parseHtmlPullRequests() {
             reviewerElement,
             pipelineElement,
             updatedAtElement,
+
+            tasksElement,
         });
     });
 

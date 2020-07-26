@@ -1,5 +1,15 @@
 export const changelogNotes = [
     {
+        date: '26.07.2020',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li>Fixed task count shown in merge request list</li>
+</ul>
+        `
+    },
+
+    {
         date: '04.07.2020',
         text: `
 <h1>Changes</h1>
