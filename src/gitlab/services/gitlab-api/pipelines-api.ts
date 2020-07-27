@@ -58,6 +58,19 @@ export namespace GitlabPipelines {
         return result.promise;
     }
 
+    export function getPipelinesForMR(mergeRequestId: number) {
+        const projectId = getProjectId();
+        const result = new Deferred<PipelineBase[]>();
+
+        $.ajax(`/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/pipelines`)
+            .then((data: PipelineScheduleBase[]) => {
+                result.resolve(data);
+            })
+            .catch(result.reject);
+
+        return result.promise;
+    }
+
     export function getPipelines(
         filter: {
             scope?: 'running' | 'pending' | 'finished' | 'branches' | 'tags';

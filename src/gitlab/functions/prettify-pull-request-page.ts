@@ -1,7 +1,8 @@
 import { isPullRequestsListPage } from './is-pull-requests-list-page';
 import { isFrontend } from './is-frontend';
 import { createFeebasCommitButtons, createMainFeebasMergeRequestButton } from './feebas';
-import { CommitApprovals } from "../services/commit-approvals";
+import { CommitApprovals } from '../services/commit-approvals';
+import { createRunE2eButton } from './e2e-start-pipeline-button';
 
 export function prettifyPullRequestPage() {
     if (!isPullRequestsListPage()) {
@@ -117,6 +118,9 @@ export function prettifyPullRequestPage() {
     approveButtonTries = 0;
     createApproveButton();
     CommitApprovals.GUI.markApprovedCommits();
+
+    // Run E2E button
+    createRunE2eButton(window?.gl?.mrWidgetData?.iid);
 
     // Remove errors
     setInterval(() => {

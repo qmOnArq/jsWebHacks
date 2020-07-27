@@ -15,6 +15,7 @@ import { CommentParser } from './services/comment-parser';
 import { Changelog } from './functions/changelog';
 import createChangelogUI = Changelog.createOpenChangelogButton;
 import { BranchingVersions } from './services/branching-versions';
+import { enhanceE2eCreatePipelineScreen } from './functions/e2e-create-pipeline-enhancements';
 
 window.toggleUntaggedMerges = toggleUntaggedMerges;
 window.hidePrStuff = hidePrStuff;
@@ -71,6 +72,7 @@ function start() {
             BranchingVersions.fetchMoreDetails().then(() => addBadges());
             colorMergeRequestNumbers();
             prettifyPullRequestCommitPage();
+            enhanceE2eCreatePipelineScreen();
         });
     }
 }
