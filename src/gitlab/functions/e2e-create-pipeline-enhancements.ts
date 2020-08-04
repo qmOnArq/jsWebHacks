@@ -31,6 +31,17 @@ export function enhanceE2eCreatePipelineScreen() {
             dp
             cmp
             anl
+
+        SPEC
+            e.g. cypress/integration/campaigns/scenarios/scenarios.e2e.ts
+            e.g. cypress/integration/campaigns/surveys/surveys.e2e.ts,cypress/integration/analytics/funnels/funnels.e2e.ts
+
+        Private instance docs: https://gitlab.exponea.com/e2e/e2e-tests/-/blob/master/docs/PRIVATE-INSTANCES.md
+        TEST_ENV_USERNAME
+        TEST_ENV_PASSWORD
+        PRIVATE_INSTANCE
+        PRIVATE_INSTANCE_API
+        PRIVATE_INSTANCE_CDN
      */
     const suiteButtons: SuiteButton[] = [
         { variables: [{ key: 'RUN_ALL', value: 'true' }], label: 'Run all' },
@@ -39,6 +50,24 @@ export function enhanceE2eCreatePipelineScreen() {
         { variables: [{ key: 'JOBS', value: 'cmp' }], label: 'Campaigns' },
         { variables: [{ key: 'JOBS', value: 'dp' }], label: 'Data Pipe' },
         { variables: [{ key: 'JOBS', value: 'we' }], label: 'Web Exp' },
+        { variables: [{ key: 'JOBS', value: 'screenshot tests' }], label: 'Screenshot tests' },
+        { variables: [{ key: 'SPEC', value: '' }], label: 'Specific test run' },
+        {
+            variables: [
+                { key: 'PRIVATE_INSTANCE', value: '' },
+                {
+                    key: 'PRIVATE_INSTANCE_API',
+                    value: '',
+                },
+                { key: 'PRIVATE_INSTANCE_CDN', value: '' },
+                {
+                    key: 'TEST_ENV_USERNAME',
+                    value: '',
+                },
+                { key: 'TEST_ENV_PASSWORD', value: '' },
+            ],
+            label: 'Private Instance',
+        },
     ];
 
     $('.js-ci-variable-list-section .ci-variable-list').after(
