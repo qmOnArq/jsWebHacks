@@ -1,6 +1,7 @@
 import { isE2e } from './is-e2e';
 import { getHashVariables } from './hash-variables';
 import { colorForIndex } from './color-for-index';
+import { snakeCase, toUpper } from 'lodash';
 
 export function enhanceE2eCreatePipelineScreen() {
     if (!isE2e()) {
@@ -20,6 +21,7 @@ export function enhanceE2eCreatePipelineScreen() {
 
     // Help for Pipeline variables
     /*
+        Specific jobs docs: https://gitlab.exponea.com/e2e/e2e-tests/-/blob/master/docs/RUNNING-SPECIFIC-JOBS.md
         RUN_ALL
             true
 
@@ -30,13 +32,13 @@ export function enhanceE2eCreatePipelineScreen() {
             cmp
             anl
      */
-    const suiteButtons = [
-        { key: 'RUN_ALL', value: 'true', label: 'Run all' },
-        { key: 'JOBS', value: 'app', label: 'App' },
-        { key: 'JOBS', value: 'anl', label: 'Analytics' },
-        { key: 'JOBS', value: 'cmp', label: 'Campaigns' },
-        { key: 'JOBS', value: 'dp', label: 'Data Pipe' },
-        { key: 'JOBS', value: 'we', label: 'Web Exp' },
+    const suiteButtons: SuiteButton[] = [
+        { variables: [{ key: 'RUN_ALL', value: 'true' }], label: 'Run all' },
+        { variables: [{ key: 'JOBS', value: 'app' }], label: 'App' },
+        { variables: [{ key: 'JOBS', value: 'anl' }], label: 'Analytics' },
+        { variables: [{ key: 'JOBS', value: 'cmp' }], label: 'Campaigns' },
+        { variables: [{ key: 'JOBS', value: 'dp' }], label: 'Data Pipe' },
+        { variables: [{ key: 'JOBS', value: 'we' }], label: 'Web Exp' },
     ];
 
     $('.js-ci-variable-list-section .ci-variable-list').after(
@@ -47,7 +49,9 @@ export function enhanceE2eCreatePipelineScreen() {
         const background = `background: ${colorForIndex(index)};`;
 
         const buttonHtml = $(`
-            <a class="label-link" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;" id="MONAR_E2E_VARIABLES_BUTTON_${button.key}_${button.value}">
+            <a class="label-link" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;" id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(
+                snakeCase(button.label),
+            )}">
                 <span class="badge color-label" style="${background}; height: 26px; line-height: 22px; border: 3px solid transparent;">
                     ${button.label}
                 </span>
@@ -55,22 +59,35 @@ export function enhanceE2eCreatePipelineScreen() {
         `);
 
         buttonHtml.on('click', () => {
-            let existingInput: JQuery = null!;
+            button.variables.forEach((variable, index) => {
+                let existingInput: JQuery = null!;
 
-            $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
-                const item = $(this);
-                if (item.val() === 'JOBS' || item.val() === 'RUN_ALL') {
-                    existingInput = item;
+                $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
+                    const item = $(this);
+
+                    // delete all pipeline variables that's not gonna be used in this preset
+                    if (
+                        isPipelineVariable(item.val()) &&
+                        !button.variables.map(v => v.key).includes(item.val() as any)
+                    ) {
+                        item.siblings('button').trigger('click');
+                    }
+
+                    // reuse existing key input
+                    if (item.val() === variable.key) {
+                        existingInput = item;
+                    }
+                });
+
+                if (existingInput) {
+                    existingInput.val(variable.key);
+                    $('*[name="pipeline[variables_attributes][][secret_value]"]', existingInput.parent()).val(
+                        variable.value,
+                    );
+                } else {
+                    insertNewVariable(variable.key, variable.value);
                 }
             });
-
-            if (existingInput) {
-                existingInput.val(button.key);
-                $('*[name="pipeline[variables_attributes][][secret_value]"]', existingInput.parent()).val(button.value);
-            } else {
-                insertNewVariable(button.key, button.value);
-            }
-
             markSelectedButton();
         });
 
@@ -111,6 +128,28 @@ function markSelectedButton() {
     if (existingInput) {
         const key = existingInput.val();
         const value = $('*[name="pipeline[variables_attributes][][secret_value]"]', existingInput.parent()).val();
-        $(`#MONAR_E2E_VARIABLES_BUTTON_${key}_${value} span`).css({ 'border-color': 'black'});
+        $(`#MONAR_E2E_VARIABLES_BUTTON_${key}_${value} span`).css({ 'border-color': 'black' });
     }
+}
+
+const PipelineVariableValues = [
+    'RUN_ALL',
+    'JOBS',
+    'SPEC',
+    'PRIVATE_INSTANCE',
+    'PRIVATE_INSTANCE_API',
+    'PRIVATE_INSTANCE_CDN',
+    'TEST_ENV_USERNAME',
+    'TEST_ENV_PASSWORD',
+] as const;
+
+type PipelineVariable = typeof PipelineVariableValues[number];
+
+function isPipelineVariable(x: any): x is PipelineVariable {
+    return PipelineVariableValues.includes(x);
+}
+
+interface SuiteButton {
+    label: string;
+    variables: { key: PipelineVariable; value: string }[];
 }
