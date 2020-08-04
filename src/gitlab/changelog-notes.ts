@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '04.08.2020',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li><b>E2E only:</b> More pipeline variable options added</li>
+</ul>
+        `,
+    },
+    {
         date: '27.07.2020',
         text: `
 <h1>Changes</h1>
@@ -7,7 +16,7 @@ export const changelogNotes = [
     <li>Improvements for running E2E pipeline from FE repo</li>
     <li>Improvements for specifying E2E pipeline variables</li>
 </ul>
-        `
+        `,
     },
     {
         date: '26.07.2020',
@@ -16,7 +25,7 @@ export const changelogNotes = [
 <ul>
     <li>Fixed task count shown in merge request list</li>
 </ul>
-        `
+        `,
     },
 
     {
@@ -26,7 +35,7 @@ export const changelogNotes = [
 <ul>
     <li>Nightly pipeline badges brought back to action</li>
 </ul>
-        `
+        `,
     },
     {
         date: '26.06.2020',
@@ -35,7 +44,7 @@ export const changelogNotes = [
 <ul>
     <li><b>FE only:</b> Automatically set "No. approvals required" based on labels</li>
 </ul>
-        `
+        `,
     },
     {
         date: '25.05.2020',
@@ -45,7 +54,7 @@ export const changelogNotes = [
     <li>New branching strategy is here</li>
     <li>The goose has been captured and moved to a pond</li>
 </ul>
-        `
+        `,
     },
     {
         date: '16.03.2020',
@@ -54,7 +63,7 @@ export const changelogNotes = [
 <ul>
     <li>Attempt to fix approve button after gitlab update</li>
 </ul>
-        `
+        `,
     },
     {
         date: '22.01.2020',
@@ -63,7 +72,7 @@ export const changelogNotes = [
 <ul>
     <li>Nightly pipeline badges used by FE repository should be working correctly again</li>
 </ul>
-        `
+        `,
     },
     {
         date: '18.01.2020',
