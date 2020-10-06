@@ -23,7 +23,13 @@ module.exports = ({ mode } = { mode: 'production', presets: [] }) => {
                     },
                     {
                         test: /\.(html|svelte)$/,
-                        use: 'svelte-loader',
+                        use: {
+                            loader: 'svelte-loader',
+                            options: {
+                                emitCss: false,
+                                preprocess: require('svelte-preprocess')({}),
+                            },
+                        },
                         exclude: /node_modules/,
                     },
                 ],
