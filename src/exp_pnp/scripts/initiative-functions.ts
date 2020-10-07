@@ -1,8 +1,6 @@
 import { InitiativeExportData, InitiativeListItem } from '../types/initiative.type';
 import { PNPHelpers } from './helpers';
 
-import handleError = PNPHelpers.handleError;
-
 export namespace PNPInitiative {
     export function getInitiativeListUrl(projectId: string) {
         return `/api/initiatives?company_id=${projectId}`;
@@ -17,7 +15,7 @@ export namespace PNPInitiative {
             .then(response => response.json())
             .then(response => response.data as InitiativeListItem[])
             .catch(error => {
-                handleError('Could not download Initiative list', error);
+                PNPHelpers.handleError('Could not download Initiative list', error);
                 return [] as InitiativeListItem[];
             });
     }
@@ -28,7 +26,7 @@ export namespace PNPInitiative {
         })
             .then(response => response.json() as InitiativeExportData)
             .catch(error => {
-                handleError(`Could not download Initiative ${initiativeId}`, error);
+                PNPHelpers.handleError(`Could not download Initiative ${initiativeId}`, error);
                 return null;
             });
     }

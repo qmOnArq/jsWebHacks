@@ -1,12 +1,8 @@
 import { PNPDownloadAllButton } from "../components/download-all-initiatives-button";
 
-import createDownloadButton = PNPDownloadAllButton.createDownloadButton;
-import setDownloadButtonEnabled = PNPDownloadAllButton.setDownloadButtonEnabled;
-
 let errorId = 0;
 
 export namespace PNPHelpers {
-
     export function appendScript(url: string, id: string) {
         if (document.querySelector(`#PLUG_AND_PLAY_INITIATIVES_SCRIPT_${id}`)) {
             return Promise.resolve();
@@ -75,9 +71,9 @@ export namespace PNPHelpers {
     }
 
     export async function initialize() {
-        createDownloadButton();
+        PNPDownloadAllButton.createDownloadButton();
         await appendScript(`//cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js`, 'jszip');
         await appendScript(`//cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js`, 'filesaver');
-        setDownloadButtonEnabled(true);
+        PNPDownloadAllButton.setDownloadButtonEnabled(true);
     }
 }

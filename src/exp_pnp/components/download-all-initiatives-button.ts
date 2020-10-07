@@ -5,11 +5,6 @@ import { PNPHelpers } from '../scripts/helpers';
 import { PNPInitiative } from '../scripts/initiative-functions';
 import * as JSZipType from 'jszip';
 
-import getMajorVersionString = PNPHelpers.getMajorVersionString;
-import handleError = PNPHelpers.handleError;
-import getInitiativeList = PNPInitiative.getInitiativeList;
-import getInitiative = PNPInitiative.getInitiative;
-
 declare const JSZip: JSZipType;
 
 let total = 0;
@@ -72,13 +67,13 @@ function updateButtonLabel() {
 async function exportAllInitiatives() {
     const project = PNPProject.getProjectData();
     if (!project) {
-        handleError('Could not find Project ID');
+        PNPHelpers.handleError('Could not find Project ID');
         return;
     }
-    const folderName = `${getMajorVersionString()}`;
-    const zipName = `${getMajorVersionString()} - ${project.company_name} - Initiatives.zip`;
+    const folderName = `${PNPHelpers.getMajorVersionString()}`;
+    const zipName = `${PNPHelpers.getMajorVersionString()} - ${project.company_name} - Initiatives.zip`;
     setButtonEnabled(false);
-    const list = await getInitiativeList(project._id);
+    const list = await PNPInitiative.getInitiativeList(project._id);
     current = 0;
     total = list.length;
     updateButtonLabel();
@@ -86,7 +81,7 @@ async function exportAllInitiatives() {
     const zip = new JSZip();
     const folder = zip.folder(folderName)!;
     await asyncForEach(list, async initiative => {
-        const initiativeData = await getInitiative(initiative._id, project._id);
+        const initiativeData = await PNPInitiative.getInitiative(initiative._id, project._id);
         current++;
         updateButtonLabel();
         if (!initiativeData) {
@@ -103,7 +98,7 @@ async function exportAllInitiatives() {
         folder.file(fileName, data);
     });
     failedInitiatives.forEach(fail => {
-        handleError(`${fail[0].name} (${fail[0]._id}) export failed`, fail[1]);
+        PNPHelpers.handleError(`${fail[0].name} (${fail[0]._id}) export failed`, fail[1]);
     });
     setButtonEnabled(true);
     total = 0;
