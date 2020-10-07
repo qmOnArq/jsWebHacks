@@ -1,5 +1,5 @@
 import { getProjectId } from '../../functions/get-project-id';
-import { Deferred } from '../../classes/deferred';
+import { Deferred } from '../../../deferred';
 import { GitlabCommits } from './commits-api';
 
 export namespace GitlabBranches {

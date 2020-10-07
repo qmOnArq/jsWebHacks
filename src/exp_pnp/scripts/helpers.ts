@@ -1,4 +1,6 @@
-import { PNPDownloadAllButton } from "../components/download-all-initiatives-button";
+import { PNPDownloadAllButton } from '../components/download-all-initiatives-button';
+import { PNPDeleteAllButton } from '../components/delete-all-initiatives-button';
+import { PNPMassImportButton } from "../components/mass-import-initiatives-button";
 
 let errorId = 0;
 
@@ -71,9 +73,17 @@ export namespace PNPHelpers {
     }
 
     export async function initialize() {
-        PNPDownloadAllButton.createDownloadButton();
+        PNPDownloadAllButton.create();
+        PNPDeleteAllButton.create();
+        PNPMassImportButton.create();
         await appendScript(`//cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js`, 'jszip');
         await appendScript(`//cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js`, 'filesaver');
-        PNPDownloadAllButton.setDownloadButtonEnabled(true);
+        setButtonStatus(true);
+    }
+
+    export function setButtonStatus(enabled: boolean) {
+        PNPDownloadAllButton.setEnabled(enabled);
+        PNPDeleteAllButton.setEnabled(enabled);
+        PNPMassImportButton.setEnabled(enabled);
     }
 }

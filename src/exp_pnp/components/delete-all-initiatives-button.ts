@@ -3,29 +3,27 @@ import { asyncForEach } from '../../helpers';
 import { PNPProject } from '../scripts/project-functions';
 import { PNPHelpers } from '../scripts/helpers';
 import { PNPInitiative } from '../scripts/initiative-functions';
-import * as JSZipType from 'jszip';
-
-declare const JSZip: JSZipType;
 
 let total = 0;
 let current = 0;
 
-export namespace PNPDownloadAllButton {
+export namespace PNPDeleteAllButton {
     export const create = createButton;
     export const setEnabled = setButtonEnabled;
 }
 
 function createButton() {
-    if (document.querySelector('#DOWNLOAD_ALL_INITIATIVES_BUTTON_WRAPPER')) {
+    if (document.querySelector('#DELETE_ALL_INITIATIVES_BUTTON_WRAPPER')) {
         return;
     }
     const button = document.createElement('e-ui-button');
-    button.id = 'DOWNLOAD_ALL_INITIATIVES_BUTTON_WRAPPER';
+    button.id = 'DELETE_ALL_INITIATIVES_BUTTON_WRAPPER';
+    button.setAttribute('priority', 'danger');
     button.classList.add('ui');
     button.classList.add('ui-node');
     button.innerHTML = `
-        <button class="button-wrapper" id="DOWNLOAD_ALL_INITIATIVES_BUTTON">
-            <span id="DOWNLOAD_ALL_INITIATIVES_BUTTON_TEXT" class="button-text">Download all</span>
+        <button class="button-wrapper" id="DELETE_ALL_INITIATIVES_BUTTON">
+            <span id="DELETE_ALL_INITIATIVES_BUTTON_TEXT" class="button-text">Delete all</span>
         </button>
     `;
     document.querySelector('.crud-header.list-header')!.appendChild(button);
@@ -34,7 +32,7 @@ function createButton() {
 }
 
 function setButtonEnabled(enabled: boolean) {
-    const wrapper = document.querySelector('#DOWNLOAD_ALL_INITIATIVES_BUTTON_WRAPPER');
+    const wrapper = document.querySelector('#DELETE_ALL_INITIATIVES_BUTTON_WRAPPER');
     if (!wrapper) {
         return;
     }
@@ -42,13 +40,13 @@ function setButtonEnabled(enabled: boolean) {
     if (!enabled) {
         wrapper.classList.add('disabled');
     }
-    const button = document.querySelector('#DOWNLOAD_ALL_INITIATIVES_BUTTON_WRAPPER') as HTMLButtonElement;
+    const button = document.querySelector('#DELETE_ALL_INITIATIVES_BUTTON_WRAPPER') as HTMLButtonElement;
     if (!button) {
         return;
     }
     if (enabled) {
         button.onclick = () => {
-            exportAllInitiatives();
+            deleteAllInitiatives();
         };
     } else {
         button.onclick = null;
@@ -56,56 +54,59 @@ function setButtonEnabled(enabled: boolean) {
 }
 
 function updateButtonLabel() {
-    const text = document.querySelector('#DOWNLOAD_ALL_INITIATIVES_BUTTON_TEXT');
+    const text = document.querySelector('#DELETE_ALL_INITIATIVES_BUTTON_TEXT');
     if (!text) {
         return;
     }
-    text.innerHTML = 'Download all';
+    text.innerHTML = 'Delete all';
     if (total > 0) {
         text.innerHTML += ` ${current} / ${total}`;
     }
 }
 
-async function exportAllInitiatives() {
+async function deleteAllInitiatives() {
     const project = PNPProject.getProjectData();
     if (!project) {
         PNPHelpers.handleError('Could not find Project ID');
         return;
     }
-    const folderName = `${PNPHelpers.getMajorVersionString()}`;
-    const zipName = `${PNPHelpers.getMajorVersionString()} - ${project.company_name} - Initiatives.zip`;
     PNPHelpers.setButtonStatus(false);
     const list = await PNPInitiative.getInitiativeList(project._id);
     current = 0;
     total = list.length;
+
+    if (
+        prompt(
+            `You are about to delete ${total} initiative${total > 1 ? 's' : ''}. Rewrite the amount to continue.`,
+        ) !== `${total}`
+    ) {
+        alert('Canceling deletion');
+        PNPHelpers.setButtonStatus(true);
+        return;
+    }
+
     updateButtonLabel();
     const failedInitiatives: [InitiativeListItem, InitiativeExportData | null][] = [];
-    const zip = new JSZip();
-    const folder = zip.folder(folderName)!;
+
     await asyncForEach(list, async initiative => {
-        const initiativeData = await PNPInitiative.getInitiative(initiative._id, project._id);
+        const response = await PNPInitiative.deleteInitiative(initiative._id, project._id);
         current++;
         updateButtonLabel();
-        if (!initiativeData) {
+        if (!response) {
             failedInitiatives.push([initiative, null]);
             return;
         }
-        if (initiativeData.errors) {
-            failedInitiatives.push([initiative, initiativeData]);
+        if (!response.success) {
+            failedInitiatives.push([initiative, null]);
             return;
         }
-        const name = initiative.name.replace(/\//g, '-').replace(/\\/g, '-');
-        const data = JSON.stringify(initiativeData);
-        const fileName = `${name}.json`;
-        folder.file(fileName, data);
     });
     failedInitiatives.forEach(fail => {
-        PNPHelpers.handleError(`${fail[0].name} (${fail[0]._id}) export failed`, fail[1]);
+        PNPHelpers.handleError(`${fail[0].name} (${fail[0]._id}) delete failed`, fail[1]);
     });
     PNPHelpers.setButtonStatus(true);
     total = 0;
     updateButtonLabel();
-    return zip.generateAsync({ type: 'blob' }).then(content => {
-        saveAs(content, zipName);
-    });
+
+    alert('Refresh the page to reload the list of initiatives');
 }

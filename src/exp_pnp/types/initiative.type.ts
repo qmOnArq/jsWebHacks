@@ -6,3 +6,7 @@ export interface InitiativeListItem {
 export interface InitiativeExportData {
     errors?: unknown;
 }
+
+export interface InitiativeImportData {
+    errors?: unknown;
+}
