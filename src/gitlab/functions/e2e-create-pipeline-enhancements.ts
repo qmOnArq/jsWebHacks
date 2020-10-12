@@ -45,12 +45,12 @@ export function enhanceE2eCreatePipelineScreen() {
      */
     const suiteButtons: SuiteButton[] = [
         { variables: [{ key: 'RUN_ALL', value: 'true' }], label: 'Run all' },
-        { variables: [{ key: 'JOBS', value: 'app' }], label: 'App' },
-        { variables: [{ key: 'JOBS', value: 'anl' }], label: 'Analytics' },
-        { variables: [{ key: 'JOBS', value: 'cmp' }], label: 'Campaigns' },
-        { variables: [{ key: 'JOBS', value: 'dp' }], label: 'Data Pipe' },
-        { variables: [{ key: 'JOBS', value: 'we' }], label: 'Web Exp' },
-        { variables: [{ key: 'JOBS', value: 'screenshot tests' }], label: 'Screenshot tests' },
+        { variables: [{ key: 'MODULES', value: 'app' }], label: 'App' },
+        { variables: [{ key: 'MODULES', value: 'anl' }], label: 'Analytics' },
+        { variables: [{ key: 'MODULES', value: 'cmp' }], label: 'Campaigns' },
+        { variables: [{ key: 'MODULES', value: 'dp' }], label: 'Data Pipe' },
+        { variables: [{ key: 'MODULES', value: 'we' }], label: 'Web Exp' },
+        { variables: [{ key: 'MODULES', value: 'screenshot tests' }], label: 'Screenshot tests' },
         { variables: [{ key: 'SPEC', value: '' }], label: 'Specific test run' },
         {
             variables: [
@@ -79,8 +79,8 @@ export function enhanceE2eCreatePipelineScreen() {
 
         const buttonHtml = $(`
             <a class="label-link" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;" id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(
-                snakeCase(button.label),
-            )}">
+            snakeCase(button.label),
+        )}">
                 <span class="badge color-label" style="${background}; height: 26px; line-height: 22px; border: 3px solid transparent;">
                     ${button.label}
                 </span>
@@ -164,6 +164,7 @@ function markSelectedButton() {
 const PipelineVariableValues = [
     'RUN_ALL',
     'JOBS',
+    'MODULES',
     'SPEC',
     'PRIVATE_INSTANCE',
     'PRIVATE_INSTANCE_API',
