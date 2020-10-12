@@ -1,4 +1,4 @@
-import { Deferred } from '../classes/deferred';
+import { Deferred } from '../../deferred';
 import { GitlabDiscussions } from './gitlab-api/discussions-api';
 import { CommitApprovals } from './commit-approvals';
 

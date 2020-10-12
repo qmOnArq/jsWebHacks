@@ -1,4 +1,4 @@
-import { Deferred } from '../classes/deferred';
+import { Deferred } from '../../deferred';
 import { CommentParser } from './comment-parser';
 
 export namespace CommitApprovals {

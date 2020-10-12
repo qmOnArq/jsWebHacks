@@ -1,5 +1,5 @@
 import { GitlabBranches } from './gitlab-api/branches-api';
-import { Deferred } from '../classes/deferred';
+import { Deferred } from '../../deferred';
 import { GitlabPipelines } from './gitlab-api/pipelines-api';
 import { Colors } from './colors';
 import { GitlabTags } from './gitlab-api/tags-api';

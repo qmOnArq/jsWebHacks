@@ -1,5 +1,5 @@
 import { getProjectId } from '../../functions/get-project-id';
-import { Deferred } from '../../classes/deferred';
+import { Deferred } from '../../../deferred';
 import { GitlabDiscussions } from './discussions-api';
 import { PipelineStatus } from '../../functions/add-badges';
 

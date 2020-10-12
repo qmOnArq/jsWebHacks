@@ -8,3 +8,6 @@
 5. Modify `const script = '';` by using correct script filename (all available scripts are in `/scripts` folder)
 
 Optionally, if you do not want to use autoupdater, you can copy and paste the script directly.
+
+## Dev
+Node 14+ required

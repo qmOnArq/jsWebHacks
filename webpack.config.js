@@ -10,6 +10,7 @@ module.exports = ({ mode } = { mode: 'production', presets: [] }) => {
             entry: {
                 gitlab: './src/gitlab/index.ts',
                 localization_highlighter: './src/localization_highlighter/index.ts',
+                exp_pnp: './src/exp_pnp/index.ts',
             },
             mode,
             devtool: 'source-map',
@@ -22,7 +23,13 @@ module.exports = ({ mode } = { mode: 'production', presets: [] }) => {
                     },
                     {
                         test: /\.(html|svelte)$/,
-                        use: 'svelte-loader',
+                        use: {
+                            loader: 'svelte-loader',
+                            options: {
+                                emitCss: false,
+                                preprocess: require('svelte-preprocess')({}),
+                            },
+                        },
                         exclude: /node_modules/,
                     },
                 ],
