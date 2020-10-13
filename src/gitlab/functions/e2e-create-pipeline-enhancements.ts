@@ -105,7 +105,17 @@ function addButtonVariables(variables: { key: PipelineVariable; value: string }[
 
         if (existingVariableNameInput) {
             const existingVariableValueInput = $('*[name="pipeline[variables_attributes][][secret_value]"]', existingVariableNameInput.parent());
-            existingVariableValueInput.val(variable.value);
+
+            // Differentiate between variables which can contain multiple values separated by ":"
+            if (isMultiple(variable.key)) {
+                const values = String(existingVariableValueInput.val()).split(':');
+                if (!values.includes(variable.value)) {
+                    values.push(variable.value);
+                    existingVariableValueInput.val(values.join(':'));
+                }
+            } else {
+                existingVariableValueInput.val(variable.value);
+            }
         } else {
             insertNewVariable(variable.key, variable.value);
         }
