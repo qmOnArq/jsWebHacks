@@ -121,7 +121,10 @@ function addButtonVariables(variables: { key: PipelineVariable; value: string }[
 }
 
 function removeButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
-    return;
+    variables.forEach((variable) => {
+        let existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
+        existingVariableNameInput.siblings('button.ci-variable-row-remove-button').trigger('click');
+    });
 }
 
 function insertNewVariable(key: string, value: string) {
