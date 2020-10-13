@@ -82,39 +82,33 @@ export function enhanceE2eCreatePipelineScreen() {
         `);
 
         buttonHtml.on('click', () => {
-            button.variables.forEach((variable, index) => {
-                let existingInput: JQuery = null!;
-
-                $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
-                    const item = $(this);
-
-                    // delete all pipeline variables that's not gonna be used in this preset
-                    if (
-                        isPipelineVariable(item.val()) &&
-                        !button.variables.map(v => v.key).includes(item.val() as any)
-                    ) {
-                        item.siblings('button').trigger('click');
-                    }
-
-                    // reuse existing key input
-                    if (item.val() === variable.key) {
-                        existingInput = item;
-                    }
-                });
-
-                if (existingInput) {
-                    existingInput.val(variable.key);
-                    $('*[name="pipeline[variables_attributes][][secret_value]"]', existingInput.parent()).val(
-                        variable.value,
-                    );
-                } else {
-                    insertNewVariable(variable.key, variable.value);
-                }
-            });
+            addButtonVariables(button.variables);
             markButton(button, true);
         });
 
         $('#MONAR_E2E_VARIABLES_BUTTONS').append(buttonHtml);
+    });
+}
+
+function addButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
+    variables.forEach((variable, index) => {
+        let existingVariableNameInput: JQuery = null!;
+
+        $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
+            const item = $(this);
+
+            // reuse existing key input
+            if (item.val() === variable.key) {
+                existingVariableNameInput = item;
+            }
+        });
+
+        if (existingVariableNameInput) {
+            const existingVariableValueInput = $('*[name="pipeline[variables_attributes][][secret_value]"]', existingVariableNameInput.parent());
+            existingVariableValueInput.val(variable.value);
+        } else {
+            insertNewVariable(variable.key, variable.value);
+        }
     });
 }
 
