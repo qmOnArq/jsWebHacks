@@ -99,7 +99,7 @@ export function enhanceE2eCreatePipelineScreen() {
 
 function addButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
     variables.forEach((variable) => {
-        let existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
+        const existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
 
         if (existingVariableNameInput) {
             const existingVariableValueInput = $(getGitlabVariableInputString('secret_value'), existingVariableNameInput.parent());
@@ -122,8 +122,24 @@ function addButtonVariables(variables: { key: PipelineVariable; value: string }[
 
 function removeButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
     variables.forEach((variable) => {
-        let existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
-        existingVariableNameInput.siblings('button.ci-variable-row-remove-button').trigger('click');
+        const existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
+        const existingVariableValueInput = $(getGitlabVariableInputString('secret_value'), existingVariableNameInput.parent());
+        const removeVariable = () => existingVariableNameInput.siblings('button.ci-variable-row-remove-button').trigger('click');
+
+        if (isMultiple(variable.key)) {
+            let values = String(existingVariableValueInput.val()).split(':');
+            values = values.filter(value => value != variable.value);
+
+            // either remove the value from multi-value string or remove the whole variable input
+            if (values.length) {
+                existingVariableValueInput.val(values.join(':'));
+            } else {
+                removeVariable();
+            }
+        } else {
+            removeVariable();
+        }
+
     });
 }
 
