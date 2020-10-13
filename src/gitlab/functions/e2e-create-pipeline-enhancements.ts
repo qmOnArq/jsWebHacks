@@ -50,7 +50,7 @@ export function enhanceE2eCreatePipelineScreen() {
         { variables: [{ key: 'MODULES', value: 'cmp' }], label: 'Campaigns' },
         { variables: [{ key: 'MODULES', value: 'dp' }], label: 'Data Pipe' },
         { variables: [{ key: 'MODULES', value: 'we' }], label: 'Web Exp' },
-        { variables: [{ key: 'MODULES', value: 'screenshot tests' }], label: 'Screenshot tests' },
+        { variables: [{ key: 'JOBS', value: 'screenshot tests' }], label: 'Screenshot tests' },
         { variables: [{ key: 'SPEC', value: '' }], label: 'Specific test run' },
         {
             variables: [
