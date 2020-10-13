@@ -111,12 +111,11 @@ export function enhanceE2eCreatePipelineScreen() {
                     insertNewVariable(variable.key, variable.value);
                 }
             });
-            markSelectedButton();
+            markButton(button, true);
         });
 
         $('#MONAR_E2E_VARIABLES_BUTTONS').append(buttonHtml);
     });
-    markSelectedButton();
 }
 
 function insertNewVariable(key: string, value: string) {
@@ -136,23 +135,9 @@ function insertNewVariable(key: string, value: string) {
         .dispatchEvent(evt);
 }
 
-function markSelectedButton() {
-    let existingInput: JQuery = null!;
-
-    $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
-        const item = $(this);
-        if (item.val() === 'JOBS' || item.val() === 'RUN_ALL') {
-            existingInput = item;
-        }
-    });
-
-    $('#MONAR_E2E_VARIABLES_BUTTONS a span').css({ 'border-color': 'transparent' });
-
-    if (existingInput) {
-        const key = existingInput.val();
-        const value = $('*[name="pipeline[variables_attributes][][secret_value]"]', existingInput.parent()).val();
-        $(`#MONAR_E2E_VARIABLES_BUTTON_${key}_${value} span`).css({ 'border-color': 'black' });
-    }
+function markButton(button: SuiteButton, selected: boolean) {
+    const targetElement = $(`#MONAR_E2E_VARIABLES_BUTTON_${toUpper(snakeCase(button.label))} span`);
+    targetElement.css({ 'border-color': selected ? 'black' : 'transparent' });
 }
 
 const PipelineVariableValues = [
