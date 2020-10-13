@@ -55,15 +55,9 @@ export function enhanceE2eCreatePipelineScreen() {
         {
             variables: [
                 { key: 'PRIVATE_INSTANCE', value: '' },
-                {
-                    key: 'PRIVATE_INSTANCE_API',
-                    value: '',
-                },
+                { key: 'PRIVATE_INSTANCE_API', value: '' },
                 { key: 'PRIVATE_INSTANCE_CDN', value: '' },
-                {
-                    key: 'TEST_ENV_USERNAME',
-                    value: '',
-                },
+                { key: 'TEST_ENV_USERNAME', value: '' },
                 { key: 'TEST_ENV_PASSWORD', value: '' },
             ],
             label: 'Private Instance',
