@@ -45,25 +45,19 @@ export function enhanceE2eCreatePipelineScreen() {
      */
     const suiteButtons: SuiteButton[] = [
         { variables: [{ key: 'RUN_ALL', value: 'true' }], label: 'Run all' },
-        { variables: [{ key: 'JOBS', value: 'app' }], label: 'App' },
-        { variables: [{ key: 'JOBS', value: 'anl' }], label: 'Analytics' },
-        { variables: [{ key: 'JOBS', value: 'cmp' }], label: 'Campaigns' },
-        { variables: [{ key: 'JOBS', value: 'dp' }], label: 'Data Pipe' },
-        { variables: [{ key: 'JOBS', value: 'we' }], label: 'Web Exp' },
+        { variables: [{ key: 'MODULES', value: 'app' }], label: 'App' },
+        { variables: [{ key: 'MODULES', value: 'anl' }], label: 'Analytics' },
+        { variables: [{ key: 'MODULES', value: 'cmp' }], label: 'Campaigns' },
+        { variables: [{ key: 'MODULES', value: 'dp' }], label: 'Data Pipe' },
+        { variables: [{ key: 'MODULES', value: 'we' }], label: 'Web Exp' },
         { variables: [{ key: 'JOBS', value: 'screenshot tests' }], label: 'Screenshot tests' },
         { variables: [{ key: 'SPEC', value: '' }], label: 'Specific test run' },
         {
             variables: [
                 { key: 'PRIVATE_INSTANCE', value: '' },
-                {
-                    key: 'PRIVATE_INSTANCE_API',
-                    value: '',
-                },
+                { key: 'PRIVATE_INSTANCE_API', value: '' },
                 { key: 'PRIVATE_INSTANCE_CDN', value: '' },
-                {
-                    key: 'TEST_ENV_USERNAME',
-                    value: '',
-                },
+                { key: 'TEST_ENV_USERNAME', value: '' },
                 { key: 'TEST_ENV_PASSWORD', value: '' },
             ],
             label: 'Private Instance',
@@ -79,8 +73,8 @@ export function enhanceE2eCreatePipelineScreen() {
 
         const buttonHtml = $(`
             <a class="label-link" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;" id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(
-                snakeCase(button.label),
-            )}">
+            snakeCase(button.label),
+        )}">
                 <span class="badge color-label" style="${background}; height: 26px; line-height: 22px; border: 3px solid transparent;">
                     ${button.label}
                 </span>
@@ -88,82 +82,111 @@ export function enhanceE2eCreatePipelineScreen() {
         `);
 
         buttonHtml.on('click', () => {
-            button.variables.forEach((variable, index) => {
-                let existingInput: JQuery = null!;
-
-                $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
-                    const item = $(this);
-
-                    // delete all pipeline variables that's not gonna be used in this preset
-                    if (
-                        isPipelineVariable(item.val()) &&
-                        !button.variables.map(v => v.key).includes(item.val() as any)
-                    ) {
-                        item.siblings('button').trigger('click');
-                    }
-
-                    // reuse existing key input
-                    if (item.val() === variable.key) {
-                        existingInput = item;
-                    }
-                });
-
-                if (existingInput) {
-                    existingInput.val(variable.key);
-                    $('*[name="pipeline[variables_attributes][][secret_value]"]', existingInput.parent()).val(
-                        variable.value,
-                    );
-                } else {
-                    insertNewVariable(variable.key, variable.value);
-                }
-            });
-            markSelectedButton();
+            if (!button.selected) {
+                button.selected = true;
+                addButtonVariables(button.variables);
+                markButton(button, button.selected);
+            } else {
+                button.selected = false;
+                removeButtonVariables(button.variables);
+                markButton(button, button.selected);
+            }
         });
 
         $('#MONAR_E2E_VARIABLES_BUTTONS').append(buttonHtml);
     });
-    markSelectedButton();
+}
+
+function addButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
+    variables.forEach((variable) => {
+        const existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
+
+        if (existingVariableNameInput) {
+            const existingVariableValueInput = $(getGitlabVariableInputString('secret_value'), existingVariableNameInput.parent());
+
+            // Differentiate between variables which can contain multiple values separated by ":"
+            if (isMultiple(variable.key)) {
+                const values = String(existingVariableValueInput.val()).split(':');
+                if (!values.includes(variable.value)) {
+                    values.push(variable.value);
+                    existingVariableValueInput.val(values.join(':'));
+                }
+            } else {
+                existingVariableValueInput.val(variable.value);
+            }
+        } else {
+            insertNewVariable(variable.key, variable.value);
+        }
+    });
+}
+
+function removeButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
+    variables.forEach((variable) => {
+        const existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
+        const existingVariableValueInput = $(getGitlabVariableInputString('secret_value'), existingVariableNameInput.parent());
+        const removeVariable = () => existingVariableNameInput.siblings('button.ci-variable-row-remove-button').trigger('click');
+
+        if (isMultiple(variable.key)) {
+            let values = String(existingVariableValueInput.val()).split(':');
+            values = values.filter(value => value != variable.value);
+
+            // either remove the value from multi-value string or remove the whole variable input
+            if (values.length) {
+                existingVariableValueInput.val(values.join(':'));
+            } else {
+                removeVariable();
+            }
+        } else {
+            removeVariable();
+        }
+
+    });
 }
 
 function insertNewVariable(key: string, value: string) {
-    $('*[name="pipeline[variables_attributes][][key]"]')
+    $(getGitlabVariableInputString('key'))
         .last()
         .val(key);
 
-    $('*[name="pipeline[variables_attributes][][secret_value]"]')
+    $(getGitlabVariableInputString('secret_value'))
         .last()
         .val(value);
 
     // simulate input event to create new input field for next variable
     const evt = document.createEvent('HTMLEvents');
     evt.initEvent('input', true, true);
-    $('*[name="pipeline[variables_attributes][][key]"]')
+    $(getGitlabVariableInputString('key'))
         .last()[0]
         .dispatchEvent(evt);
 }
 
-function markSelectedButton() {
-    let existingInput: JQuery = null!;
+function markButton(button: SuiteButton, selected: boolean) {
+    const targetElement = $(`#MONAR_E2E_VARIABLES_BUTTON_${toUpper(snakeCase(button.label))} span`);
+    targetElement.css({ 'border-color': selected ? 'black' : 'transparent' });
+}
 
-    $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
-        const item = $(this);
-        if (item.val() === 'JOBS' || item.val() === 'RUN_ALL') {
-            existingInput = item;
+function getExistingInput(type: 'key' | 'secret_value', searchMatch: string) {
+    let matchedInput: JQuery = null!;
+
+    $(getGitlabVariableInputString(type)).each(function() {
+        if ($(this).val() === searchMatch) {
+            matchedInput = $(this);
+            return false;
         }
+        return;
     });
 
-    $('#MONAR_E2E_VARIABLES_BUTTONS a span').css({ 'border-color': 'transparent' });
+    return matchedInput ?? null;
+}
 
-    if (existingInput) {
-        const key = existingInput.val();
-        const value = $('*[name="pipeline[variables_attributes][][secret_value]"]', existingInput.parent()).val();
-        $(`#MONAR_E2E_VARIABLES_BUTTON_${key}_${value} span`).css({ 'border-color': 'black' });
-    }
+function getGitlabVariableInputString(type: 'key' | 'secret_value') {
+    return `*[name="pipeline[variables_attributes][][${type}]"]`;
 }
 
 const PipelineVariableValues = [
     'RUN_ALL',
     'JOBS',
+    'MODULES',
     'SPEC',
     'PRIVATE_INSTANCE',
     'PRIVATE_INSTANCE_API',
@@ -178,7 +201,18 @@ function isPipelineVariable(x: any): x is PipelineVariable {
     return PipelineVariableValues.includes(x);
 }
 
+const PipelineMultipleVariables = [
+    'JOBS', 'MODULES',
+];
+
+type PipelineMultipleVariable = typeof PipelineMultipleVariables[number];
+
+function isMultiple(x: any): x is PipelineMultipleVariable {
+    return PipelineMultipleVariables.includes(x);
+}
+
 interface SuiteButton {
     label: string;
     variables: { key: PipelineVariable; value: string }[];
+    selected?: boolean;
 }

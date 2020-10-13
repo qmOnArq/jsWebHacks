@@ -9,5 +9,23 @@
 
 Optionally, if you do not want to use autoupdater, you can copy and paste the script directly.
 
-## Dev
-Node 14+ required
+## Contribution
+
+**Prerequisites**
+- Node 14+ required
+
+1. Install dependencies:
+    ```
+    npm install
+    ```
+
+1. Run webserver:
+
+    ```
+    npm run dev
+    ```
+   
+1. Turn on *DEV mode* by setting `MONAR_JS_WEB_HACK_DEV` in localStorage
+   ```
+   localStorage.setItem('MONAR_JS_WEB_HACK_DEV','true')
+   ```
