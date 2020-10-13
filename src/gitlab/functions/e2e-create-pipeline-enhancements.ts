@@ -82,8 +82,15 @@ export function enhanceE2eCreatePipelineScreen() {
         `);
 
         buttonHtml.on('click', () => {
-            addButtonVariables(button.variables);
-            markButton(button, true);
+            if (!button.selected) {
+                button.selected = true;
+                addButtonVariables(button.variables);
+                markButton(button, button.selected);
+            } else {
+                button.selected = false;
+                removeButtonVariables(button.variables);
+                markButton(button, button.selected);
+            }
         });
 
         $('#MONAR_E2E_VARIABLES_BUTTONS').append(buttonHtml);
@@ -120,6 +127,10 @@ function addButtonVariables(variables: { key: PipelineVariable; value: string }[
             insertNewVariable(variable.key, variable.value);
         }
     });
+}
+
+function removeButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
+    return;
 }
 
 function insertNewVariable(key: string, value: string) {
@@ -175,4 +186,5 @@ function isMultiple(x: any): x is PipelineMultipleVariable {
 interface SuiteButton {
     label: string;
     variables: { key: PipelineVariable; value: string }[];
+    selected?: boolean;
 }
