@@ -173,6 +173,16 @@ function isPipelineVariable(x: any): x is PipelineVariable {
     return PipelineVariableValues.includes(x);
 }
 
+const PipelineMultipleVariables = [
+    'JOBS', 'MODULES',
+];
+
+type PipelineMultipleVariable = typeof PipelineMultipleVariables[number];
+
+function isMultiple(x: any): x is PipelineMultipleVariable {
+    return PipelineMultipleVariables.includes(x);
+}
+
 interface SuiteButton {
     label: string;
     variables: { key: PipelineVariable; value: string }[];
