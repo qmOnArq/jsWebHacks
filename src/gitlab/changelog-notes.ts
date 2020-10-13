@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '13.10.2020',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li><b>E2E only:</b> Pipeline variables now can be toggled and support multi-value strings</li>
+</ul>
+        `,
+    },
+    {
         date: '04.08.2020',
         text: `
 <h1>Changes</h1>
