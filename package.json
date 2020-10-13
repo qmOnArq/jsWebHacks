@@ -16,6 +16,9 @@
     "url": "git+https://github.com/qmOnArq/jsWebHacks.git"
   },
   "author": "mOnAr",
+  "contributors": [
+    "František Gič <mcfreddie777@gmail.com> (https://github.com/MCFreddie777)"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/qmOnArq/jsWebHacks/issues"
