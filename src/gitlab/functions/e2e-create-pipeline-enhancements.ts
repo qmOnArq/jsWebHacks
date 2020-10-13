@@ -98,20 +98,11 @@ export function enhanceE2eCreatePipelineScreen() {
 }
 
 function addButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
-    variables.forEach((variable, index) => {
-        let existingVariableNameInput: JQuery = null!;
-
-        $('*[name="pipeline[variables_attributes][][key]"]').each(function() {
-            const item = $(this);
-
-            // reuse existing key input
-            if (item.val() === variable.key) {
-                existingVariableNameInput = item;
-            }
-        });
+    variables.forEach((variable) => {
+        let existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
 
         if (existingVariableNameInput) {
-            const existingVariableValueInput = $('*[name="pipeline[variables_attributes][][secret_value]"]', existingVariableNameInput.parent());
+            const existingVariableValueInput = $(getGitlabVariableInputString('secret_value'), existingVariableNameInput.parent());
 
             // Differentiate between variables which can contain multiple values separated by ":"
             if (isMultiple(variable.key)) {
@@ -134,18 +125,18 @@ function removeButtonVariables(variables: { key: PipelineVariable; value: string
 }
 
 function insertNewVariable(key: string, value: string) {
-    $('*[name="pipeline[variables_attributes][][key]"]')
+    $(getGitlabVariableInputString('key'))
         .last()
         .val(key);
 
-    $('*[name="pipeline[variables_attributes][][secret_value]"]')
+    $(getGitlabVariableInputString('secret_value'))
         .last()
         .val(value);
 
     // simulate input event to create new input field for next variable
     const evt = document.createEvent('HTMLEvents');
     evt.initEvent('input', true, true);
-    $('*[name="pipeline[variables_attributes][][key]"]')
+    $(getGitlabVariableInputString('key'))
         .last()[0]
         .dispatchEvent(evt);
 }
@@ -153,6 +144,24 @@ function insertNewVariable(key: string, value: string) {
 function markButton(button: SuiteButton, selected: boolean) {
     const targetElement = $(`#MONAR_E2E_VARIABLES_BUTTON_${toUpper(snakeCase(button.label))} span`);
     targetElement.css({ 'border-color': selected ? 'black' : 'transparent' });
+}
+
+function getExistingInput(type: 'key' | 'secret_value', searchMatch: string) {
+    let matchedInput: JQuery = null!;
+
+    $(getGitlabVariableInputString(type)).each(function() {
+        if ($(this).val() === searchMatch) {
+            matchedInput = $(this);
+            return false;
+        }
+        return;
+    });
+
+    return matchedInput ?? null;
+}
+
+function getGitlabVariableInputString(type: 'key' | 'secret_value') {
+    return `*[name="pipeline[variables_attributes][][${type}]"]`;
 }
 
 const PipelineVariableValues = [
