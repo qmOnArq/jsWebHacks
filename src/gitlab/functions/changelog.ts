@@ -43,9 +43,9 @@ export namespace Changelog {
     style="display: none; position: fixed; left: 0; right: 0; bottom: 0; top: 40px; background: rgba(0,0,0,0.8); z-index: 9999;"
 >
     <div style="background: white; left: 50%; top: 40px; width: 70%; bottom: 40px; transform: translateX(-50%); border-radius: 4px; position: absolute; overflow: hidden;">
-        <div id="monar_changelog_close_button" style="position: absolute; right: 0; top: 0; color: black; cursor: pointer; font-weight: bold; padding: 10px 20px;">
+        <a href="javascript:void(0)" id="monar_changelog_close_button" style="position: absolute; right: 0; top: 0; color: black; cursor: pointer; font-weight: bold; padding: 10px 20px;">
             X
-        </div>
+        </a>
         <h1 style="text-align: center; font-size: 20px; margin-top: 8px; margin-bottom: -12px;">
             Changelog
         </h1>
