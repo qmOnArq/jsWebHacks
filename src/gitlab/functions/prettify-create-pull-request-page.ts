@@ -105,7 +105,7 @@ function createLabelButtons() {
 
             const html = `
                 <a class="label-link" data-id="${id}" data-monar="CUSTOM_LABEL_BUTTON" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;">
-                    <span class="badge color-label" style="${color}; height: 26px; line-height: 22px; border: 3px solid transparent;">
+                    <span class="badge color-label" style="${color}; height: 26px; border: 3px solid transparent; margin-bottom: 5px; line-height: 13px;">
                         ${name}
                     </span>
                 </a>

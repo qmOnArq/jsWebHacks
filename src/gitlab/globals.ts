@@ -52,5 +52,6 @@ declare global {
 
         gl: any;
         gon: any;
+        uploads_path: string;
     }
 }

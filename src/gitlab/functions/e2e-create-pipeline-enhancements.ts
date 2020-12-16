@@ -64,7 +64,7 @@ export function enhanceE2eCreatePipelineScreen() {
         },
     ];
 
-    $('.js-ci-variable-list-section .ci-variable-list').after(
+    $('.form-group.gl-form-group').last().after(
         '<div style="margin-top: 10px" id="MONAR_E2E_VARIABLES_BUTTONS"></div>',
     );
 
@@ -75,7 +75,7 @@ export function enhanceE2eCreatePipelineScreen() {
             <a class="label-link" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;" id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(
             snakeCase(button.label),
         )}">
-                <span class="badge color-label" style="${background}; height: 26px; line-height: 22px; border: 3px solid transparent;">
+                <span class="badge color-label" style="${background}; height: 26px; line-height: 13px; border: 3px solid transparent; margin-bottom: 5px">
                     ${button.label}
                 </span>
             </a>
@@ -143,19 +143,30 @@ function removeButtonVariables(variables: { key: PipelineVariable; value: string
     });
 }
 
-function insertNewVariable(key: string, value: string) {
+async function insertNewVariable(key: string, value: string) {
     $(getGitlabVariableInputString('key'))
         .last()
         .val(key);
+
+    let evt = document.createEvent('HTMLEvents');
+    evt.initEvent('input', true, true);
+    $(getGitlabVariableInputString('key'))
+        .last()[0]
+        .dispatchEvent(evt);
+
+    evt = document.createEvent('HTMLEvents');
+    evt.initEvent('change', true, true);
+    $(getGitlabVariableInputString('key'))
+        .last()[0]
+        .dispatchEvent(evt);
 
     $(getGitlabVariableInputString('secret_value'))
         .last()
         .val(value);
 
-    // simulate input event to create new input field for next variable
-    const evt = document.createEvent('HTMLEvents');
+    evt = document.createEvent('HTMLEvents');
     evt.initEvent('input', true, true);
-    $(getGitlabVariableInputString('key'))
+    $(getGitlabVariableInputString('secret_value'))
         .last()[0]
         .dispatchEvent(evt);
 }
@@ -180,7 +191,8 @@ function getExistingInput(type: 'key' | 'secret_value', searchMatch: string) {
 }
 
 function getGitlabVariableInputString(type: 'key' | 'secret_value') {
-    return `*[name="pipeline[variables_attributes][][${type}]"]`;
+    const v = type === 'secret_value' ? 'value' : 'key';
+    return `*[data-testid="pipeline-form-ci-variable-${v}"]`;
 }
 
 const PipelineVariableValues = [

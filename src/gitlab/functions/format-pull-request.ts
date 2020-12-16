@@ -8,6 +8,11 @@ import { Colors } from '../services/colors';
 export function formatPullRequest(request: any) {
     const projectId = getProjectId();
 
+    request.element.css('position', 'relative');
+
+    // Remove Approvals required
+    $('.issuable-meta li.d-none.d-sm-inline-block.has-tooltip', request.element).remove();
+
     // Remove "x of y" approvals required
     $('li[data-original-title="Approvals"], li[title="Approvals"]', request.element).remove();
 
@@ -202,14 +207,13 @@ export function formatPullRequest(request: any) {
 
                 if (unresolved > 0) {
                     $('a', request.commentsElement).prepend(
-                        `<span style="color: red;"><i aria-hidden="true" data-hidden="true" class="fa fa-crosshairs"></i><span>${unresolved}</span></span>&nbsp;&nbsp;&nbsp;`,
+                        `<span style="color: red;">🎯 <span>${unresolved}</span></span>&nbsp;&nbsp;&nbsp;`,
                     );
                 }
             })
             .catch((x: any) => {
                 console.log(x.responseJSON);
             });
-
         const tasks = /(\d+) of (\d+).*/g.exec(request.tasksElement.text().trim());
 
         if (tasks) {

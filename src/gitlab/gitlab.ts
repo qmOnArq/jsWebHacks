@@ -23,13 +23,15 @@ window.hidePrStuff = hidePrStuff;
 let startFails = 0;
 
 function start() {
-    if (!window.gon || !window.gl || !window.gl.projectOptions) {
+    if (!window.gon || !window.gl || !window.uploads_path) {
         startFails++;
         if (startFails < 5) {
             setTimeout(() => start(), 50);
         }
         return;
     }
+
+    console.log('Gitlab plugin started');
 
     window.monar = {};
 
@@ -42,9 +44,7 @@ function start() {
 
         untaggedMerges: [],
 
-        project: window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath
-            ? window.gl.projectOptions[Object.keys(window.gl.projectOptions)[0]].issuesPath.replace('/issues', '')
-            : '',
+        project: (window.uploads_path || '').replace('/uploads', ''),
         projectId: getProjectId(),
 
         internalUsername: 'user.of.system',

@@ -8,6 +8,10 @@ export function createRunE2eButton(mergeRequestId: number) {
         return Promise.resolve();
     }
 
+    if (mergeRequestId == null) {
+        return Promise.resolve();
+    }
+
     return GitlabPipelines.getPipelinesForMR(mergeRequestId).then(pipelines => {
         if (!pipelines || pipelines.length === 0) {
         } else {
@@ -76,5 +80,5 @@ function createButton(status: 'success' | 'noJob' | 'error' | 'running' | 'other
         </a>
     `;
 
-    $('.mr-widget-heading.mr-widget-workflow > .mr-widget-content > .ci-widget.media.js-ci-widget').prepend(html);
+    $('.mr-state-widget .mr-widget-heading.mr-widget-workflow .ci-widget.media').prepend(html);
 }
