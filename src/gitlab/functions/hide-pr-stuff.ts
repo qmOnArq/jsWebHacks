@@ -4,7 +4,7 @@ export function hidePrStuff() {
     parseHtmlPullRequests().forEach(request => {
         const title = request.title;
 
-        const isWip = title.includes('WIP');
+        const isWip = title.toLocaleLowerCase().startsWith('wip') || title.toLocaleLowerCase().startsWith('draft');
         let hidden = false;
 
         if (isWip && window.monar_SETTINGS?.hideWip) {

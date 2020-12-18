@@ -1,5 +1,30 @@
 export const changelogNotes = [
     {
+        date: '18.12.2020',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li>Support for Draft MRs</li>
+</ul>
+<h1>Known issues</h1>
+<ul>
+    <li>E2E pipelines: Selecting predefined variables is buggy in some cases (buttons with multiple variables assigned, clicking to remove variable)</li>
+    <li>E2E pipelines: Changing branch deletes all set variables</li>
+    <li>Commit approvals: Whole feature has to be retested with new gitlab comments</li>
+    <li>Commit approvals: Clicking on show next/previous commit bugs the Approve commit button</li>
+</ul>
+        `,
+    },
+    {
+        date: '16.12.2020',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li>Initial fixes for new gitlab version</li>
+</ul>
+        `,
+    },
+    {
         date: '13.10.2020',
         text: `
 <h1>Changes</h1>

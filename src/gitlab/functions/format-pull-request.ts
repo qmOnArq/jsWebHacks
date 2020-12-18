@@ -96,7 +96,8 @@ export function formatPullRequest(request: any) {
     title = title.replace(/(WE-\d*)/g, '<b>$1</b>');
     title = title.replace(/(ANL-\d*)/g, '<b>$1</b>');
     title = title.replace(/\[([^\]]+)\]/gi, '<b style="background-color: rgba(0,255,255,0.5); color: black;">[$1]</b>');
-    title = title.replace(/WIP(:?)/g, '<b style="color: red;">WIP$1</b>');
+    title = title.replace(/WIP(:?)/gi, '<b style="color: red;">WIP$1</b>');
+    title = title.replace(/Draft(:?)/gi, '<b style="color: red;">Draft$1</b>');
     request.titleElement.html(title);
     request.titleElement.css({
         display: 'inline-block',
