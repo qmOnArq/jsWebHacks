@@ -16,7 +16,7 @@ export function enhanceE2eCreatePipelineScreen() {
 
     // Pre-fill FE version
     if (variables.fe_version) {
-        insertNewVariable('DOCKER_FRONTEND_VERSION', variables.fe_version);
+        insertNewVariable('ENVIRONMENT', `frontend_version: ${variables.fe_version}`);
     }
 
     // Help for Pipeline variables
@@ -64,17 +64,17 @@ export function enhanceE2eCreatePipelineScreen() {
         },
     ];
 
-    $('.form-group.gl-form-group').last().after(
-        '<div style="margin-top: 10px" id="MONAR_E2E_VARIABLES_BUTTONS"></div>',
-    );
+    $('.form-group.gl-form-group')
+        .last()
+        .after('<div style="margin-top: 10px" id="MONAR_E2E_VARIABLES_BUTTONS"></div>');
 
     suiteButtons.forEach((button, index) => {
         const background = `background: ${colorForIndex(index)};`;
 
         const buttonHtml = $(`
             <a class="label-link" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;" id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(
-            snakeCase(button.label),
-        )}">
+                snakeCase(button.label),
+            )}">
                 <span class="badge color-label" style="${background}; height: 26px; line-height: 13px; border: 3px solid transparent; margin-bottom: 5px">
                     ${button.label}
                 </span>
@@ -98,11 +98,14 @@ export function enhanceE2eCreatePipelineScreen() {
 }
 
 function addButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
-    variables.forEach((variable) => {
+    variables.forEach(variable => {
         const existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
 
         if (existingVariableNameInput) {
-            const existingVariableValueInput = $(getGitlabVariableInputString('secret_value'), existingVariableNameInput.parent());
+            const existingVariableValueInput = $(
+                getGitlabVariableInputString('secret_value'),
+                existingVariableNameInput.parent(),
+            );
 
             // Differentiate between variables which can contain multiple values separated by ":"
             if (isMultiple(variable.key)) {
@@ -121,10 +124,14 @@ function addButtonVariables(variables: { key: PipelineVariable; value: string }[
 }
 
 function removeButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
-    variables.forEach((variable) => {
+    variables.forEach(variable => {
         const existingVariableNameInput: JQuery = getExistingInput('key', variable.key);
-        const existingVariableValueInput = $(getGitlabVariableInputString('secret_value'), existingVariableNameInput.parent());
-        const removeVariable = () => existingVariableNameInput.siblings('button.ci-variable-row-remove-button').trigger('click');
+        const existingVariableValueInput = $(
+            getGitlabVariableInputString('secret_value'),
+            existingVariableNameInput.parent(),
+        );
+        const removeVariable = () =>
+            existingVariableNameInput.siblings('button.ci-variable-row-remove-button').trigger('click');
 
         if (isMultiple(variable.key)) {
             let values = String(existingVariableValueInput.val()).split(':');
@@ -139,7 +146,6 @@ function removeButtonVariables(variables: { key: PipelineVariable; value: string
         } else {
             removeVariable();
         }
-
     });
 }
 
@@ -213,9 +219,7 @@ function isPipelineVariable(x: any): x is PipelineVariable {
     return PipelineVariableValues.includes(x);
 }
 
-const PipelineMultipleVariables = [
-    'JOBS', 'MODULES',
-];
+const PipelineMultipleVariables = ['JOBS', 'MODULES'];
 
 type PipelineMultipleVariable = typeof PipelineMultipleVariables[number];
 
