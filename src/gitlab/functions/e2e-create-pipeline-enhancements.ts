@@ -12,12 +12,8 @@ export function enhanceE2eCreatePipelineScreen() {
         return;
     }
 
-    const variables = getHashVariables();
-
-    // Pre-fill FE version
-    if (variables.fe_version) {
-        insertNewVariable('ENVIRONMENT', `frontend_version: ${variables.fe_version}`);
-    }
+    // Pre-fill default variables
+    fillDefaultVariableValues();
 
     // Help for Pipeline variables
     /*
@@ -95,6 +91,19 @@ export function enhanceE2eCreatePipelineScreen() {
 
         $('#MONAR_E2E_VARIABLES_BUTTONS').append(buttonHtml);
     });
+
+    // After the branch is changed, wait for the re-render and set default variable values again
+    const listOfBranches = $('fieldset:eq(0) ul')[0];
+    listOfBranches.addEventListener('click', () => setTimeout(fillDefaultVariableValues, 500));
+}
+
+function fillDefaultVariableValues() {
+    const variables = getHashVariables();
+
+    // Pre-fill FE version
+    if (variables.fe_version) {
+        insertNewVariable('ENVIRONMENT', `frontend_version: ${variables.fe_version}`);
+    }
 }
 
 function addButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
