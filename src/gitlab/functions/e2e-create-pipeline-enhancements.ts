@@ -131,7 +131,7 @@ function removeButtonVariables(variables: { key: PipelineVariable; value: string
             existingVariableNameInput.parent(),
         );
         const removeVariable = () =>
-            existingVariableNameInput.siblings('button.ci-variable-row-remove-button').trigger('click');
+            existingVariableNameInput.siblings('button[data-testid="remove-ci-variable-row"]').trigger('click');
 
         if (isMultiple(variable.key)) {
             let values = String(existingVariableValueInput.val()).split(':');
