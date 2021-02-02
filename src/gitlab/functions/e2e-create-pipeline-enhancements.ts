@@ -3,6 +3,9 @@ import { getHashVariables } from './hash-variables';
 import { colorForIndex } from './color-for-index';
 import { snakeCase, toUpper } from 'lodash';
 
+const DelayAfterBranchChanged = 250;
+const DelayAfterAddingVariable = 50;
+
 export function enhanceE2eCreatePipelineScreen() {
     if (!isE2e()) {
         return;
@@ -13,7 +16,7 @@ export function enhanceE2eCreatePipelineScreen() {
     }
 
     // Pre-fill default variables
-    fillDefaultVariableValues();
+    fillAutomaticVariables();
 
     // Help for Pipeline variables
     /*
@@ -94,16 +97,43 @@ export function enhanceE2eCreatePipelineScreen() {
 
     // After the branch is changed, wait for the re-render and set default variable values again
     const listOfBranches = $('fieldset:eq(0) ul')[0];
-    listOfBranches.addEventListener('click', () => setTimeout(fillDefaultVariableValues, 500));
+    listOfBranches.addEventListener('click', () => setTimeout(fillAutomaticVariables, DelayAfterBranchChanged));
 }
 
-function fillDefaultVariableValues() {
-    const variables = getHashVariables();
+function fillAutomaticVariables(suiteButtons?: SuiteButton[]) {
+    const hashVariables = getHashVariables();
+    let formVariables = [];
 
-    // Pre-fill FE version
-    if (variables.fe_version) {
-        insertNewVariable('ENVIRONMENT', `frontend_version: ${variables.fe_version}`);
+    // Pre-fill FE/BE versions
+    const versions = [];
+    if (hashVariables.fe_version) {
+        versions.push(`frontend_version: ${hashVariables.fe_version}`);
     }
+    if (hashVariables.be_version) {
+        versions.push(`backend_version: ${hashVariables.be_version}`);
+    }
+    if (versions) {
+        formVariables.push(['ENVIRONMENT', versions.join('\\n')]);
+    }
+
+    // Project id and pipeline url of triggering project
+    if (hashVariables.source_project_id) {
+        formVariables.push(['SOURCE_PROJECT_ID', hashVariables.source_project_id]);
+    }
+    if (hashVariables.source_project_pipeline_url) {
+        formVariables.push(['SOURCE_PROJECT_PIPELINE_URL', hashVariables.source_project_pipeline_url]);
+    }
+
+    formVariables.reduce(
+        (previousVarInserted, currentVar) =>
+            new Promise(resolve =>
+                previousVarInserted.then(() => {
+                    insertNewVariable(currentVar[0] as string, currentVar[1] as string);
+                    setTimeout(resolve, DelayAfterAddingVariable);
+                }),
+            ),
+        Promise.resolve(),
+    );
 }
 
 function addButtonVariables(variables: { key: PipelineVariable; value: string }[]) {
