@@ -4,16 +4,19 @@ import { GitlabPipelines } from '../services/gitlab-api/pipelines-api';
 import { GitlabJobs } from '../services/gitlab-api/jobs-api';
 import { createHashString } from './hash-variables';
 
-const FrontendImageJob = {
-    name: 'exponea docker image',
-    imageRegex: /digest: (sha256:[^ ]*) size: \d+/gm,
-    imageUrlParam: 'fe_version'
-}
-
-const AppImageJob = {
-    name: 'prod image',
-    imageRegex : /^Built Docker image\:.*digest:.*(sha256\:.+)$/m,
-    imageUrlParam: 'be_version'
+const ImageJobByProjectId: { [key: string]: ImageJob } = {
+    // Frontend
+    '106': {
+        name: 'exponea docker image',
+        imageRegex: /digest: (sha256:[^ ]*) size: \d+/m,
+        imageUrlParam: 'fe_version',
+    },
+    // Backend
+    '107': {
+        name: 'prod image',
+        imageRegex: /^Built Docker image\:.*digest:.*(sha256\:.+)$/m,
+        imageUrlParam: 'be_version',
+    },
 };
 
 export function createRunE2eButton(mergeRequestId: number) {
@@ -25,7 +28,7 @@ export function createRunE2eButton(mergeRequestId: number) {
         return Promise.resolve();
     }
 
-    const imageJob = isFrontend() ? FrontendImageJob : AppImageJob;
+    const imageJob = ImageJobByProjectId[window.monar_GLOBALS.projectId];
 
     return GitlabPipelines.getPipelinesForMR(mergeRequestId).then(pipelines => {
         if (!pipelines || pipelines.length === 0) {
@@ -33,7 +36,7 @@ export function createRunE2eButton(mergeRequestId: number) {
             const pipeline = pipelines[0];
             GitlabJobs.getJobsForPipeline(pipeline.id).then(jobs => {
                 if (jobs) {
-                    const job = jobs.filter(job => job.name === imageJob.name)[0];
+                    const job = jobs.find(job => job.name === imageJob.name);
                     if (job) {
                         if (job.status === 'success') {
                             GitlabJobs.getJobLog(job.id).then(log => {
@@ -41,8 +44,8 @@ export function createRunE2eButton(mergeRequestId: number) {
                                 if (match && match[1]) {
                                     const url = `/e2e/e2e-tests/pipelines/new/${createHashString({
                                         [imageJob.imageUrlParam]: match[1],
-                                        'source_project_id': window.monar_GLOBALS.projectId,
-                                        'source_pipeline_url': pipeline.web_url
+                                        source_project_id: window.monar_GLOBALS.projectId,
+                                        source_pipeline_url: pipeline.web_url,
                                     })}`;
                                     return createButton('success', url);
                                 }
@@ -97,4 +100,10 @@ function createButton(status: 'success' | 'noJob' | 'error' | 'running' | 'other
     `;
 
     $('.mr-state-widget .mr-widget-heading.mr-widget-workflow .ci-widget.media').prepend(html);
+}
+
+interface ImageJob {
+    name: string;
+    imageRegex: RegExp;
+    imageUrlParam: string;
 }

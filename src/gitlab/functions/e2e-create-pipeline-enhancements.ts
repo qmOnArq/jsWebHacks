@@ -100,7 +100,7 @@ export function enhanceE2eCreatePipelineScreen() {
     listOfBranches.addEventListener('click', () => setTimeout(fillAutomaticVariables, DelayAfterBranchChanged));
 }
 
-function fillAutomaticVariables(suiteButtons?: SuiteButton[]) {
+function fillAutomaticVariables() {
     const hashVariables = getHashVariables();
     let formVariables = [];
 
