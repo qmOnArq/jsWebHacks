@@ -120,8 +120,8 @@ function fillAutomaticVariables(suiteButtons?: SuiteButton[]) {
     if (hashVariables.source_project_id) {
         formVariables.push(['SOURCE_PROJECT_ID', hashVariables.source_project_id]);
     }
-    if (hashVariables.source_project_pipeline_url) {
-        formVariables.push(['SOURCE_PROJECT_PIPELINE_URL', hashVariables.source_project_pipeline_url]);
+    if (hashVariables.source_pipeline_url) {
+        formVariables.push(['SOURCE_PIPELINE_URL', hashVariables.source_pipeline_url]);
     }
 
     formVariables.reduce(

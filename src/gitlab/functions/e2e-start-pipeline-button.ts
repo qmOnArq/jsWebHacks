@@ -42,7 +42,7 @@ export function createRunE2eButton(mergeRequestId: number) {
                                     const url = `/e2e/e2e-tests/pipelines/new/${createHashString({
                                         [imageJob.imageUrlParam]: match[1],
                                         'source_project_id': window.monar_GLOBALS.projectId,
-                                        'source_project_pipeline_url': pipeline.web_url
+                                        'source_pipeline_url': pipeline.web_url
                                     })}`;
                                     return createButton('success', url);
                                 }
