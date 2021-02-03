@@ -1,5 +1,21 @@
 export const changelogNotes = [
     {
+        date: '3.2.2021',
+        text: `
+<h1>Changes</h1>
+<ul>
+    <li>Integration of 'Run E2E' button with app repo</li>
+    <li>E2E pipeline: New automatic variables SOURCE_PROJECT_ID, SOURCE_PIPELINE_URL</li>
+    <li>E2E pipeline: Changing the branch preserves automatic variables like ENVIRONMENT (but still deletes manual variables)</li>
+    <li>Frontend MR: Improved parsing of frontend image hash, should show less of "Docker Job error"</li>
+</ul>
+<h1>Known issues</h1>
+<ul>
+    <li>E2E pipeline: Selecting predefined variables is still buggy in some cases (buttons with multiple variables assigned, clicking to remove variable)</li>
+</ul>
+        `,
+    },
+    {
         date: '18.12.2020',
         text: `
 <h1>Changes</h1>

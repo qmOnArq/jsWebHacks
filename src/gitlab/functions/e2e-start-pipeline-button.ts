@@ -1,10 +1,26 @@
 import { isFrontend } from './is-frontend';
+import { isApp } from './is-app';
 import { GitlabPipelines } from '../services/gitlab-api/pipelines-api';
 import { GitlabJobs } from '../services/gitlab-api/jobs-api';
 import { createHashString } from './hash-variables';
 
+const ImageJobByProjectId: { [key: string]: ImageJob } = {
+    // Frontend
+    '106': {
+        name: 'exponea docker image',
+        imageRegex: /digest: (sha256:[^ ]*) size: \d+/m,
+        imageUrlParam: 'fe_version',
+    },
+    // Backend
+    '107': {
+        name: 'prod image',
+        imageRegex: /^Built Docker image\:.*digest:.*(sha256\:.+)$/m,
+        imageUrlParam: 'be_version',
+    },
+};
+
 export function createRunE2eButton(mergeRequestId: number) {
-    if (!isFrontend()) {
+    if (!isFrontend() && !isApp()) {
         return Promise.resolve();
     }
 
@@ -12,21 +28,24 @@ export function createRunE2eButton(mergeRequestId: number) {
         return Promise.resolve();
     }
 
+    const imageJob = ImageJobByProjectId[window.monar_GLOBALS.projectId];
+
     return GitlabPipelines.getPipelinesForMR(mergeRequestId).then(pipelines => {
         if (!pipelines || pipelines.length === 0) {
         } else {
             const pipeline = pipelines[0];
             GitlabJobs.getJobsForPipeline(pipeline.id).then(jobs => {
                 if (jobs) {
-                    const job = jobs.filter(job => job.name === 'exponea docker image')[0];
-
+                    const job = jobs.find(job => job.name === imageJob.name);
                     if (job) {
                         if (job.status === 'success') {
                             GitlabJobs.getJobLog(job.id).then(log => {
-                                const match = log.match(/latest: digest: (sha256:[^ ]*)/m);
+                                const match = log.match(imageJob.imageRegex);
                                 if (match && match[1]) {
                                     const url = `/e2e/e2e-tests/pipelines/new/${createHashString({
-                                        fe_version: match[1],
+                                        [imageJob.imageUrlParam]: match[1],
+                                        source_project_id: window.monar_GLOBALS.projectId,
+                                        source_pipeline_url: pipeline.web_url,
                                     })}`;
                                     return createButton('success', url);
                                 }
@@ -81,4 +100,10 @@ function createButton(status: 'success' | 'noJob' | 'error' | 'running' | 'other
     `;
 
     $('.mr-state-widget .mr-widget-heading.mr-widget-workflow .ci-widget.media').prepend(html);
+}
+
+interface ImageJob {
+    name: string;
+    imageRegex: RegExp;
+    imageUrlParam: string;
 }

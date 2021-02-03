@@ -66,7 +66,7 @@ export namespace GitlabJobs {
         const projectId = getProjectId();
         const result = new Deferred<JobBase[]>();
 
-        $.ajax({ url: `/api/v4/projects/${projectId}/pipelines/${pipelineId}/jobs`, data: filter })
+        $.ajax({ url: `/api/v4/projects/${projectId}/pipelines/${pipelineId}/jobs?scope=success&per_page=100`, data: filter })
             .then((data: JobBase[]) => {
                 result.resolve(data);
             })
