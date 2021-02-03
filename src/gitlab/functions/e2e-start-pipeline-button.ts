@@ -82,7 +82,7 @@ function createButton(status: 'success' | 'noJob' | 'error' | 'running' | 'other
         text = 'Docker Job Running';
         className = 'btn-info';
     } else if (status === 'other') {
-        text = 'Unknown Docker Job Issue ';
+        text = 'Unknown Docker Job Issue';
     }
 
     const html = `
