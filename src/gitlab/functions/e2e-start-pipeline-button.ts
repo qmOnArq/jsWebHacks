@@ -1,10 +1,23 @@
 import { isFrontend } from './is-frontend';
+import { isApp } from './is-app';
 import { GitlabPipelines } from '../services/gitlab-api/pipelines-api';
 import { GitlabJobs } from '../services/gitlab-api/jobs-api';
 import { createHashString } from './hash-variables';
 
+const FrontendImageJob = {
+    name: 'exponea docker image',
+    imageRegex: /digest: (sha256:[^ ]*) size: \d+/gm,
+    imageUrlParam: 'fe_version'
+}
+
+const AppImageJob = {
+    name: 'prod image',
+    imageRegex : /^Built Docker image\:.*digest:.*(sha256\:.+)$/m,
+    imageUrlParam: 'be_version'
+};
+
 export function createRunE2eButton(mergeRequestId: number) {
-    if (!isFrontend()) {
+    if (!isFrontend() && !isApp()) {
         return Promise.resolve();
     }
 
@@ -12,21 +25,24 @@ export function createRunE2eButton(mergeRequestId: number) {
         return Promise.resolve();
     }
 
+    const imageJob = isFrontend() ? FrontendImageJob : AppImageJob;
+
     return GitlabPipelines.getPipelinesForMR(mergeRequestId).then(pipelines => {
         if (!pipelines || pipelines.length === 0) {
         } else {
             const pipeline = pipelines[0];
             GitlabJobs.getJobsForPipeline(pipeline.id).then(jobs => {
                 if (jobs) {
-                    const job = jobs.filter(job => job.name === 'exponea docker image')[0];
-
+                    const job = jobs.filter(job => job.name === imageJob.name)[0];
                     if (job) {
                         if (job.status === 'success') {
                             GitlabJobs.getJobLog(job.id).then(log => {
-                                const match = log.match(/latest: digest: (sha256:[^ ]*)/m);
+                                const match = log.match(imageJob.imageRegex);
                                 if (match && match[1]) {
                                     const url = `/e2e/e2e-tests/pipelines/new/${createHashString({
-                                        fe_version: match[1],
+                                        [imageJob.imageUrlParam]: match[1],
+                                        'source_project_id': window.monar_GLOBALS.projectId,
+                                        'source_project_pipeline_url': pipeline.web_url
                                     })}`;
                                     return createButton('success', url);
                                 }
@@ -66,7 +82,7 @@ function createButton(status: 'success' | 'noJob' | 'error' | 'running' | 'other
         text = 'Docker Job Running';
         className = 'btn-info';
     } else if (status === 'other') {
-        text = 'Unknown Docker Job Issue';
+        text = 'Unknown Docker Job Issue ';
     }
 
     const html = `
