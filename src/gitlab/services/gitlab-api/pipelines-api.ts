@@ -58,17 +58,24 @@ export namespace GitlabPipelines {
         return result.promise;
     }
 
-    export function getPipelinesForMR(mergeRequestId: number) {
+    export async function getPipelinesForMR(mergeRequestId: number) {
         const projectId = getProjectId();
-        const result = new Deferred<PipelineBase[]>();
 
-        $.ajax(`/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/pipelines`)
-            .then((data: PipelineScheduleBase[]) => {
-                result.resolve(data);
-            })
-            .catch(result.reject);
-
-        return result.promise;
+        try {
+            const mrData = await $.ajax(`/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}`);
+            const branchName = mrData?.source_branch;
+            if (branchName) {
+                const pipelineData: PipelineBase[] = await $.ajax(
+                    `/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/pipelines?per_page=100`,
+                );
+                return pipelineData
+                    .filter(pipeline => pipeline.ref === branchName)
+                    .sort((a, b) => (new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1));
+            }
+            return [];
+        } catch (error) {
+            return [];
+        }
     }
 
     export function getPipelines(
