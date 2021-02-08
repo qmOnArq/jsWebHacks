@@ -62,17 +62,10 @@ export namespace GitlabPipelines {
         const projectId = getProjectId();
 
         try {
-            const mrData = await $.ajax(`/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}`);
-            const branchName = mrData?.source_branch;
-            if (branchName) {
-                const pipelineData: PipelineBase[] = await $.ajax(
-                    `/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/pipelines?per_page=100`,
-                );
-                return pipelineData
-                    .filter(pipeline => pipeline.ref === branchName)
-                    .sort((a, b) => (new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1));
-            }
-            return [];
+            const pipelineData: PipelineBase[] = await $.ajax(
+                `/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/pipelines?per_page=100`,
+            );
+            return pipelineData.sort((a, b) => (a.id > b.id ? -1 : 1));
         } catch (error) {
             return [];
         }
