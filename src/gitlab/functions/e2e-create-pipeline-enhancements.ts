@@ -112,7 +112,7 @@ function fillAutomaticVariables() {
     if (hashVariables.be_version) {
         versions.push(`backend_version: ${hashVariables.be_version}`);
     }
-    if (versions) {
+    if (versions.length > 0) {
         formVariables.push(['ENVIRONMENT', versions.join('\\n')]);
     }
 
