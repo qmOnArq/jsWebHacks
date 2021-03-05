@@ -63,9 +63,9 @@ export namespace Changelog {
                 changelogNotes.forEach(note => {
                     $('#monar_changelog_contents').append(`
                         <hr>
-                        <div>
-                            <div style="display: inline-block; vertical-align: top; margin-right: 20px; font-weight: bold; color: #de7e00;">${note.date}</div>
-                            <div style="display: inline-block; vertical-align: top;">${note.text}</div>
+                        <div style="display:flex">
+                            <div style="width:10%; vertical-align: top; margin-right: 20px; font-weight: bold; color: #de7e00;">${note.date}</div>
+                            <div style="width:90%; vertical-align: top;">${note.text}</div>
                         </div>
                     `)
                 });
