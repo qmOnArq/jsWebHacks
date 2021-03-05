@@ -1,5 +1,16 @@
 export const changelogNotes = [
     {
+        date: '5.3.2021',
+        text: `
+    <h1>Changes</h1>
+    <ul>
+        <li>Deprecated showing assignees in favor of reviewers on MR list page</li>
+        <li>Fix cases when new schedule which hasn't been run yet broke badges</li>
+        <li>Style fixes in changelog</li>
+    </ul>
+    `,
+    },
+    {
         date: '3.2.2021',
         text: `
 <h1>Changes</h1>

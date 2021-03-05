@@ -88,9 +88,9 @@ export namespace BranchingVersions {
             .then(data => data.map(pipeline => pipeline.last_pipeline))
             .then(data => {
                 return data.forEach(schedule => {
-                    if (isVersionBranch(schedule.ref) || schedule.ref === 'master') {
+                    if (!!schedule && (isVersionBranch(schedule.ref) || schedule.ref === 'master')) {
                         const key = isVersionBranch(schedule.ref) ? parseVersion(schedule.ref) : 'master';
-                        window.monar.versionData!.versionData[key].nightly = schedule;
+                        window.monar.versionData!.versionData[key].schedule = schedule;
                     }
                 });
             })
@@ -122,7 +122,7 @@ export interface VersionData {
             color: string;
             pipeline?: GitlabPipelines.PipelineBase;
             tag?: GitlabTags.TagBase;
-            nightly?: GitlabPipelines.PipelineBase;
+            schedule?: GitlabPipelines.PipelineBase;
         }
     >;
     minVersion: number;

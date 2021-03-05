@@ -130,6 +130,14 @@ export function formatPullRequest(request: any) {
         request.element.css(CONSTS_CSS('approvedBg'));
     }
 
+    // Assignee
+    if (request.assigneeElement[0]) {
+        // Remove assignees
+        request.assigneeElement.each(function(this: any) {
+            $(this).remove();
+        });
+    }
+
     // Reviewer
     if (request.reviewerElement[0]) {
         $('img', request.reviewerElement).css(CONSTS_CSS('reviewerPhoto'));

@@ -56,20 +56,20 @@ export function addBadges() {
             badges += `</tr>`;
         }
 
-        if (Object.values(window.monar.versionData.versionData).filter(version => version.nightly).length) {
+        if (Object.values(window.monar.versionData.versionData).filter(version => version.schedule).length) {
             badges += `<tr>`;
             badges += `<td style="padding-left: 10px; text-align: right;">
-                    <img src="${getBadgeUrl('nightly', '')}" alt="nightly" />
+                    <img src="${getBadgeUrl('schedule', '')}" alt="schedule" />
                     </td>`;
 
             for (const version of [...window.monar.versionData.versions, 'master']) {
                 const value = window.monar.versionData.versionData[version];
 
                 badges += `<td style="padding-left: 10px; text-align: left;">`;
-                if (value.nightly) {
+                if (value.schedule) {
                     badges += `
-                <a href="${value.nightly.web_url}">
-                    <img src="${getBadgeUrl(value.nightly.status, value.nightly.ref)}" alt="${value.nightly.ref}" />
+                <a href="${value.schedule.web_url}">
+                    <img src="${getBadgeUrl(value.schedule.status, value.schedule.ref)}" alt="${value.schedule.ref}" />
                 </a>
                 `;
                 }
@@ -97,7 +97,7 @@ function getBadgeUrl(status: PipelineStatus, text: string) {
             failed: 'red',
             canceled: 'lightgrey',
             skipped: 'lightgrey',
-            nightly: 'orange',
+            schedule: 'orange',
             latest: 'orange',
             undefined: 'lightgrey',
             branches: 'orange',
@@ -112,7 +112,7 @@ function getBadgeUrl(status: PipelineStatus, text: string) {
             failed: 'failed',
             canceled: 'canceled',
             skipped: 'skipped',
-            nightly: 'nightly',
+            schedule: 'schedule',
             latest: 'latest',
             undefined: 'unknown',
             branches: 'branches',
@@ -129,7 +129,7 @@ export type PipelineStatus =
     | 'failed'
     | 'canceled'
     | 'skipped'
-    | 'nightly'
+    | 'schedule'
     | 'latest'
     | 'branches'
     | 'tags'
