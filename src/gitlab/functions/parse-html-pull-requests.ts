@@ -14,7 +14,8 @@ export function parseHtmlPullRequests() {
         const commentsElement = $('.issuable-comments', element);
         const approveElement = $('.issuable-info .badge:contains("approved")', element);
         const systemElement = $('.issuable-info .badge:contains("system")', element);
-        const reviewerElement = $('.issuable-meta .author-link', element);
+        const assigneeElement = $('.issuable-meta .author-link:not(.issuable-reviewers .author-link)', element);
+        const reviewerElement = $('.issuable-meta .issuable-reviewers .author-link', element);
         const pipelineElement = $('.issuable-pipeline-status', element);
         const updatedAtElement = $('.issuable-updated-at', element);
         const statusElement = $('.issuable-status', element);
@@ -68,6 +69,7 @@ export function parseHtmlPullRequests() {
             statusElement,
             status: statusElement.text().trim(),
 
+            assigneeElement,
             reviewerElement,
             pipelineElement,
             updatedAtElement,
