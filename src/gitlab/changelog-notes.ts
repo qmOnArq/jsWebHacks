@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '19.3.2021',
+        text: `
+    <h1>Changes</h1>
+    <ul>
+        <li>Resolved problems with E2E variables when switching branches</li>
+    </ul>
+    `,
+    },
+    {
         date: '5.3.2021',
         text: `
     <h1>Changes</h1>

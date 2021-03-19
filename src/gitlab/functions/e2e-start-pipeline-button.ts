@@ -42,7 +42,7 @@ export function createRunE2eButton(mergeRequestId: number) {
                             GitlabJobs.getJobLog(job.id).then(log => {
                                 const match = log.match(imageJob.imageRegex);
                                 if (match && match[1]) {
-                                    const url = `/e2e/e2e-tests/pipelines/new/${createHashString({
+                                    const url = `/e2e/e2e-tests/pipelines/new${createHashString({
                                         [imageJob.imageUrlParam]: match[1],
                                         source_project_id: window.monar_GLOBALS.projectId,
                                         source_pipeline_url: pipeline.web_url,
