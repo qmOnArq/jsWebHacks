@@ -1,13 +1,14 @@
-import { isE2e } from './is-e2e';
+import { isE2ERepository } from './is-e2e';
 import { getHashVariables } from './hash-variables';
 import { colorForIndex } from './color-for-index';
 import { snakeCase, toUpper } from 'lodash';
+import { isMultiple, PipelineVariable, SuiteButton, suiteButtons } from '../constants/e2e-pipeline-buttons.constant';
 
 const DelayAfterBranchChanged = 250;
 const DelayAfterAddingVariable = 50;
 
-export function enhanceE2eCreatePipelineScreen() {
-    if (!isE2e()) {
+export function enhanceE2ECreatePipelineScreen() {
+    if (!isE2ERepository()) {
         return;
     }
 
@@ -19,49 +20,6 @@ export function enhanceE2eCreatePipelineScreen() {
     fillAutomaticVariables();
 
     // Help for Pipeline variables
-    /*
-        Specific jobs docs: https://gitlab.exponea.com/e2e/e2e-tests/-/blob/master/docs/RUNNING-SPECIFIC-JOBS.md
-        RUN_ALL
-            true
-
-        JOBS
-            app
-            we
-            dp
-            cmp
-            anl
-
-        SPEC
-            e.g. cypress/integration/campaigns/scenarios/scenarios.e2e.ts
-            e.g. cypress/integration/campaigns/surveys/surveys.e2e.ts,cypress/integration/analytics/funnels/funnels.e2e.ts
-
-        Private instance docs: https://gitlab.exponea.com/e2e/e2e-tests/-/blob/master/docs/PRIVATE-INSTANCES.md
-        TEST_ENV_USERNAME
-        TEST_ENV_PASSWORD
-        PRIVATE_INSTANCE
-        PRIVATE_INSTANCE_API
-        PRIVATE_INSTANCE_CDN
-     */
-    const suiteButtons: SuiteButton[] = [
-        { variables: [{ key: 'RUN_ALL', value: 'true' }], label: 'Run all' },
-        { variables: [{ key: 'MODULES', value: 'app' }], label: 'App' },
-        { variables: [{ key: 'MODULES', value: 'anl' }], label: 'Analytics' },
-        { variables: [{ key: 'MODULES', value: 'cmp' }], label: 'Campaigns' },
-        { variables: [{ key: 'MODULES', value: 'dp' }], label: 'Data Pipe' },
-        { variables: [{ key: 'MODULES', value: 'we' }], label: 'Web Exp' },
-        { variables: [{ key: 'JOBS', value: 'screenshot tests' }], label: 'Screenshot tests' },
-        { variables: [{ key: 'SPEC', value: '' }], label: 'Specific test run' },
-        {
-            variables: [
-                { key: 'PRIVATE_INSTANCE', value: '' },
-                { key: 'PRIVATE_INSTANCE_API', value: '' },
-                { key: 'PRIVATE_INSTANCE_CDN', value: '' },
-                { key: 'TEST_ENV_USERNAME', value: '' },
-                { key: 'TEST_ENV_PASSWORD', value: '' },
-            ],
-            label: 'Private Instance',
-        },
-    ];
 
     $('.form-group.gl-form-group')
         .last()
@@ -238,36 +196,4 @@ function getExistingInput(type: 'key' | 'secret_value', searchMatch: string) {
 function getGitlabVariableInputString(type: 'key' | 'secret_value') {
     const v = type === 'secret_value' ? 'value' : 'key';
     return `*[data-testid="pipeline-form-ci-variable-${v}"]`;
-}
-
-const PipelineVariableValues = [
-    'RUN_ALL',
-    'JOBS',
-    'MODULES',
-    'SPEC',
-    'PRIVATE_INSTANCE',
-    'PRIVATE_INSTANCE_API',
-    'PRIVATE_INSTANCE_CDN',
-    'TEST_ENV_USERNAME',
-    'TEST_ENV_PASSWORD',
-] as const;
-
-type PipelineVariable = typeof PipelineVariableValues[number];
-
-function isPipelineVariable(x: any): x is PipelineVariable {
-    return PipelineVariableValues.includes(x);
-}
-
-const PipelineMultipleVariables = ['JOBS', 'MODULES'];
-
-type PipelineMultipleVariable = typeof PipelineMultipleVariables[number];
-
-function isMultiple(x: any): x is PipelineMultipleVariable {
-    return PipelineMultipleVariables.includes(x);
-}
-
-interface SuiteButton {
-    label: string;
-    variables: { key: PipelineVariable; value: string }[];
-    selected?: boolean;
 }
