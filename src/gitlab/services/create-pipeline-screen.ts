@@ -19,7 +19,7 @@ export default class CreatePipelineScreen {
             if (!event.originalEvent) return;
 
             const isRemoveBtn = $(event.target).is(this.getVariableRemoveRowButtonSelector());
-            const isChildOfRemoveBtn = $(event.target).parents(this.getVariableRemoveRowButtonSelector());
+            const isChildOfRemoveBtn = $(event.target).parents(this.getVariableRemoveRowButtonSelector()).length;
 
             if (!isRemoveBtn && !isChildOfRemoveBtn) return;
 
@@ -32,6 +32,10 @@ export default class CreatePipelineScreen {
             );
 
             delete this.variables[variableKey];
+
+            window.monar_GLOBALS.eventEmitter.dispatchEvent(
+                new CustomEvent('variableRemoved', { detail: { variableKey } }),
+            );
         });
     }
 

@@ -23,6 +23,21 @@ export class E2ECreatePipelineScreen extends CreatePipelineScreen {
 
         // Create E2E Buttons
         this.createButtons();
+
+        // check for removed variable and deactivate buttons
+        window.monar_GLOBALS.eventEmitter.addEventListener('variableRemoved', (event: Event) => {
+            const variableKey = (event as CustomEvent).detail.variableKey;
+
+            // deactivate buttons containing given variable
+            const selectedButtonsContainingVariable = pipelineButtons.filter(
+                button => button.variables.some(variable => variable.key === variableKey) && button.selected,
+            );
+
+            selectedButtonsContainingVariable.forEach(button => {
+                button.selected = false;
+                this.markButton(button, button.selected);
+            });
+        });
     }
 
     getEnvironmentFromHash(hashVariables: KeyValuePair): string {

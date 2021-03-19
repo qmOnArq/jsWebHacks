@@ -53,6 +53,8 @@ function start() {
             danger: 28,
             blink: 38,
         },
+
+        eventEmitter: new EventTarget(),
     };
 
     loadSettings();

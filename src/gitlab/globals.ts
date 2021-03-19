@@ -45,6 +45,7 @@ declare global {
                 danger: number;
                 blink: number;
             };
+            eventEmitter: EventTarget
         };
 
         toggleUntaggedMerges: any;
