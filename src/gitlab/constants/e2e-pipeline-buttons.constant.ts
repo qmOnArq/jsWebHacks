@@ -49,6 +49,10 @@ export const PipelineMultipleVariableSeparators = {
 
 type PipelineMultipleVariable = keyof typeof PipelineMultipleVariableSeparators;
 
+export function isE2EPipelineVariable(x: string): x is E2EPipelineVariableType {
+    return (Object.values(E2EPipelineVariableType) as string[]).includes(x);
+}
+
 export function isMultiValueVariable(x: string): x is PipelineMultipleVariable {
     return x in PipelineMultipleVariableSeparators;
 }
