@@ -87,9 +87,9 @@ export class E2ECreatePipelineScreen extends CreatePipelineScreen {
     }
 
     createButtons() {
-        $('.form-group.gl-form-group')
-            .last()
-            .after('<div style="margin-top: 10px" id="MONAR_E2E_VARIABLES_BUTTONS"></div>');
+        const runPipelineSection = $('[data-qa-selector="run_pipeline_button"]').parent();
+        runPipelineSection
+            .before('<div style="margin-top: 10px" id="MONAR_E2E_VARIABLES_BUTTONS"></div>');
 
         pipelineButtons.forEach((button, index) => {
             const background = `background: ${colorForIndex(index)};`;
