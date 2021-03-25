@@ -1,16 +1,23 @@
 import { Deferred } from '../../deferred';
 import { KeyValuePair } from '../../types/name-value-pair.type';
 import retry, { asyncForEach, objectFilter } from '../../helpers';
-import { isE2EPipelineVariable } from '../constants/e2e-pipeline-buttons.constant';
 
 export default class CreatePipelineScreen {
-    private static BRANCH_DROPDOWN = 'fieldset:eq(0) ul.dropdown-menu';
+    private static BRANCH_DROPDOWN_TOGGLE_BTN = 'fieldset:eq(0) button.dropdown-toggle';
+    private static BRANCH_DROPDOWN_MENU = 'fieldset:eq(0) ul.dropdown-menu';
+
     private event = document.createEvent('HTMLEvents');
     private variables: KeyValuePair = {};
 
     constructor() {
-        $(CreatePipelineScreen.BRANCH_DROPDOWN).on('click', () => {
-            return this.refreshGUI();
+        // Cache variables on toggle click before changing branches
+        $(CreatePipelineScreen.BRANCH_DROPDOWN_TOGGLE_BTN).on('click', async $event => {
+            await this.cacheCustomValuesFromInputs();
+        });
+
+        // Mirror state in GUI after the branch has been changed
+        $(CreatePipelineScreen.BRANCH_DROPDOWN_MENU).on('click', async () => {
+            await this.refreshGUI();
         });
 
         // Remove variables from cache when manually deleted
@@ -68,10 +75,31 @@ export default class CreatePipelineScreen {
         this.variables = objectFilter(this.variables, ([key]) => !variableKeys.includes(key));
     }
 
-    async refreshGUI() {
+    protected async refreshGUI() {
         await this.removeAllVariablesGUI();
         await asyncForEach(Object.entries(this.variables), async ([key, value]) => {
             return await this.addNewVariableGUI(key, value);
+        });
+    }
+
+    protected cacheCustomValuesFromInputs() {
+        return this.iterateThroughGUIVariables($row => {
+            const variableKey = String(
+                $($row)
+                    .find(this.getVariableInputSelector('key'))
+                    .val(),
+            );
+
+            const variableValue = String(
+                $($row)
+                    .find(this.getVariableInputSelector('value'))
+                    .val(),
+            );
+
+            // Cache variable value
+            if (variableKey) {
+                this.variables[variableKey] = variableValue;
+            }
         });
     }
 
@@ -95,29 +123,20 @@ export default class CreatePipelineScreen {
     }
 
     private removeAllVariablesGUI(): Promise<void> {
-        const result = new Deferred<void>();
-        const $rows = $(this.getVariableRowSelector());
-
-        asyncForEach($rows, async $row => {
-            const variableKey = String(
-                $($row)
-                    .find(this.getVariableInputSelector('key'))
-                    .val(),
-            );
-
-            // If current row is a custom variable, save it into cache
-            if (variableKey && !this.variableExists(variableKey) && !isE2EPipelineVariable(variableKey)) {
-                this.variables[variableKey] = String(
-                    $($row)
-                        .find(this.getVariableInputSelector('value'))
-                        .val(),
-                );
-            }
-
+        return this.iterateThroughGUIVariables($row => {
             // Remove using the remove button
             $($row)
                 .find(this.getVariableRemoveRowButtonSelector())
                 .trigger('click');
+        });
+    }
+
+    private iterateThroughGUIVariables(callback: ($row: HTMLElement) => Promise<any> | void) {
+        const result = new Deferred<void>();
+        const $rows = $(this.getVariableRowSelector());
+
+        asyncForEach($rows, async $row => {
+            return callback($row);
         }).then(() => result.resolve());
 
         return result.promise;

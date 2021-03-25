@@ -1,5 +1,16 @@
 export const changelogNotes = [
     {
+        date: '24.3.2021',
+        text: `
+    <h1>Changes</h1>
+    <ul>
+        <li>Fix: Variables stay persistent when changing branches on create pipeline screen in any repository</li>
+        <li>Fix: E2E Buttons rendering in other repositories than e2e</li>
+        <li>Fix: E2E Buttons rendering above variable form</li>
+    </ul>
+    `,
+    },
+    {
         date: '19.3.2021',
         text: `
     <h1>Changes</h1>
