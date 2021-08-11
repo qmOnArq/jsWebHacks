@@ -11,6 +11,7 @@ module.exports = ({ mode } = { mode: 'production', presets: [] }) => {
                 gitlab: './src/gitlab/index.ts',
                 localization_highlighter: './src/localization_highlighter/index.ts',
                 exp_pnp: './src/exp_pnp/index.ts',
+                jira: './src/jira/index.ts',
             },
             mode,
             devtool: 'source-map',
