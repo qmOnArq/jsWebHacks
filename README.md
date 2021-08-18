@@ -1,7 +1,7 @@
 # jsWebHacks
 
 ## Usage
-1. Download and install [Custom JavaScript for websites](https://chrome.google.com/webstore/detail/custom-javascript-for-web/poakhlngfciodnhlhhgnaaelnpjljija)
+1. Download and install [Custom JavaScript for Websites 2](https://chrome.google.com/webstore/detail/custom-javascript-for-web/ddbjnfjiigjmcpcpkmhogomapikjbjdk?hl=en)
 2. Navigate to website you wish to run script on
 3. Open installed extension
 4. Paste the contents of [updater.js](https://raw.githubusercontent.com/qmOnArq/jsWebHacks/master/updater.js) into the extension
