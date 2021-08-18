@@ -42,13 +42,13 @@ export function formatPullRequest(request: any) {
         $('#monar-pull-requests-buttons').append(
             `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-mine" href="${urlMine}" class="btn btn-sm btn-success">Show mine</a>`,
         );
-        const urlAssignedToMe = `${window.monar_GLOBALS.project}/merge_requests?scope=all&utf8=✓&state=opened&assignee_username=${window.monar_GLOBALS.username}`;
+        const urlReviewedByMe = `${window.monar_GLOBALS.project}/merge_requests?scope=all&utf8=✓&state=opened&reviewer_username=${window.monar_GLOBALS.username}`;
         $('#monar-pull-requests-buttons').append(
-            `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-my-rev" href="${urlAssignedToMe}" class="btn btn-sm btn-warning">Assigned to me</a>`,
+            `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-my-rev" href="${urlReviewedByMe}" class="btn btn-sm btn-warning">Reviewed by me</a>`,
         );
-        const urlWithoutAssignee = `${window.monar_GLOBALS.project}/merge_requests?scope=all&utf8=✓&state=opened&assignee_id=None&wip=no`;
+        const urlWithoutReviewer = `${window.monar_GLOBALS.project}/merge_requests?scope=all&utf8=✓&state=opened&reviewer_id=None&wip=no`;
         $('#monar-pull-requests-buttons').append(
-            `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-without-rev" href="${urlWithoutAssignee}" class="btn btn-sm btn-danger">Without assignee</a>`,
+            `<a style="margin-left: 10px" id="monar-pull-requests-buttons-show-without-rev" href="${urlWithoutReviewer}" class="btn btn-sm btn-danger">Without reviewer</a>`,
         );
     }
 
