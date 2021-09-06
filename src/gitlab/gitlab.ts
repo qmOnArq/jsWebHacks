@@ -16,6 +16,7 @@ import { Changelog } from './functions/changelog';
 import createChangelogUI = Changelog.createOpenChangelogButton;
 import { BranchingVersions } from './services/branching-versions';
 import { enhanceCreatePipelineScreen } from './functions/e2e-create-pipeline-enhancements';
+import { loadScript } from './functions/load-script';
 
 window.toggleUntaggedMerges = toggleUntaggedMerges;
 window.hidePrStuff = hidePrStuff;
@@ -62,20 +63,23 @@ function start() {
     if (window.monar_GLOBALS.project) {
         addCustomStyles();
 
-        Promise.all([
-            CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid),
-            BranchingVersions.initialize(),
-        ]).then(() => {
-            createChangelogUI();
-            parseHtmlPullRequests().forEach(formatPullRequest);
-            prettifyPullRequestPage();
-            prettifyCommitList();
-            prettifyCreatePullRequestPage();
-            BranchingVersions.fetchMoreDetails().then(() => addBadges());
-            colorMergeRequestNumbers();
-            prettifyPullRequestCommitPage();
-            enhanceCreatePipelineScreen();
-        });
+
+        loadScript('https://code.jquery.com/jquery-3.6.0.min.js').then(() =>
+            Promise.all([
+                CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid),
+                BranchingVersions.initialize(),
+            ]).then(() => {
+                createChangelogUI();
+                parseHtmlPullRequests().forEach(formatPullRequest);
+                prettifyPullRequestPage();
+                prettifyCommitList();
+                prettifyCreatePullRequestPage();
+                BranchingVersions.fetchMoreDetails().then(() => addBadges());
+                colorMergeRequestNumbers();
+                prettifyPullRequestCommitPage();
+                enhanceCreatePipelineScreen();
+            }),
+        );
     }
 }
 

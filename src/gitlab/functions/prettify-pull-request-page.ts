@@ -105,7 +105,7 @@ export function prettifyPullRequestPage() {
         $button.removeClass('btn-sm');
         $button.attr('data-qa-selector', '-');
         $button.on('click', function() {
-            $('[data-qa-selector="approve_button"]').trigger('click');
+            $('[data-qa-selector="approve_button"]')[0]?.click();
             $(this).off('click');
             $(this).addClass('disabled');
             setTimeout(() => {

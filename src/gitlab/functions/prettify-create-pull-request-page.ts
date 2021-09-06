@@ -12,8 +12,8 @@ export function prettifyCreatePullRequestPage() {
     }
 
     // Labels
-    $('.qa-issuable-label').trigger('click');
-    $('.qa-issuable-label').trigger('click');
+    $('.qa-issuable-label')[0]?.click();
+    $('.qa-issuable-label')[0]?.click();
 
     if ($('#MONAR_CUSTOM_LABEL_BUTTONS').length === 0) {
         $('.qa-issuable-label').closest('.col-sm-10').append(`
@@ -113,7 +113,7 @@ function createLabelButtons() {
 
             $('#MONAR_CUSTOM_LABEL_BUTTONS').append(html);
             $(`[data-id="${id}"][data-monar="CUSTOM_LABEL_BUTTON"]`).on('click', () => {
-                $(`.dropdown-menu-labels .label-item[data-label-id="${id}"]`).trigger('click');
+                $(`.dropdown-menu-labels .label-item[data-label-id="${id}"]`)[0]?.click();
                 markSelectedLabels();
             });
         });
