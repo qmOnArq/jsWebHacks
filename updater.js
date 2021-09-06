@@ -15,9 +15,6 @@ function applyScript(url) {
     }
 
     const codeCache = localStorage.getItem(CODE_KEY);
-    if (codeCache) {
-        eval(codeCache);
-    }
 
     fetch(url).then(data => data.text()).then(data => {
         localStorage.setItem(CODE_KEY, data);
@@ -39,6 +36,10 @@ function applyScript(url) {
             `);
         }
     }).catch(console.error);
+
+    if (codeCache) {
+        eval(codeCache);
+    }
 }
 
 const script = ''; // e.g. 'gitlab.js';
