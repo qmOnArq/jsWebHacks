@@ -8,7 +8,7 @@ const IS_DEV = !!localStorage.getItem(DEV_KEY);
 
 function applyScript(url) {
     if (IS_DEV) {
-        $.ajax(url).then(data => {
+        fetch(url).then(data => data.text()).then(data => {
             eval(data);
         }).catch(console.error);
         return;
@@ -19,7 +19,7 @@ function applyScript(url) {
         eval(codeCache);
     }
 
-    $.ajax(url).then(data => {
+    fetch(url).then(data => data.text()).then(data => {
         localStorage.setItem(CODE_KEY, data);
         if (codeCache !== data) {
             $('body').append(`
