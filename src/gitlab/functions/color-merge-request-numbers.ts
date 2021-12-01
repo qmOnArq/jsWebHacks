@@ -11,8 +11,9 @@ export function colorMergeRequestNumbers() {
                 : 'red';
         $(this).css('background-color', CONSTS_STRINGS(color));
         $(this).css('color', 'white');
-        if (MRs >= window.monar_GLOBALS.MR_LIMITS.blink) {
-            $(this).css('animation', 'monar_background_blink .75s ease-in-out infinite alternate');
-        }
+        // Blinking disabled cause of CPU consumption
+        // if (MRs >= window.monar_GLOBALS.MR_LIMITS.blink) {
+        //     $(this).css('animation', 'monar_background_blink .75s ease-in-out infinite alternate');
+        // }
     });
 }
