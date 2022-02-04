@@ -9,10 +9,10 @@
 
 Optionally, if you do not want to use autoupdater, you can copy and paste the script directly.
 
-## Contribution
+## Prerequisites
+- [Node 14+](https://nodejs.org)
 
-**Prerequisites**
-- Node 14+ required
+## Contribution
 
 1. Install dependencies:
     ```
@@ -29,3 +29,11 @@ Optionally, if you do not want to use autoupdater, you can copy and paste the sc
    ```
    localStorage.setItem('MONAR_JS_WEB_HACK_DEV','true')
    ```
+
+### Build
+
+After finishing your changes, don't forget to build the files  
+
+   ```
+   npm run build:prod
+   ```   
