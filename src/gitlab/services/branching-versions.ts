@@ -85,7 +85,7 @@ export namespace BranchingVersions {
             })
             .then(() => GitlabPipelines.getPipelineSchedules())
             .then(data => Promise.all(data.map(pipeline => GitlabPipelines.getPipelineSchedule(pipeline.id))))
-            .then(data => data.map(pipeline => pipeline.last_pipeline))
+            .then(data => data.filter(schedule => schedule.active).map(schedule => schedule.last_pipeline))
             .then(data => {
                 return data.forEach(schedule => {
                     if (!!schedule && (isVersionBranch(schedule.ref) || schedule.ref === 'master')) {
