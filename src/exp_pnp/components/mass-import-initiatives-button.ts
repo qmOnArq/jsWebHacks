@@ -28,7 +28,7 @@ function createButton() {
             <span id="IMPORT_ALL_INITIATIVES_BUTTON_TEXT" class="button-text">Mass import</span>
         </button>
     `;
-    document.querySelector('.crud-header.list-header')!.appendChild(button);
+    document.querySelector(PNPHelpers.headerSelector)!.prepend(button);
     PNPHelpers.setButtonStatus(false);
     updateButtonLabel();
 }

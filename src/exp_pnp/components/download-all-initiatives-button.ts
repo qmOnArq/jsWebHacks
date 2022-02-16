@@ -28,7 +28,7 @@ function createButton() {
             <span id="DOWNLOAD_ALL_INITIATIVES_BUTTON_TEXT" class="button-text">Download all</span>
         </button>
     `;
-    document.querySelector('.crud-header.list-header')!.appendChild(button);
+    document.querySelector(PNPHelpers.headerSelector)!.prepend(button);
     PNPHelpers.setButtonStatus(false);
     updateButtonLabel();
 }

@@ -26,7 +26,7 @@ function createButton() {
             <span id="DELETE_ALL_INITIATIVES_BUTTON_TEXT" class="button-text">Delete all</span>
         </button>
     `;
-    document.querySelector('.crud-header.list-header')!.appendChild(button);
+    document.querySelector(PNPHelpers.headerSelector)!.prepend(button);
     PNPHelpers.setButtonStatus(false);
     updateButtonLabel();
 }

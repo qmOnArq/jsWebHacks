@@ -5,6 +5,8 @@ import { PNPMassImportButton } from "../components/mass-import-initiatives-butto
 let errorId = 0;
 
 export namespace PNPHelpers {
+    export const headerSelector = 'e-ui-page-header e-ui-layout e-ui-col:nth-child(2)';
+
     export function appendScript(url: string, id: string) {
         if (document.querySelector(`#PLUG_AND_PLAY_INITIATIVES_SCRIPT_${id}`)) {
             return Promise.resolve();
@@ -66,7 +68,7 @@ export namespace PNPHelpers {
 
     export function isReadyToInitialize() {
         return (
-            !!document.querySelector('.crud-header.list-header') &&
+            !!document.querySelector(headerSelector) &&
             location.pathname.endsWith('/initiatives') &&
             !document.querySelector('#DOWNLOAD_ALL_INITIATIVES_BUTTON_WRAPPER')
         );
