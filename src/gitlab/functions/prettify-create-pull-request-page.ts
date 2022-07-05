@@ -16,7 +16,7 @@ export function prettifyCreatePullRequestPage() {
     $('.qa-issuable-label')[0]?.click();
 
     if ($('#MONAR_CUSTOM_LABEL_BUTTONS').length === 0) {
-        $('.qa-issuable-label').closest('.col-sm-10').append(`
+        $('.qa-issuable-label').closest('.col-sm-10, .col-12').append(`
             <div id="MONAR_CUSTOM_LABEL_BUTTONS"
                 style="
                     display: inline-block;

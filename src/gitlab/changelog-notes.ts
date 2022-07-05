@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '5.7.2022',
+        text: `
+    <h1>Changes</h1>
+    <ul>
+        <li>Fix labels selector in Create MR screen for new Gitlab version</li>
+    </ul>
+    `,
+    },
+    {
         date: '6.9.2021',
         text: `
     <h1>Changes</h1>
