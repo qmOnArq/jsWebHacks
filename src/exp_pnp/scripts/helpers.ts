@@ -11,7 +11,7 @@ export namespace PNPHelpers {
         if (document.querySelector(`#PLUG_AND_PLAY_INITIATIVES_SCRIPT_${id}`)) {
             return Promise.resolve();
         }
-        return new Promise(resolve => {
+        return new Promise<void>(resolve => {
             const head = document.getElementsByTagName('head')[0];
             const theScript = document.createElement('script');
             theScript.type = 'text/javascript';
