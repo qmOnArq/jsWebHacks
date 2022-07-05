@@ -1,5 +1,6 @@
 module.exports = env => ({
     devServer: {
+        hot: false,
         https: true,
         host: 'localhost',
         allowedHosts: 'all',

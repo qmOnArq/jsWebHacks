@@ -2,6 +2,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = env => ({
     devServer: {
+        hot: false,
         https: true,
         host: 'localhost',
         allowedHosts: 'all',
@@ -16,7 +17,6 @@ module.exports = env => ({
         minimizer: [
             new TerserPlugin({
                 parallel: true,
-                sourceMap: false,
                 terserOptions: {
                     ecma: 6,
                 },

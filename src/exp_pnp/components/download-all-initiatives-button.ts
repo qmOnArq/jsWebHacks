@@ -4,7 +4,9 @@ import { PNPProject } from '../scripts/project-functions';
 import { PNPHelpers } from '../scripts/helpers';
 import { PNPInitiative } from '../scripts/initiative-functions';
 import * as JSZipType from 'jszip';
+import { saveAs as fileSaverSaveAs } from 'file-saver';
 
+declare const saveAs: typeof fileSaverSaveAs;
 declare const JSZip: JSZipType;
 
 let total = 0;
