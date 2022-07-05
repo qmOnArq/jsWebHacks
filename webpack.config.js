@@ -45,7 +45,7 @@ module.exports = ({ mode } = { mode: 'production', presets: [] }) => {
             output: {
                 filename: '[name].js',
                 sourceMapFilename: '[file].map',
-                path: path.resolve(__dirname, 'scripts'),
+                path: path.join(__dirname, 'scripts'),
             },
             optimization: {},
             plugins: [new CleanWebpackPlugin()],

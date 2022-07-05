@@ -3,8 +3,9 @@ const TerserPlugin = require('terser-webpack-plugin');
 module.exports = env => ({
     devServer: {
         https: true,
-        disableHostCheck: true,
-        contentBase: './scripts',
+        host: 'localhost',
+        allowedHosts: 'all',
+        static: './scripts',
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
