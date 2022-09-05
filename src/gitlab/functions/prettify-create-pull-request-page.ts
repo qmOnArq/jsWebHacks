@@ -2,7 +2,7 @@ import { isFrontend } from './is-frontend';
 
 export function prettifyCreatePullRequestPage() {
     // Title
-    const titleElement: HTMLInputElement | null = document.querySelector('.form-control.qa-issuable-form-title');
+    const titleElement: HTMLInputElement | null = document.querySelector('#merge_request_title');
     if (titleElement) {
         const titleRegex = /Resolve (.*?) \"(.*?)\"/g;
         const titleRegexMatch = titleRegex.exec(titleElement.value);
@@ -12,11 +12,11 @@ export function prettifyCreatePullRequestPage() {
     }
 
     // Labels
-    $('.qa-issuable-label')[0]?.click();
-    $('.qa-issuable-label')[0]?.click();
+    $('.js-label-select')[0]?.click();
+    $('.js-label-select')[0]?.click();
 
     if ($('#MONAR_CUSTOM_LABEL_BUTTONS').length === 0) {
-        $('.qa-issuable-label').closest('.col-sm-10, .col-12').append(`
+        $('.js-label-select').closest('.col-sm-10, .col-12').append(`
             <div id="MONAR_CUSTOM_LABEL_BUTTONS"
                 style="
                     display: inline-block;
@@ -28,11 +28,15 @@ export function prettifyCreatePullRequestPage() {
         `);
         createLabelButtons();
     }
+
+    if (titleElement) {
+        titleElement.focus();
+    }
 }
 
 function markSelectedLabels() {
     const selectedLabelIds: string[] = [];
-    $('.qa-issuable-label')
+    $('.js-label-select')
         .closest('.issuable-form-select-holder')
         .find('input[type="hidden"]')
         .each(function() {
