@@ -109,7 +109,7 @@ function createButton(status: ButtonStatus, url?: string) {
         </a>
     `;
 
-    $('.mr-state-widget .mr-widget-heading.mr-widget-workflow .ci-widget.media').prepend(html);
+    $('.mr-state-widget .mr-widget-workflow .ci-widget.media').prepend(html);
 }
 
 interface ImageJob {
