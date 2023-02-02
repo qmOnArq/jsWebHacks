@@ -1,5 +1,14 @@
 export const changelogNotes = [
     {
+        date: '2.2.2023',
+        text: `
+    <h1>Changes</h1>
+    <ul>
+        <li>Fix: Non-existing handle for "Run E2E" button</li>
+    </ul>
+    `,
+    },
+    {
         date: '5.7.2022',
         text: `
     <h1>Changes</h1>
