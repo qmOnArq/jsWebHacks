@@ -111,7 +111,7 @@ const consts_css = {
 
     commentsWrapper: {
         position: 'absolute',
-        right: '200px',
+        right: '210px',
         top: '11px',
     },
 

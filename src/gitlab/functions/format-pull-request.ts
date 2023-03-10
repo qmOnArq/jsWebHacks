@@ -25,7 +25,7 @@ export function formatPullRequest(request: any) {
         $('#monar-pull-requests-buttons').append(
             '<a id="monar-pull-requests-buttons-hide-wip" href="javascript:void(0)" class="btn btn-sm btn-missing">Hide WIP</a>',
         );
-        $('#monar-pull-requests-buttons-hide-wip').on('click', function() {
+        $('#monar-pull-requests-buttons-hide-wip').on('click', function () {
             window.monar_SETTINGS.hideWip = !window.monar_SETTINGS.hideWip;
             $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-missing', !window.monar_SETTINGS.hideWip);
             $('#monar-pull-requests-buttons-hide-wip').toggleClass('btn-info', window.monar_SETTINGS.hideWip);
@@ -140,7 +140,7 @@ export function formatPullRequest(request: any) {
     // Assignee
     if (request.assigneeElement[0]) {
         // Remove assignees
-        request.assigneeElement.each(function(this: any) {
+        request.assigneeElement.each(function (this: any) {
             $(this).remove();
         });
     }
@@ -150,7 +150,7 @@ export function formatPullRequest(request: any) {
         $('img', request.reviewerElement).css(CONSTS_CSS('reviewerPhoto'));
         request.reviewerElement.css(CONSTS_CSS('reviewerWrapper'));
 
-        request.reviewerElement.each(function(this: any, index: any) {
+        request.reviewerElement.each(function (this: any, index: any) {
             $(this).css('right', parseInt($(this).css('right')) + 30 * index + 'px');
         });
     }
@@ -186,7 +186,7 @@ export function formatPullRequest(request: any) {
 
     // Time
     if ($('time', request.element)[0]) {
-        $('time', request.element).each(function(this: any) {
+        $('time', request.element).each(function (this: any) {
             $(this).html(
                 $(this)
                     .html()
@@ -211,7 +211,7 @@ export function formatPullRequest(request: any) {
         // Unresolved discussions
         let unresolved = 0;
         GitlabDiscussions.getMergeRequestDiscussions(request.id)
-            .then(function(data) {
+            .then(function (data) {
                 (data || []).forEach(item => {
                     if (item.notes && item.notes[0]) {
                         const note = item.notes[0];
@@ -222,7 +222,7 @@ export function formatPullRequest(request: any) {
                 });
 
                 if (unresolved > 0) {
-                    $('a', request.commentsElement).prepend(
+                    $(request.commentsElement).prepend(
                         `<span style="color: red;">🎯 <span>${unresolved}</span></span>&nbsp;&nbsp;&nbsp;`,
                     );
                 }

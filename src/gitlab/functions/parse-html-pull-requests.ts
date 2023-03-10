@@ -11,7 +11,7 @@ export function parseHtmlPullRequests() {
         const conflictElement = $('.issuable-pipeline-broken a', element);
         const upvoteElement = $('.issuable-upvotes', element);
         const downvoteElement = $('.issuable-downvotes', element);
-        const commentsElement = $('.issuable-comments', element);
+        const commentsElement = $('[data-testid="issuable-comments"]', element);
         const approveElement = $('.issuable-info .badge:contains("approved")', element);
         const systemElement = $('.issuable-info .badge:contains("system")', element);
         const assigneeElement = $('.issuable-meta .author-link:not(.issuable-reviewers .author-link)', element);
