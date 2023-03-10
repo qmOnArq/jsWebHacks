@@ -8,13 +8,13 @@ const ImageJobByProjectId: { [key: string]: ImageJob } = {
     // Frontend
     '106': {
         name: ['exponea docker image', 'bloomreach docker image'],
-        imageRegex: /digest: (sha256:[^ ]*) size: \d+/m,
+        imageRegex: /^Digest:.*(sha256:.+)$/m,
         imageUrlParam: 'fe_version',
     },
     // Backend
     '107': {
         name: ['prod image'],
-        imageRegex: /^Built Docker image\:.*digest:.*(sha256\:.+)$/m,
+        imageRegex: /^Built image:.*digest:.*(sha256:.+)$/m,
         imageUrlParam: 'be_version',
     },
 };
@@ -70,7 +70,7 @@ export function createRunE2eButton(mergeRequestId: number) {
 }
 
 function createButton(status: ButtonStatus, url?: string) {
-    let text = '';
+    let text: string;
     let className = '';
 
     switch (status) {
