@@ -114,6 +114,11 @@ export function formatPullRequest(request: any) {
         'white-space': 'nowrap',
     });
 
+    // Tags
+    if (request.tagsElement) {
+        request.tagsElement.css(CONSTS_CSS('tagsElement'));
+    }
+
     // Upvoted
     if (request.isUpvoted) {
         request.upvoteElement.css(CONSTS_CSS('upvoteIcon'));

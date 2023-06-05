@@ -1,7 +1,7 @@
 export function parseHtmlPullRequests() {
     const pullRequests: any[] = [];
 
-    $('li.merge-request').each(function() {
+    $('li.merge-request').each(function () {
         const element = $(this);
 
         const titleElement = $('.merge-request-title-text a', element);
@@ -21,6 +21,7 @@ export function parseHtmlPullRequests() {
         const statusElement = $('.issuable-status', element);
         const bottomTextElement = $('.issuable-authored', element);
         const tasksElement = $('.task-status', element);
+        const tagsElement = $('[aria-label="Labels"]', element);
 
         if (!titleElement.data('monar-title')) {
             titleElement.data('monar-title', titleElement.text().trim());
@@ -33,10 +34,7 @@ export function parseHtmlPullRequests() {
             title: titleElement.data('monar-title'),
 
             idElement,
-            id: idElement
-                .text()
-                .trim()
-                .substring(1),
+            id: idElement.text().trim().substring(1),
 
             authorElement,
             author: {
@@ -75,6 +73,7 @@ export function parseHtmlPullRequests() {
             updatedAtElement,
 
             tasksElement,
+            tagsElement,
         });
     });
 

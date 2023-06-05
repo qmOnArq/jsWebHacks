@@ -35,6 +35,11 @@ const consts_strings = {
 };
 
 const consts_css = {
+    tagsElement: {
+        display: 'inline-block',
+        'margin-top': 0,
+        'margin-left': '0.125rem',
+    },
     feebas: {
         'background-image':
             'url("https://github.com/timzatko/feebas/blob/master/packages/desktop_app/src/favicon.256x256.png?raw=true")',
