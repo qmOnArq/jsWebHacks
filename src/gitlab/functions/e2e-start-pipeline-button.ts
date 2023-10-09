@@ -7,7 +7,7 @@ import { createHashString } from './hash-variables';
 const ImageJobByProjectId: { [key: string]: ImageJob } = {
     // Frontend
     '106': {
-        name: ['exponea docker image', 'bloomreach docker image'],
+        name: ['bloomreach docker image', 'bloomreach with showcase docker image autorun'],
         imageRegex: /^Digest:.*(sha256:.+)$/m,
         imageUrlParam: 'fe_version',
     },
