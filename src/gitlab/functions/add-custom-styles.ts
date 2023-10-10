@@ -5,9 +5,32 @@ export function addCustomStyles() {
 
                 @keyframes monar_background_blink {
                     100% {
-                    background-color: rgba(0,0,0,0);
-
+                        background-color: rgba(0,0,0,0);
                     }
+                }
+
+                 .close-button {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    color: #111;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 130%;
+                    padding: 3px 10px;
+                    margin: 5px 5px;
+                    border-radius: 5px;
+                }
+
+                body.gl-dark .close-button {
+                    color:#ddd;
+                }
+
+                .close-button:hover,
+                body.gl-dark .close-button:hover {
+                    text-decoration: none;
+                    color:red;
+                    background-color:rgba(255,0,0,0.2)
                 }
 
                 .monar-notification-dot {
@@ -21,6 +44,15 @@ export function addCustomStyles() {
                     box-shadow: 0px 1px 2px rgba(0,0,0, 0.3);
                     transform: scale(1);
                     animation: pop 0.2s ease;
+                }
+
+                .monar-background {
+                    background: white;
+                }
+
+                body.gl-dark .monar-background {
+                        background: var(--gray-50); /* variable from gitlab ui */
+                    }
                 }
             </style>`;
 
