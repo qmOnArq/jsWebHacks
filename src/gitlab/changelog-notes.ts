@@ -1,5 +1,19 @@
 export const changelogNotes = [
     {
+        date: '10.10.2023',
+        text: `
+    <h1>Changes</h1>
+    <ul>
+        <li>Changing target branch at "New pipeline" screen from now remembers the state of variables and remove them</li>
+        <li>Removed changelog notification glow using too much CPU</li>
+        <li>Added notification badge with number of changelog notifications</li>
+        <li>Changelog notifications center now supports dark mode</li>
+        <li>Fixed covering MR buttons in New Gitlab UI</li>
+        <li>Frontend: Fixed "Run E2E" button on Merge Requests</li>
+    </ul>
+    `,
+    },
+    {
         date: '2.2.2023',
         text: `
     <h1>Changes</h1>

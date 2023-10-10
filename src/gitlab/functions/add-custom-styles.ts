@@ -5,25 +5,63 @@ export function addCustomStyles() {
 
                 @keyframes monar_background_blink {
                     100% {
-                    background-color: rgba(0,0,0,0);
-
+                        background-color: rgba(0,0,0,0);
                     }
                 }
 
-                .monar-glow {
-                  color: #fff;
-                  -webkit-animation: monar-glow 1s ease-in-out infinite alternate;
-                  -moz-animation: monar-glow 1s ease-in-out infinite alternate;
-                  animation: monar-glow 1s ease-in-out infinite alternate;
+                 .close-button {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    color: #111;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 130%;
+                    padding: 3px 10px;
+                    margin: 5px 5px;
+                    border-radius: 5px;
                 }
 
-                @-webkit-keyframes monar-glow {
-                  from {
-                    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e6000b, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
-                  }
-                  to {
-                    text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
-                  }
+                body.gl-dark .close-button {
+                    color:#ddd;
+                }
+
+                .close-button:hover,
+                body.gl-dark .close-button:hover {
+                    text-decoration: none;
+                    color:red;
+                    background-color:rgba(255,0,0,0.2)
+                }
+
+                .monar-notification-dot {
+                    position: absolute;
+                    top: 0;
+                    right: -5px;
+                    padding: 1px 7px;
+                    border-radius: 50%;
+                    font-size: 80%;
+                    background-color:red;
+                    box-shadow: 0px 1px 2px rgba(0,0,0, 0.3);
+                    transform: scale(1);
+                    animation: pop 0.2s ease;
+                }
+
+                 /* New UI */
+                .page-with-super-sidebar .content-wrapper {
+                    padding-top: 0 !important;
+                }
+
+                .page-with-super-sidebar .top-bar-fixed {
+                    position: static !important;
+                }
+
+                .monar-background {
+                    background: white;
+                }
+
+                body.gl-dark .monar-background {
+                        background: var(--gray-50); /* variable from gitlab ui */
+                    }
                 }
             </style>`;
 
