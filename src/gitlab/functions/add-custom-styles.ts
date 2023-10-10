@@ -10,20 +10,17 @@ export function addCustomStyles() {
                     }
                 }
 
-                .monar-glow {
-                  color: #fff;
-                  -webkit-animation: monar-glow 1s ease-in-out infinite alternate;
-                  -moz-animation: monar-glow 1s ease-in-out infinite alternate;
-                  animation: monar-glow 1s ease-in-out infinite alternate;
-                }
-
-                @-webkit-keyframes monar-glow {
-                  from {
-                    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e6000b, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
-                  }
-                  to {
-                    text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
-                  }
+                .monar-notification-dot {
+                    position: absolute;
+                    top: 0;
+                    right: -5px;
+                    padding: 1px 7px;
+                    border-radius: 50%;
+                    font-size: 80%;
+                    background-color:red;
+                    box-shadow: 0px 1px 2px rgba(0,0,0, 0.3);
+                    transform: scale(1);
+                    animation: pop 0.2s ease;
                 }
             </style>`;
 

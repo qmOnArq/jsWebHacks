@@ -21,11 +21,16 @@ export namespace Changelog {
             </div>
         `);
 
-        const shouldGlow =
-            parseInt(localStorage.getItem(localStorageLastSeenVersionKey) || '0', 10) < changelogNotes.length;
-        $('button', openChangelogButton).toggleClass('monar-glow', shouldGlow);
-        $('button', openChangelogButton).on('click', function() {
-            $(this).removeClass('monar-glow');
+        const unseenChangelogVersions =
+            changelogNotes.length - parseInt(localStorage.getItem(localStorageLastSeenVersionKey) || '0', 10);
+        const unseenChangelogVersionBadge = $(`<span class="monar-notification-dot">${unseenChangelogVersions}</span>`);
+
+        if (unseenChangelogVersions > 0) {
+            $(openChangelogButton).append(unseenChangelogVersionBadge);
+        }
+
+        $('button', openChangelogButton).on('click', function () {
+            $(this).removeClass('monar-notification-dot');
             localStorage.setItem(localStorageLastSeenVersionKey, `${changelogNotes.length}`);
             toggleChangelog();
         });
