@@ -8,6 +8,7 @@ export const changelogNotes = [
         <li>Removed changelog notification glow using too much CPU</li>
         <li>Added notification badge with number of changelog notifications</li>
         <li>Changelog notifications center now supports dark mode</li>
+        <li>Fixed covering MR buttons in New Gitlab UI</li>
         <li>Frontend: Fixed "Run E2E" button on Merge Requests</li>
     </ul>
     `,

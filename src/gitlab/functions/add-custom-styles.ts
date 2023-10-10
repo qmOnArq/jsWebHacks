@@ -46,6 +46,15 @@ export function addCustomStyles() {
                     animation: pop 0.2s ease;
                 }
 
+                 /* New UI */
+                .page-with-super-sidebar .content-wrapper {
+                    padding-top: 0 !important;
+                }
+
+                .page-with-super-sidebar .top-bar-fixed {
+                    position: static !important;
+                }
+
                 .monar-background {
                     background: white;
                 }
