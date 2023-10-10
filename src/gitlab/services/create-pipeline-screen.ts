@@ -3,8 +3,8 @@ import { KeyValuePair } from '../../types/name-value-pair.type';
 import retry, { asyncForEach, objectFilter } from '../../helpers';
 
 export default class CreatePipelineScreen {
-    private static BRANCH_DROPDOWN_TOGGLE_BTN = 'fieldset:eq(0) button.dropdown-toggle';
-    private static BRANCH_DROPDOWN_MENU = 'fieldset:eq(0) ul.dropdown-menu';
+    private static BRANCH_DROPDOWN_TOGGLE_BTN = 'fieldset:eq(0) button[data-testid="base-dropdown-toggle"]';
+    private static BRANCH_DROPDOWN_MENU = 'fieldset:eq(0) *[data-testid="base-dropdown-menu"] ul';
 
     private event = document.createEvent('HTMLEvents');
     private variables: KeyValuePair = {};

@@ -1,5 +1,15 @@
 export const changelogNotes = [
     {
+        date: '10.10.2023',
+        text: `
+    <h1>Changes</h1>
+    <ul>
+        <li>All: Changing target branch at "New pipeline" screen from now remembers the state of variables and remove them</li>
+        <li>Frontend: Fixed "Run E2E" button on Merge Requests</li>
+    </ul>
+    `,
+    },
+    {
         date: '2.2.2023',
         text: `
     <h1>Changes</h1>
