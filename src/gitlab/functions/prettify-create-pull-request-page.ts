@@ -12,15 +12,18 @@ export function prettifyCreatePullRequestPage() {
     }
 
     // Labels
-    $('.js-label-select')[0]?.click();
-    $('.js-label-select')[0]?.click();
+    $('.issuable-form-label-select-holder button')[0]?.click();
+    setTimeout(() => {
+        $('.issuable-form-label-select-holder button')[0]?.click();
+    }, 50);
 
     if ($('#MONAR_CUSTOM_LABEL_BUTTONS').length === 0) {
-        $('.js-label-select').closest('.col-sm-10, .col-12').append(`
+        $('.issuable-form-label-select-holder').closest('.col-sm-10, .col-12').append(`
             <div id="MONAR_CUSTOM_LABEL_BUTTONS"
                 style="
                     display: inline-block;
                     margin-left: 25px;
+                    margin-top: 25px;
                     max-width: 500px;
                     vertical-align: top;
                     "
@@ -35,44 +38,52 @@ export function prettifyCreatePullRequestPage() {
 }
 
 function markSelectedLabels() {
-    const selectedLabelIds: string[] = [];
-    $('.js-label-select')
-        .closest('.issuable-form-select-holder')
-        .find('input[type="hidden"]')
-        .each(function() {
-            selectedLabelIds.push($(this).attr('value') || '');
+    setTimeout(() => {
+        const selectedLabelIds: string[] = [];
+        $('.js-labels-list .gl-dropdown-item').each(function() {
+            const checkmark = $(this).find('.gl-dropdown-item-check-icon');
+            if (!checkmark.hasClass('gl-visibility-hidden')) {
+                const text = $(this).find('.gl-dropdown-item-text-primary').text().trim();
+                if (text === 'No matching results') {
+                    return;
+                }
+                selectedLabelIds.push(text);
+            }
+        })
+
+        $('[data-monar="CUSTOM_LABEL_BUTTON"]').each(function() {
+            const id = $(this).attr('data-id') || '-';
+            if (selectedLabelIds.includes(id)) {
+                $(this).css('opacity', 1);
+                $('span', this).css('border-color', 'rgba(0,0,0,0.8)');
+            } else {
+                $(this).css('opacity', 0.5);
+                $('span', this).css('border-color', 'transparent');
+            }
         });
 
-    $('[data-monar="CUSTOM_LABEL_BUTTON"]').each(function() {
-        const id = $(this).attr('data-id') || '-';
-        if (selectedLabelIds.includes(id)) {
-            $(this).css('opacity', 1);
-            $('span', this).css('border-color', 'rgba(0,0,0,0.8)');
-        } else {
-            $(this).css('opacity', 0.5);
-            $('span', this).css('border-color', 'transparent');
+        // Automatic No. approvals required
+        if (isFrontend()) {
+            const requiresDev = selectedLabelIds.includes(devReviewId);
+            const requiresStyler = selectedLabelIds.includes(designReviewId) || selectedLabelIds.includes(styleReviewId);
+            const neededAmount = Math.max(1, (requiresDev ? 1 : 0) + (requiresStyler ? 1 : 0));
+            $('.js-approvals-required input').val(neededAmount);
+            $('input[name="merge_request[approval_rules_attributes][][approvals_required]"]').val(neededAmount);
         }
-    });
 
-    // Automatic No. approvals required
-    if (isFrontend()) {
-        const requiresDev = selectedLabelIds.includes(devReviewId);
-        const requiresStyler = selectedLabelIds.includes(designReviewId) || selectedLabelIds.includes(styleReviewId);
-        const neededAmount = Math.max(1, (requiresDev ? 1 : 0) + (requiresStyler ? 1 : 0));
-        $('.js-approvals-required input').val(neededAmount);
-        $('input[name="merge_request[approval_rules_attributes][][approvals_required]"]').val(neededAmount);
-    }
+        $('*[data-testid="embedded-labels-list"]').hide();
+    }, 50);
 }
 
-let devReviewId = 'x';
-let designReviewId = 'x';
-let styleReviewId = 'x';
+let devReviewId = 'dev review';
+let designReviewId = 'design review';
+let styleReviewId = 'style review';
 
 function createLabelButtons() {
     let tries = 0;
 
     setTimeout(() => {
-        if ($('.dropdown-menu-labels .label-item').length === 0) {
+        if ($('.js-labels-list .gl-dropdown-item-text-primary').length === 0) {
             tries++;
             if (tries < 20) {
                 createLabelButtons();
@@ -80,35 +91,30 @@ function createLabelButtons() {
             return;
         }
 
-        $(`.dropdown-menu-labels .label-item`).on('click', function() {
+        $(`.js-labels-list .gl-dropdown-item-text-primary`).on('click', function() {
             setTimeout(() => {
                 markSelectedLabels();
             });
         });
 
-        $(`.dropdown-menu-labels .dropdown-clear-active`).on('click', function() {
+        $(`.js-labels-list .dropdown-clear-active`).on('click', function() {
             setTimeout(() => {
                 markSelectedLabels();
             });
         });
 
-        $('.dropdown-menu-labels .label-item').each(function() {
+        $('.js-labels-list .gl-dropdown-item-text-primary').each(function() {
             const name = $(this)
                 .text()
                 .trim();
             const color = $('span', this).attr('style');
-            const id = $(this).attr('data-label-id');
 
-            if (name === 'dev review') {
-                devReviewId = id || 'x';
-            } else if (name === 'design review') {
-                designReviewId = id || 'x';
-            } else if (name === 'style review') {
-                styleReviewId = id || 'x';
+            if (name === 'No matching results') {
+                return;
             }
 
             const html = `
-                <a class="label-link" data-id="${id}" data-monar="CUSTOM_LABEL_BUTTON" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;">
+                <a class="label-link" data-id="${name}" data-monar="CUSTOM_LABEL_BUTTON" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;">
                     <span class="badge color-label" style="${color}; height: 26px; border: 3px solid transparent; margin-bottom: 5px; line-height: 13px;">
                         ${name}
                     </span>
@@ -116,8 +122,19 @@ function createLabelButtons() {
             `;
 
             $('#MONAR_CUSTOM_LABEL_BUTTONS').append(html);
-            $(`[data-id="${id}"][data-monar="CUSTOM_LABEL_BUTTON"]`).on('click', () => {
-                $(`.dropdown-menu-labels .label-item[data-label-id="${id}"]`)[0]?.click();
+            $(`[data-id="${name}"][data-monar="CUSTOM_LABEL_BUTTON"]`).on('click', function()  {
+                const text1 = $(this).text().trim();
+                $(`.js-labels-list .gl-dropdown-item-text-primary`).each(function() {
+                    const text2 = $(this).text().trim();
+                    if (text1 === text2) {
+                        $(this).closest('button')[0].click();
+
+                        $('.issuable-form-label-select-holder button')[0]?.click();
+                        setTimeout(() => {
+                            $('.issuable-form-label-select-holder button')[0]?.click();
+                        }, 50);
+                    }
+                });
                 markSelectedLabels();
             });
         });
