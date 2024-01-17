@@ -84,19 +84,17 @@ export class E2ECreatePipelineScreen extends CreatePipelineScreen {
     }
 
     createButtons() {
-        const runPipelineSection = $('[data-qa-selector="run_pipeline_button"]').parent();
+        const runPipelineSection = $('[data-testid="run-pipeline-button"]').parent();
         runPipelineSection.before('<div style="margin-top: 10px" id="MONAR_E2E_VARIABLES_BUTTONS"></div>');
 
         pipelineButtons.forEach((button, index) => {
-            const background = `background: ${colorForIndex(index)};`;
-
             const buttonHtml = $(`
-                <a class="label-link" style="cursor: pointer; margin-bottom: 10px; margin-right: 5px;" id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(
-                    snakeCase(button.label),
-                )}">
-                    <span class="badge color-label" style="${background}; height: 26px; line-height: 13px; border: 3px solid transparent; margin-bottom: 5px">
-                        ${button.label}
-                    </span>
+                <a
+                    class="btn btn-sm gl-mr-2"
+                    style="background: ${colorForIndex(index)}"
+                    id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(snakeCase(button.label))}"
+                >
+                    <span> ${button.label}</span>
                 </a>
             `);
 
