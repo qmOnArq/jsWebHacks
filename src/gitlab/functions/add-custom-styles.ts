@@ -13,7 +13,7 @@ export function addCustomStyles() {
                     position: absolute;
                     right: 0;
                     top: 0;
-                    color: #111;
+                    color: var(--dark); /* variable from gitlab ui */
                     cursor: pointer;
                     font-weight: bold;
                     font-size: 130%;
@@ -22,12 +22,7 @@ export function addCustomStyles() {
                     border-radius: 5px;
                 }
 
-                body.gl-dark .close-button {
-                    color:#ddd;
-                }
-
-                .close-button:hover,
-                body.gl-dark .close-button:hover {
+                .close-button:hover {
                     text-decoration: none;
                     color:red;
                     background-color:rgba(255,0,0,0.2)
@@ -35,8 +30,7 @@ export function addCustomStyles() {
 
                 .monar-notification-dot {
                     position: absolute;
-                    top: 0;
-                    right: -5px;
+                    top: -10px;
                     padding: 1px 7px;
                     border-radius: 50%;
                     font-size: 80%;
@@ -56,13 +50,19 @@ export function addCustomStyles() {
                 }
 
                 .monar-background {
-                    background: white;
+                    background: var(--light); /* variable from gitlab ui */
                 }
 
-                body.gl-dark .monar-background {
-                        background: var(--gray-50); /* variable from gitlab ui */
-                    }
+                /* Top bar */
+                .top-bar-container {
+                    justify-content: space-between !important;
                 }
+
+                nav.breadcrumbs {
+                    flex-grow: 0;
+                    flex-basis: auto;
+                }
+
             </style>`;
 
         document.head.insertAdjacentHTML('beforeend', css);

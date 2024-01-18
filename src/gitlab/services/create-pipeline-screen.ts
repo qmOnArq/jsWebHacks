@@ -20,7 +20,7 @@ export default class CreatePipelineScreen {
             await this.refreshGUI();
         });
 
-        // Remove variables from cache when manually deleted
+        // Remove variables from cache when manually deleted in GUI
         $('form').on('click', event => {
             // only user clicks, not jQuery clicks
             if (!event.originalEvent) return;
@@ -28,14 +28,12 @@ export default class CreatePipelineScreen {
             const isRemoveBtn = $(event.target).is(this.getVariableRemoveRowButtonSelector());
             const isChildOfRemoveBtn = $(event.target).parents(this.getVariableRemoveRowButtonSelector()).length;
 
+            // clicked in form, but not on remove button
             if (!isRemoveBtn && !isChildOfRemoveBtn) return;
 
             // remove removed key from our cache
             const variableKey = String(
-                $(event.target)
-                    .parents(this.getVariableRowSelector())
-                    .find(this.getVariableInputSelector('key'))
-                    .val(),
+                $(event.target).parents(this.getVariableRowSelector()).find(this.getVariableInputSelector('key')).val(),
             );
 
             delete this.variables[variableKey];
@@ -84,17 +82,8 @@ export default class CreatePipelineScreen {
 
     protected cacheCustomValuesFromInputs() {
         return this.iterateThroughGUIVariables($row => {
-            const variableKey = String(
-                $($row)
-                    .find(this.getVariableInputSelector('key'))
-                    .val(),
-            );
-
-            const variableValue = String(
-                $($row)
-                    .find(this.getVariableInputSelector('value'))
-                    .val(),
-            );
+            const variableKey = String($($row).find(this.getVariableInputSelector('key')).val());
+            const variableValue = String($($row).find(this.getVariableInputSelector('value')).val());
 
             // Cache variable value
             if (variableKey) {
@@ -125,9 +114,7 @@ export default class CreatePipelineScreen {
     private removeAllVariablesGUI(): Promise<void> {
         return this.iterateThroughGUIVariables($row => {
             // Remove using the remove button
-            $($row)
-                .find(this.getVariableRemoveRowButtonSelector())
-                .trigger('click');
+            $($row).find(this.getVariableRemoveRowButtonSelector()).trigger('click');
         });
     }
 
@@ -167,15 +154,15 @@ export default class CreatePipelineScreen {
     }
 
     private getVariableRowSelector() {
-        return '*[data-testid="ci-variable-row"]';
+        return '*[data-testid="ci-variable-row-container"]';
     }
 
     private getVariableRemoveRowButtonSelector() {
-        return '*[data-testid="remove-ci-variable-row"]';
+        return 'button[data-testid="remove-ci-variable-row"]';
     }
 
     private getVariableInputSelector(type: 'key' | 'value') {
-        return `*[data-testid="pipeline-form-ci-variable-${type}"]`;
+        return `*[data-testid="pipeline-form-ci-variable-${type}-field"]`;
     }
 
     private inputEvent() {
