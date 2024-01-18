@@ -5,6 +5,7 @@ export const changelogNotes = [
     <h1>Changes</h1>
     <ul>
         <li>Fix: Broken new e2e pipeline buttons after update</li>
+        <li>Fix: Changelog button in new Gitlab UI</li>
     </ul>
     `,
     },
