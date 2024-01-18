@@ -35,7 +35,7 @@ export namespace Changelog {
             toggleChangelog();
         });
 
-        $('header.navbar').prepend(openChangelogButton);
+        $('.top-bar-container').append(openChangelogButton);
     }
 
     export function toggleChangelog() {
