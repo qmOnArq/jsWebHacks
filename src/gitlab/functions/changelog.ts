@@ -100,6 +100,16 @@ export namespace Changelog {
             }
 
             $('#monar_changelog_panel').fadeIn(FADE_SPEED);
+
+            document.addEventListener(
+                'keyup',
+                event => {
+                    if (event.key === 'Escape') {
+                        $('#monar_changelog_panel').fadeOut(FADE_SPEED);
+                    }
+                },
+                { once: true },
+            );
         } else {
             $('#monar_changelog_panel').fadeOut(FADE_SPEED);
         }
