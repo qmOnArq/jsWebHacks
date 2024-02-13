@@ -1,5 +1,13 @@
 export const changelogNotes = [
     {
+        date: '13.2.2024',
+        text: `
+    <h1>Bugfixes</h1>
+    <ul>
+        <li>Running E2E pipeline from FE repository using button</li>
+    </ul>`,
+    },
+    {
         date: '17.1.2024',
         text: `
     <h1>Changes</h1>
