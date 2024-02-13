@@ -7,7 +7,10 @@ import { createHashString } from './hash-variables';
 const ImageJobByProjectId: { [key: string]: ImageJob } = {
     // Frontend
     '106': {
-        name: ['bloomreach docker image', 'bloomreach with showcase docker image autorun'],
+        name: [
+            'bloomreach docker image (Google Container Registry - to be deprecated)',
+            'bloomreach with showcase docker image autorun (Google Container Registry - to be deprecated)',
+        ],
         imageRegex: /^Digest:.*(sha256:.+)$/m,
         imageUrlParam: 'fe_version',
     },
