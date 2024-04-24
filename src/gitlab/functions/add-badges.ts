@@ -119,7 +119,7 @@ function getBadgeUrl(status: PipelineStatus, text: string) {
             tags: 'tags',
         }[status] || '';
 
-    return `https://img.shields.io/badge/${text}-${statusWord}-${color}.svg`;
+    return `https://img.shields.io/badge/${(text || '').replace(/-/g, '--')}-${statusWord}-${color}.svg`;
 }
 
 export type PipelineStatus =
