@@ -109,7 +109,7 @@ function createButton(status: ButtonStatus, url?: string) {
         </a>
     `;
 
-    $('.mr-state-widget .mr-widget-workflow .ci-widget.media').prepend(html);
+    $('[data-testid=pipeline-container] .ci-widget.media').prepend(html);
 }
 
 interface ImageJob {
