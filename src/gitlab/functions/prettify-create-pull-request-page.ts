@@ -42,7 +42,7 @@ function markSelectedLabels() {
         const selectedLabelIds: string[] = [];
         $('.js-labels-list .gl-dropdown-item').each(function() {
             const checkmark = $(this).find('.gl-dropdown-item-check-icon');
-            if (!checkmark.hasClass('gl-visibility-hidden')) {
+            if (!checkmark.hasClass('gl-invisible')) {
                 const text = $(this).find('.gl-dropdown-item-text-primary').text().trim();
                 if (text === 'No matching results') {
                     return;

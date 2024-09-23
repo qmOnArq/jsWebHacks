@@ -22,11 +22,11 @@ const consts_strings = {
         </div>`,
 
     added: `
-        <div class="diff-stats-group cgreen" style="display: inline-block; transform: scale(0.8);">
+        <div class="diff-stats-group gl-text-green-600" style="display: inline-block; transform: scale(0.8);">
             <strong>+${REPLACE}</strong>
         </div>`,
     removed: `
-        <div class="diff-stats-group cred" style="display: inline-block; transform: scale(0.8);">
+        <div class="diff-stats-group gl-text-red-500" style="display: inline-block; transform: scale(0.8);">
             <strong>-${REPLACE}</strong>
         </div>`,
 
