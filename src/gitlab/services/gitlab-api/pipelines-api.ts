@@ -2,6 +2,7 @@ import { getProjectId } from '../../functions/get-project-id';
 import { Deferred } from '../../../deferred';
 import { GitlabDiscussions } from './discussions-api';
 import { PipelineStatus } from '../../functions/add-badges';
+import { GitlabJobs } from './jobs-api';
 
 export namespace GitlabPipelines {
     export interface PipelineScheduleBase {
@@ -30,6 +31,12 @@ export namespace GitlabPipelines {
         status: PipelineStatus;
         updated_at: string;
         web_url: string;
+    }
+
+    interface PipelineTrigger {
+        name: string;
+        status: GitlabJobs.JobStatus;
+        downstream_pipeline: PipelineBase;
     }
 
     export function getPipelineSchedules() {
@@ -99,5 +106,16 @@ export namespace GitlabPipelines {
             .catch(result.reject);
 
         return result.promise;
+    }
+
+    export async function getDownstreamPipeline(parentPipelineId: number, triggerName: string) {
+        const projectId = getProjectId();
+
+        try {
+            const triggers: PipelineTrigger[] = await $.ajax(`/api/v4/projects/${projectId}/pipelines/${parentPipelineId}/bridges`);
+            return triggers?.find((trigger) => trigger.status === 'success' && trigger.name === triggerName)?.downstream_pipeline;
+        } catch (error) {
+            return null;
+        }
     }
 }
