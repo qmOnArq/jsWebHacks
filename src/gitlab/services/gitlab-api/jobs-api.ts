@@ -23,7 +23,7 @@ export namespace GitlabJobs {
         ref: string;
         stage: string;
         started_at: string;
-        status: 'created' | 'pending' | 'running' | 'failed' | 'success' | 'canceled' | 'skipped' | 'manual';
+        status: JobStatus;
         tag: boolean;
         web_url: string;
         pipeline: GitlabPipelines.PipelineBase;
@@ -57,10 +57,12 @@ export namespace GitlabJobs {
         };
     }
 
+    export type JobStatus = 'created' | 'pending' | 'running' | 'failed' | 'success' | 'canceled' | 'skipped' | 'manual';
+
     export function getJobsForPipeline(
         pipelineId: number,
         filter: {
-            scope?: 'created' | 'pending' | 'running' | 'failed' | 'success' | 'canceled' | 'skipped' | 'manual';
+            scope?: JobStatus;
         } = {},
     ) {
         const projectId = getProjectId();

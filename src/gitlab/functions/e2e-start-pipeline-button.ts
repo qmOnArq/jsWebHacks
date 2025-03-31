@@ -19,54 +19,68 @@ const ImageJobByProjectId: { [key: string]: ImageJob } = {
     },
 };
 
-export function createRunE2eButton(mergeRequestId: number) {
+export async function createRunE2eButton(mergeRequestId: number) {
     if (!isFrontend() && !isApp()) {
-        return Promise.resolve();
+        return;
     }
 
     if (mergeRequestId == null) {
-        return Promise.resolve();
+        return;
     }
 
-    const imageJob = ImageJobByProjectId[window.monar_GLOBALS.projectId];
-    return GitlabPipelines.getPipelinesForMR(mergeRequestId).then(pipelines => {
-        if (!pipelines || pipelines.length === 0) {
+    const pipelines = await GitlabPipelines.getPipelinesForMR(mergeRequestId);
+    
+    if (!pipelines || pipelines.length === 0) {
+        return;
+    }
+    
+    let pipeline = pipelines[0];
+    
+    if (isFrontend()) {
+        const downstreamPipeline = await GitlabPipelines.getDownstreamPipeline(pipeline.id, 'trigger engagement app');
+        if (!downstreamPipeline) {
             return;
         }
+        
+        pipeline = downstreamPipeline;
+    }
+    
+    return createE2eButtonFromPipeline(pipeline);
+}
 
-        return GitlabJobs.getJobsForPipeline(pipelines[0].id).then(fetchedJobs => {
-            // Search for built docker image job
-            const dockerImageJob = fetchedJobs?.find(job => imageJob.name.includes(job.name));
-            if (!fetchedJobs || !dockerImageJob) {
-                return createButton('noJob');
-            }
+async function createE2eButtonFromPipeline(pipeline: GitlabPipelines.PipelineBase) {
+    const fetchedJobs = await GitlabJobs.getJobsForPipeline(pipeline.id);
+    const imageJob = ImageJobByProjectId[window.monar_GLOBALS.projectId];
+    
+    // Search for built docker image job
+    const dockerImageJob = fetchedJobs?.find(job => imageJob.name.includes(job.name));
+    if (!fetchedJobs || !dockerImageJob) {
+        return createButton('noJob');
+    }
 
-            switch (dockerImageJob.status) {
-                case 'success': {
-                    return GitlabJobs.getJobLog(dockerImageJob.id).then(log => {
-                        const match = log.match(imageJob.imageRegex);
-                        if (!match || !match[1]) {
-                            return createButton('other');
-                        }
-                        const url = `/e2e/e2e-tests/pipelines/new${createHashString({
-                            [imageJob.imageUrlParam]: match[1],
-                            source_project_id: window.monar_GLOBALS.projectId,
-                            source_pipeline_url: pipelines[0].web_url,
-                        })}`;
-                        return createButton('success', url);
-                    });
-                }
-                case 'running':
-                case 'pending':
-                case 'created':
-                    return createButton('running');
-                case 'failed':
-                    return createButton('error');
-                default:
-                    return createButton('other');
+    switch (dockerImageJob.status) {
+        case 'success': {
+            const log = await GitlabJobs.getJobLog(dockerImageJob.id);
+            const match = log.match(imageJob.imageRegex);
+            if (!match || !match[1]) {
+                return createButton('other');
             }
-        });
-    });
+            const url = `/e2e/e2e-tests/pipelines/new${createHashString({
+                [imageJob.imageUrlParam]: match[1],
+                source_project_id: window.monar_GLOBALS.projectId,
+                source_pipeline_url: pipeline.web_url,
+            })}`;
+            return createButton('success', url);
+        }
+        case 'running':
+        case 'pending':
+        case 'created':
+            return createButton('running');
+        case 'failed':
+            return createButton('error');
+        default:
+            return createButton('other');
+    }
 }
 
 function createButton(status: ButtonStatus, url?: string) {
