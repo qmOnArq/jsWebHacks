@@ -69,7 +69,7 @@ function start() {
                 CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid),
                 BranchingVersions.initialize(),
             ]).then(() => {
-                createChangelogUI();
+                // createChangelogUI();
                 parseHtmlPullRequests().forEach(formatPullRequest);
                 prettifyPullRequestPage();
                 prettifyCommitList();
@@ -78,7 +78,11 @@ function start() {
                 colorMergeRequestNumbers();
                 prettifyPullRequestCommitPage();
                 enhanceCreatePipelineScreen();
-            }),
+            }).then(() => {
+                setInterval(() => {
+                    parseHtmlPullRequests().forEach(formatPullRequest);
+                }, 500);
+            })
         );
     }
 }

@@ -1,7 +1,7 @@
 import { getProjectId } from './get-project-id';
 import { CONSTS_CSS, CONSTS_STRINGS, REPLACE } from './CONSTS';
 import { saveSettings } from './save-load-settings';
-import { hidePrStuff } from './hide-pr-stuff';
+import { hidePr, hidePrStuff } from "./hide-pr-stuff";
 import { GitlabDiscussions } from '../services/gitlab-api/discussions-api';
 import { Colors } from '../services/colors';
 
@@ -10,11 +10,20 @@ export function formatPullRequest(request: any) {
 
     request.element.css('position', 'relative');
 
+    request.element.css({'min-height': '67px'});
+
     // Remove Approvals required
     $('.issuable-meta li.d-none.d-sm-inline-block.has-tooltip', request.element).remove();
 
     // Remove "x of y" approvals required
     $('li[data-original-title="Approvals"], li[title="Approvals"]', request.element).remove();
+
+    // Hide approvals
+    $('[data-testid="mr-appovals"]', request.element).hide();
+
+    // Hide threads
+    $('span.gl-badge.badge.badge-pill.badge-muted', request.element).hide();
+    $('span.gl-badge.badge.badge-pill.badge-success', request.element).hide();
 
     // Buttons
     if ($('#monar-pull-requests-buttons').length === 0) {
@@ -67,7 +76,7 @@ export function formatPullRequest(request: any) {
     // Author photo
     let authorPhoto = $('.monar-author-photo', request.element);
     if (!authorPhoto[0]) {
-        $('.issuable-info-container', request.element).prepend(CONSTS_STRINGS('authorPhotoHTML'));
+        $(request.element).prepend(CONSTS_STRINGS('authorPhotoHTML'));
         authorPhoto = $('.monar-author-photo', request.element);
     }
     authorPhoto.css(CONSTS_CSS('authorPhoto'));
@@ -85,6 +94,8 @@ export function formatPullRequest(request: any) {
     title = title.replace(/(APPT-\d*)/g, '<b>$1</b>');
     title = title.replace(/(EAI-\d*)/g, '<b>$1</b>');
     title = title.replace(/(ECMP-\d*)/g, '<b>$1</b>');
+    title = title.replace(/(EQA-\d*)/g, '<b>$1</b>');
+    title = title.replace(/(EE2E-\d*)/g, '<b>$1</b>');
     title = title.replace(/(CMP-\d*)/g, '<b>$1</b>');
     title = title.replace(/(DB-\d*)/g, '<b>$1</b>');
     title = title.replace(/(FIX)/g, '<b>$1</b>');
@@ -117,6 +128,7 @@ export function formatPullRequest(request: any) {
     // Tags
     if (request.tagsElement) {
         request.tagsElement.css(CONSTS_CSS('tagsElement'));
+        $('.gl-label', request.tagsElement).css({'margin-right': '4px'});
     }
 
     // Upvoted
@@ -190,8 +202,8 @@ export function formatPullRequest(request: any) {
     }
 
     // Time
-    if ($('time', request.element)[0]) {
-        $('time', request.element).each(function (this: any) {
+    if ($('[data-testid="issuable-timestamp"], [data-testid="issuable-created-at"]', request.element)[0]) {
+        $('[data-testid="issuable-timestamp"], [data-testid="issuable-created-at"]', request.element).each(function (this: any) {
             $(this).html(
                 $(this)
                     .html()
@@ -212,9 +224,12 @@ export function formatPullRequest(request: any) {
 
     // Line
 
+    hidePr(request);
+
     if (projectId !== null) {
         // Unresolved discussions
         let unresolved = 0;
+        let comments = 0;
         GitlabDiscussions.getMergeRequestDiscussions(request.id)
             .then(function (data) {
                 (data || []).forEach(item => {
@@ -224,13 +239,22 @@ export function formatPullRequest(request: any) {
                             unresolved++;
                         }
                     }
+
+                    if (item.notes && item.notes[0]) {
+                        const note = item.notes[0];
+                        if (!note.system) {
+                            comments++;
+                        }
+                    }
                 });
 
-                if (unresolved > 0) {
-                    $(request.commentsElement).prepend(
-                        `<span style="color: red;">🎯 <span>${unresolved}</span></span>&nbsp;&nbsp;&nbsp;`,
-                    );
-                }
+                $('[data-testid="issuable-title"]', request.element).append(
+                `<div style="font-size: 14px; position: absolute; top: 11px; right: 270px; font-weight: normal;">
+                            ${unresolved > 0 ? `🎯<span style="color: red">${unresolved}</span>` : ''}
+                            &nbsp;
+                            ${comments > 0 ? `📄<span>${comments}</span>` : ''}
+                            </div>`,
+                );
             })
             .catch((x: any) => {
                 console.log(x.responseJSON);
@@ -245,8 +269,8 @@ export function formatPullRequest(request: any) {
 
             const doneStyle = done >= total ? 'color: #1aaa55' : '';
 
-            $('.merge-request-title.title', request.element).append(
-                `<span style="position: absolute; top: 11px; right: 330px; font-weight: normal; ${doneStyle}"><i aria-hidden="true" data-hidden="true" class="fa fa-check-square-o"></i> <span>${done}/${total}</span></span>&nbsp;&nbsp;&nbsp;`,
+            $('[data-testid="issuable-title"]', request.element).append(
+                `<span style="font-size: 14px; position: absolute; top: 11px; right: 400px; font-weight: normal; ${doneStyle}"><i aria-hidden="true" data-hidden="true" class="fa fa-check-square-o"></i> <span>${done}/${total}</span></span>&nbsp;&nbsp;&nbsp;`,
             );
         }
 
@@ -258,14 +282,14 @@ export function formatPullRequest(request: any) {
                 const removed = data.removed_lines;
 
                 const html = `
-                    <div style="display: inline-block; position: absolute; left: 525px;">
+                    <div style="display: inline-block; position: absolute; left: 525px; font-size: 14px;">
                     ${CONSTS_STRINGS('changed').replace(REPLACE, size)}
                     ${CONSTS_STRINGS('added').replace(REPLACE, added)}
                     ${CONSTS_STRINGS('removed').replace(REPLACE, removed)}
                     </div>
                 `;
 
-                $('.merge-request-title.title', request.element).append(html);
+                $('[data-testid="issuable-title"]', request.element).append(html);
             })
             .catch((x: any) => {
                 console.log(x);
@@ -296,7 +320,7 @@ export function formatPullRequest(request: any) {
 
                     let approvePhoto = $('.' + className, request.element);
                     if (!approvePhoto[0]) {
-                        $('.issuable-info-container', request.element).prepend(html);
+                        $('.issuable-meta', request.element).prepend(html);
                         approvePhoto = $('.' + className, request.element);
                     }
                     approvePhoto.css(css);

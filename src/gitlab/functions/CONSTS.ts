@@ -22,7 +22,7 @@ const consts_strings = {
         </div>`,
 
     added: `
-        <div class="diff-stats-group gl-text-green-600" style="display: inline-block; transform: scale(0.8);">
+        <div class="diff-stats-group gl-text-green-500" style="display: inline-block; font-weight: bold; transform: scale(0.8);">
             <strong>+${REPLACE}</strong>
         </div>`,
     removed: `
