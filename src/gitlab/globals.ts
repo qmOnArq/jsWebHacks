@@ -15,7 +15,7 @@ declare global {
         };
 
         monar_GLOBALS: {
-            id: string;
+            id: number;
             username: string;
             name: string;
             avatar: string;
