@@ -3,6 +3,8 @@ import { isFrontend } from './is-frontend';
 import { createFeebasCommitButtons, createMainFeebasMergeRequestButton } from './feebas';
 import { CommitApprovals } from '../services/commit-approvals';
 import { createRunE2eButton } from './e2e-start-pipeline-button';
+import { isApp } from './is-app';
+import { pullRequestPage } from '../constants/pull-request-page.constant';
 
 export function prettifyPullRequestPage() {
     if (!isPullRequestsListPage()) {
@@ -121,6 +123,46 @@ export function prettifyPullRequestPage() {
 
     // Run E2E button
     createRunE2eButton(window?.gl?.mrWidgetData?.iid);
+
+    function replaceAIBotAppearance() {
+        if (!isFrontend() && !isApp()) {
+            return;
+        }
+
+        // Only for selected users
+        if (!pullRequestPage.AIreviewer.newAppearance.allowedTargetUserIds.includes(window.monar_GLOBALS.id)) {
+            return;
+        }
+
+        $('.discussion-notes .note.note-wrapper').each((_, note) => {
+            const $userNameLinks = $(note).find(
+                `.author-name-link[data-username="${pullRequestPage.AIreviewer.userName}"]`,
+            );
+
+            if ($userNameLinks.length > 0) {
+                $userNameLinks.each((_, link) => {
+                    $(link).text(pullRequestPage.AIreviewer.newAppearance.userName);
+                });
+
+                const $avatarLink = $(note).find(
+                    `.timeline-avatar .gl-avatar-link[data-username="${pullRequestPage.AIreviewer.userName}"]`,
+                );
+                if ($avatarLink.length > 0) {
+                    $avatarLink.css('width', '32px').css('height', '32px');
+                    const $avatarIdenticon = $avatarLink.find('.gl-avatar.gl-avatar-identicon');
+                    if ($avatarIdenticon.length > 0) {
+                        $avatarIdenticon.replaceWith(`<img
+                                src="${pullRequestPage.AIreviewer.newAppearance.imageSrc}"
+                                class="gl-avatar gl-avatar-circle gl-avatar-s32"
+                                style="height: 100%;object-fit: cover;"
+                        >`);
+                    }
+                }
+            }
+        });
+    }
+
+    replaceAIBotAppearance();
 
     // Remove errors
     setInterval(() => {
