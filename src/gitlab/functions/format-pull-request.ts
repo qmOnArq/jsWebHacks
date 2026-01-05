@@ -20,10 +20,12 @@ export function formatPullRequest(request: any) {
 
     // Hide approvals
     $('[data-testid="mr-appovals"]', request.element).hide();
+    $('[data-testid="mr-approvals"]', request.element).hide();
 
     // Hide threads
     $('span.gl-badge.badge.badge-pill.badge-muted', request.element).hide();
     $('span.gl-badge.badge.badge-pill.badge-success', request.element).hide();
+    $('button.gl-rounded-pill.gl-border-none.gl-bg-transparent.gl-p-0', request.element).hide();
 
     // Buttons
     if ($('#monar-pull-requests-buttons').length === 0) {
@@ -113,6 +115,7 @@ export function formatPullRequest(request: any) {
     title = title.replace(/(WE-\d*)/g, '<b>$1</b>');
     title = title.replace(/(ANL-\d*)/g, '<b>$1</b>');
     title = title.replace(/(EXP-\d*)/g, '<b>$1</b>');
+    title = title.replace(/(AFFI-\d*)/g, '<b>$1</b>');
     title = title.replace(/\[([^\]]+)\]/gi, '<b style="background-color: rgba(0,255,255,0.5); color: black;">[$1]</b>');
     title = title.replace(/WIP(:?)/gi, '<b style="color: red;">WIP$1</b>');
     title = title.replace(/Draft(:?)/gi, '<b style="color: red;">Draft$1</b>');

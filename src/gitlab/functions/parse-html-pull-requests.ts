@@ -13,7 +13,7 @@ export function parseHtmlPullRequests(forceAll = false) {
         const idElement = $('.issuable-reference', element);
         const authorElement = $('.issuable-info .author-link', element);
         const targetElement = $('.project-ref-path .ref-name', element);
-        const conflictElement = $('.issuable-pipeline-broken a', element);
+        const conflictElement = $('[data-testid="merge-request-cannot-merge"]', element);
         const upvoteElement = $('.issuable-upvotes', element);
         const downvoteElement = $('.issuable-downvotes', element);
         const commentsElement = $('[data-testid="issuable-comments"]', element);

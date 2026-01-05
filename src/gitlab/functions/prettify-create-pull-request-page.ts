@@ -12,13 +12,13 @@ export function prettifyCreatePullRequestPage() {
     }
 
     // Labels
-    $('.issuable-form-label-select-holder button')[0]?.click();
+    $('.labels-select-wrapper button')[0]?.click();
     setTimeout(() => {
-        $('.issuable-form-label-select-holder button')[0]?.click();
+        $('.labels-select-wrapper button')[0]?.click();
     }, 50);
 
     if ($('#MONAR_CUSTOM_LABEL_BUTTONS').length === 0) {
-        $('.issuable-form-label-select-holder').closest('.col-sm-10, .col-12').append(`
+        $('.labels-select-wrapper').closest('.gl-col-12').append(`
             <div id="MONAR_CUSTOM_LABEL_BUTTONS"
                 style="
                     display: inline-block;
