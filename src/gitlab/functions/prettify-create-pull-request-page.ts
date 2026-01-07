@@ -9,6 +9,8 @@ export function prettifyCreatePullRequestPage() {
         if (titleRegexMatch && titleRegexMatch.length === 3) {
             titleElement.value = `${titleRegexMatch[1]} ${titleRegexMatch[2]}`;
         }
+    } else {
+        return;
     }
 
     // Labels
