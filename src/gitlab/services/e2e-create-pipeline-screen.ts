@@ -91,7 +91,7 @@ export class E2ECreatePipelineScreen extends CreatePipelineScreen {
             const buttonHtml = $(`
                 <a
                     class="btn btn-sm gl-mr-2"
-                    style="background: ${colorForIndex(index)}"
+                    style="background: ${colorForIndex(index)}; border: 4px solid transparent;"
                     id="MONAR_E2E_VARIABLES_BUTTON_${toUpper(snakeCase(button.label))}"
                 >
                     <span> ${button.label}</span>
@@ -159,7 +159,7 @@ export class E2ECreatePipelineScreen extends CreatePipelineScreen {
     }
 
     markButton(button: PipelineButton, selected: boolean) {
-        const targetElement = $(`#MONAR_E2E_VARIABLES_BUTTON_${toUpper(snakeCase(button.label))} span`);
-        targetElement.css({ 'border-color': selected ? '#222222' : 'transparent' });
+        const targetElement = $(`#MONAR_E2E_VARIABLES_BUTTON_${toUpper(snakeCase(button.label))}`);
+        targetElement.css({ 'border-color': selected ? '#222' : 'transparent' });
     }
 }

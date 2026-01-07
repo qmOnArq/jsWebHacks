@@ -158,7 +158,7 @@ export default class CreatePipelineScreen {
     }
 
     private getVariableRemoveRowButtonSelector() {
-        return 'button[data-testid="remove-ci-variable-row"]';
+        return 'button[data-testid="remove-ci-variable-button-desktop"]';
     }
 
     private getVariableInputSelector(type: 'key' | 'value') {
