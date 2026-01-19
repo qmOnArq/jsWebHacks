@@ -131,9 +131,9 @@ function createLabelButtons() {
                     if (text1 === text2) {
                         $(this).closest('button')[0].click();
 
-                        $('.issuable-form-label-select-holder button')[0]?.click();
+                        $('.labels-select-wrapper button')[0]?.click();
                         setTimeout(() => {
-                            $('.issuable-form-label-select-holder button')[0]?.click();
+                            $('.labels-select-wrapper button')[0]?.click();
                         }, 50);
                     }
                 });
