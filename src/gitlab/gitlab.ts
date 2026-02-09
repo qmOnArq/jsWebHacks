@@ -64,7 +64,12 @@ function start() {
         addCustomStyles();
 
 
-        loadScript('https://code.jquery.com/jquery-3.6.0.min.js').then(() =>
+        loadScript('https://code.jquery.com/jquery-3.6.0.min.js').then(() => {
+            (jQuery.expr[':'].icontains as any) = function(a: any, i: any, m: any) {
+                return jQuery(a).text().toUpperCase()
+                    .indexOf(m[3].toUpperCase()) >= 0;
+            };
+        }).then(() =>
             Promise.all([
                 CommentParser.fetchMergeRequestCommentData(window?.gl?.mrWidgetData?.iid),
                 BranchingVersions.initialize(),

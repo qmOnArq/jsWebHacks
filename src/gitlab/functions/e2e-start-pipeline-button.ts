@@ -29,29 +29,29 @@ export async function createRunE2eButton(mergeRequestId: number) {
     }
 
     const pipelines = await GitlabPipelines.getPipelinesForMR(mergeRequestId);
-    
+
     if (!pipelines || pipelines.length === 0) {
         return;
     }
-    
+
     let pipeline = pipelines[0];
-    
+
     if (isFrontend()) {
         const downstreamPipeline = await GitlabPipelines.getDownstreamPipeline(pipeline.id, 'trigger engagement app');
         if (!downstreamPipeline) {
             return;
         }
-        
+
         pipeline = downstreamPipeline;
     }
-    
+
     return createE2eButtonFromPipeline(pipeline);
 }
 
 async function createE2eButtonFromPipeline(pipeline: GitlabPipelines.PipelineBase) {
     const fetchedJobs = await GitlabJobs.getJobsForPipeline(pipeline.id);
     const imageJob = ImageJobByProjectId[window.monar_GLOBALS.projectId];
-    
+
     // Search for built docker image job
     const dockerImageJob = fetchedJobs?.find(job => imageJob.name.includes(job.name));
     if (!fetchedJobs || !dockerImageJob) {
@@ -70,7 +70,7 @@ async function createE2eButtonFromPipeline(pipeline: GitlabPipelines.PipelineBas
                 source_project_id: window.monar_GLOBALS.projectId,
                 source_pipeline_url: pipeline.web_url,
             })}`;
-            return createButton('success', url);
+            return createButton('success', url, match[1]);
         }
         case 'running':
         case 'pending':
@@ -83,7 +83,7 @@ async function createE2eButtonFromPipeline(pipeline: GitlabPipelines.PipelineBas
     }
 }
 
-function createButton(status: ButtonStatus, url?: string) {
+function createButton(status: ButtonStatus, url?: string, sha?: string) {
     let text: string;
     let className = '';
 
@@ -121,9 +121,11 @@ function createButton(status: ButtonStatus, url?: string) {
         >
             ${text}
         </a>
+
+        ${sha ? `<code style="font-family: monospace; position: absolute; top: -20px; left: 0; opacity: 0.5; font-size: 9px">${sha}</code>` : ''}
     `;
 
-    $('[data-testid=pipeline-container] .ci-widget.media').prepend(html);
+    $('[data-testid=pipeline-container] .ci-widget.media').css('position', 'relative').prepend(html);
 }
 
 interface ImageJob {
