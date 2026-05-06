@@ -65,7 +65,7 @@ async function createE2eButtonFromPipeline(pipeline: GitlabPipelines.PipelineBas
             if (!match || !match[1]) {
                 return createButton('other');
             }
-            const url = `/e2e/e2e-tests/pipelines/new${createHashString({
+            const url = `/qa/test-hub/pipelines/new${createHashString({
                 [imageJob.imageUrlParam]: match[1],
                 source_project_id: window.monar_GLOBALS.projectId,
                 source_pipeline_url: pipeline.web_url,
