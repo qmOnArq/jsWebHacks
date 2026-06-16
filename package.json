@@ -30,7 +30,7 @@
     "@types/lodash": "^4.14.182",
     "clean-webpack-plugin": "^4.0.0",
     "jszip": "^3.10.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "prettier": "^2.7.1",
     "svelte": "^3.49.0",
     "svelte-loader": "^3.1.3",
